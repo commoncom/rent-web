@@ -1,47 +1,44 @@
 <template>
   	<div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
-        <div id="bg" class="bg">
+        <div v-if="showLoginForm == false" id="bg" class="bg">
           <div class="login" @keyup.13="doLogin">
              <div class="form-horizontal login">
               <div class="logo">欢迎来到租房空间</div>
               <div class="form-group input-group input-group-lg ">
                 <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                <input type="text" class=" form-control" placeholder="请输入地址" v-model="userInfo.address">
+                <input type="text" class=" form-control input_wid" placeholder="请输入地址" v-model="userInfo.address">
               </div>
               <div class="form-group input-group input-group-lg ">
                 <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                <input type="text" class=" form-control" placeholder="请输入用户名" v-model="userInfo.userName">
+                <input type="text" class=" form-control input_wid" placeholder="请输入用户名" v-model="userInfo.userName">
               </div>
               <div class="form-group input-group input-group-lg">
                 <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control" placeholder="请输入密码" v-model="userInfo.password">
-              </div>
-              <div class="form-group input-group input-group-lg">
-                <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control" placeholder="请输入确认密码" v-model="userInfo.retpassword">
+                <input type="password" class=" form-control input_wid" placeholder="请输入密码" v-model="userInfo.password">
               </div>
               <div class="form-group">
                 <!--<el-button class="form-control" @click="doLogin">登 录</el-button>-->
-                <el-button class="form-control" @click="doRegister">注 册</el-button>
                 <el-button class="form-control" @click="doLogin">登 录</el-button>
                 <!-- <button class="btn btn-default btn-sm form-control login-btn" @click="doLogin">注 册</button>-->
               </div>
             </div>
           </div>
         </div>
+        </div>
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
+import {packOpt} from 'src/common/js/com_fun';
 export default {
 	  name: 'home',
   	components: {
   		itemcontainer
   	},
     created(){
-        
+        this.showLoginForm = false;
     },
     data () {
     return {
@@ -52,48 +49,75 @@ export default {
           password: '',
           retpassword: ''
       },
-      show : false,
+      showLoginForm : false,
     }
   },
   methods : {
-      doRegister () {
-          console.log(this.address)
-      },
       doLogin (){
-          if (this.userName == ''){
-              alert('用户名不能为空');
-              return false
+          if (!this.validateReLg()) {
+             return false;
           }
-          if (this.password == ''){
-              alert('密码名不能为空');
-              return false
-          }
-          axios.post('/login',JSON.stringify(this.userInfo))
-              .then(res => {
-                  console.log(res)
-                  if(res.status == 200){
-                      this.$store.commit('setToken',res.data);
-                      localStorage.userName = this.userInfo.userName;
-                      localStorage.token_expire = res.data.expire;
-                      localStorage.token = res.data.token;
+          let form = this.userInfo;
+          let requestPath = "/login/"+form.address+"/"+form.userName+"/"+form.pwd+"/"+form.prikey;
+          let option = packOpt(requestPath);
+          http.get(options, function(res){
+              res.on('data', (res) => {
+                  if (res) {
+                      let parsedData_1 = JSON.parse(data.toString());
+                      console.info("---request data------", parsedData_1);
                       this.$notify({
                           title : '提示信息',
                           message : '登录成功',
                           type : 'success'
                       });
                       this.$router.push({path:'/'})
-                  }else {
+                  } else {
                       this.$notify({
                           title : '提示信息',
                           message : '账号或密码错误',
                           type : 'error'
                       });
                   }
-              })
-              .catch(err => {
-                  console.log(err)
-              })
-      }
+              });
+          });
+          // axios.post('/login',JSON.stringify(this.userInfo)).then(res => {
+          //         console.log(res)
+          //         if(res.status == 200){
+          //             this.$store.commit('setToken',res.data);
+          //             localStorage.userName = this.userInfo.userName;
+          //             localStorage.token_expire = res.data.expire;
+          //             localStorage.token = res.data.token;
+          //             this.$notify({
+          //                 title : '提示信息',
+          //                 message : '登录成功',
+          //                 type : 'success'
+          //             });
+          //             this.$router.push({path:'/'})
+          //         }else {
+          //             this.$notify({
+          //                 title : '提示信息',
+          //                 message : '账号或密码错误',
+          //                 type : 'error'
+          //             });
+          //         }
+          // })
+          // .catch(err => {
+          //     console.log(err)
+          // })
+      },
+      validateReLg() {
+          if (!(/^0x[0-9a-fA-F]{40}$"/.test(this.userInfo.address))) {
+              alert('该地址不是以太坊地址');
+          }
+          if (this.userInfo.userName == ''){
+              alert('用户名不能为空');
+              return false
+          }
+          if (this.userInfo.password == ''){
+              alert('密码不能为空');
+              return false
+          }
+        },
   },
   mounted (){
       // var wi=window.screen.width;
@@ -127,5 +151,9 @@ export default {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
       font-size: 50px;
+    }
+    .input_wid {
+       width:350px;
+       font-size: 16px;
     }
 </style>
