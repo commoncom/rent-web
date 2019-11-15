@@ -53,7 +53,6 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
 import {generateAddress} from 'src/common/js/address';
-import {packOpt, Configuration} from 'src/common/js/com_fun';
 export default {
 	  name: 'home',
   	components: {
@@ -109,6 +108,8 @@ export default {
                     });
                     this.showLoginForm = true;
                     this.newMap.set(this.userInfo.userName, addr);
+                    this.userInfo = {};
+                    this.form = {};
                 }else {
                     this.$notify({
                         title : '提示信息',
@@ -121,19 +122,6 @@ export default {
           }).catch(err => {
               console.log(err);
           })
-      },
-      packOpt(requestPath) {
-          let header = {
-                  'Content-Type': 'application/json'
-          };
-          let options = {
-            hostname: Configuration.ServerName,
-            port: Configuration.ServerPort,
-            path: requestPath,
-            method: "GET",
-            headers: header
-          };
-          return options;
       },
       jumpLog() {
          this.$router.push({path: '/'}); 
@@ -150,11 +138,13 @@ export default {
           return true;
         },
       handleClose() {
-         this.dialogVisible = false;
          if (this.showLoginForm) {
             this.jumpLog();
             this.showLoginForm = false;
-         }       
+            this.dialogVisible = false;
+         } else {
+            this.$notify({title : '提示信息',message : '注册中，请稍后！',type : 'info'});
+         }     
       },
   },
   mounted (){
