@@ -26,9 +26,14 @@ const param2String = data => {
 const get = (url, params) => ajax.get(url, {
   params: params,
   headers: {
-    'X-Requested-With': 'XMLHttpRequest'
+    'X-Requested-With': 'XMLHttpRequest',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+    'Content-Type': 'application/json'
    }
 }).then((res) => {
+  console.log("get-axios", res)
   if (res.status === 200 && res.data.status !== 0) {
       return Promise.reject(res.data);
   }

@@ -1,5 +1,5 @@
 export const Configuration = {
-  ServerName: "localhost",
+  ServerName: "http://192.168.218.147",
   ServerPort: "8080"
 }
 

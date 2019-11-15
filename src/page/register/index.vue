@@ -8,34 +8,52 @@
               <div class="logo">欢迎来到租房空间</div>
               <div class="form-group input-group input-group-lg ">
                 <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                <input type="text" class=" form-control" placeholder="请输入地址" v-model="userInfo.address">
-              </div>
-              <div class="form-group input-group input-group-lg ">
-                <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
                 <input type="text" class=" form-control" placeholder="请输入用户名" v-model="userInfo.userName">
               </div>
               <div class="form-group input-group input-group-lg">
                 <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control" placeholder="请输入密码" v-model="userInfo.password">
+                <input type="password" class=" form-control" placeholder="请输入密码" v-model="userInfo.pwd">
               </div>
               <div class="form-group input-group input-group-lg">
                 <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control" placeholder="请输入确认密码" v-model="userInfo.retpassword">
+                <input type="password" class=" form-control" placeholder="请输入确认密码" v-model="userInfo.retpwd">
               </div>
               <div class="form-group">
-                <!--<el-button class="form-control" @click="doLogin">登 录</el-button>-->
                 <el-button class="form-control" @click="doRegister">注 册</el-button>
-                <!-- <button class="btn btn-default btn-sm form-control login-btn" @click="doLogin">注 册</button>-->
+                <el-button class="form-control" @click="jumpLog">登 录</el-button>
               </div>
             </div>
           </div>
         </div>
+        <el-dialog
+                  title="提示"
+                  :visible.sync="dialogVisible" :modal-append-to-body="false" 
+                  width="30%"
+                  :before-close="handleClose">
+                   <div slot="title" style="float:left;font-size:18px;">请牢记您的地址和密钥</div>
+                  <el-form :model="form">
+                    <el-form-item label="地址" :label-width="formLabelWidth">
+                      <el-input v-model="form.address" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密钥" :label-width="formLabelWidth">
+                      <el-input v-model="form.prikey" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item style="margin-left:160px;">
+                      <el-button @click="dialogVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                    </el-form-item>
+                  </el-form>
+                  
+              </el-dialog>
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
-import {Configuration} from 'src/common/js/globe';
+import http from 'http';
+import {UrlConfig} from 'src/common/js/globe';
+import {generateAddress} from 'src/common/js/address';
+import {packOpt, Configuration} from 'src/common/js/com_fun';
 export default {
 	  name: 'home',
   	components: {
@@ -47,49 +65,61 @@ export default {
     data () {
     return {
       userInfo :{
-          address: '',
           userName : '',
-          password : '',
-          password: '',
-          retpassword: ''
+          pwd: '',
+          retpwd: ''
       },
+      form: {
+         address: '',
+         prikey: ''
+      },
+      dialogVisible: false,
       showLoginForm : false,
+      formLabelWidth: '50px',
+      newMap: new Map(),
     }
   },
   methods : {
       doRegister () {
-          console.log(this.userInfo)
+          // console.log(this.userInfo)
           if (!this.validateReLg()) {
              return false;
           }
-          if (this.userInfo.retpassword == this.userInfo.password){
-              alert('确认密码和密码不一致');
-              return false
+          // console.log(this.userInfo.retpwd, this.userInfo.pwd, typeof(this.userInfo.retpwd), typeof(this.userInfo.pwd))
+          // if (this.userInfo.retpwd === this.userInfo.pwd){
+          //     alert('确认密码和密码不一致');
+          //     return false
+          // }
+          console.log(11111, typeof(this.newMap))
+          if (this.newMap.has(this.userInfo.userName)) {
+               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap[this.userInfo.userName],type : 'error'});
+               return false;
           }
-          this.showLoginForm = true;
-          axios.post('/register',JSON.stringify(this.userInfo)).then(res => {
-                console.log(res)
-                if(res.status == 200){
-                    this.$store.commit('setToken',res.data);
-                    localStorage.userName = this.userInfo.userName;
-                    localStorage.token_expire = res.data.expire;
-                    localStorage.token = res.data.token;
+          let [addr, prikey] = generateAddress();
+          this.form.address = addr;
+          this.form.prikey = prikey;
+          let url = UrlConfig.serverUrl+"/register/"+addr+"/"+this.userInfo.userName+"/"+this.userInfo.pwd+"/"+prikey;
+          this.dialogVisible = true;
+          axios.get(url, {}).then(res => {
+                if(res.data.status){
                     this.$notify({
                         title : '提示信息',
                         message : '注册成功',
                         type : 'success'
                     });
-                    this.$router.push({path:'/'})
+                    this.showLoginForm = true;
+                    this.newMap.set(this.userInfo.userName, addr);
                 }else {
                     this.$notify({
                         title : '提示信息',
                         message : '注册失败，请重新注册！',
                         type : 'error'
                     });
+                    this.userInfo = {};
+                    this.form = {};
                 }
-          })
-          .catch(err => {
-              console.log(err)
+          }).catch(err => {
+              console.log(err);
           })
       },
       packOpt(requestPath) {
@@ -104,17 +134,28 @@ export default {
             headers: header
           };
           return options;
-      }
+      },
+      jumpLog() {
+         this.$router.push({path: '/'}); 
+      },
       validateReLg() {
           if (this.userInfo.userName == ''){
               alert('用户名不能为空');
               return false
           }
-          if (this.userInfo.password == ''){
+          if (this.userInfo.pwd == ''){
               alert('密码不能为空');
               return false
           }
+          return true;
         },
+      handleClose() {
+         this.dialogVisible = false;
+         if (this.showLoginForm) {
+            this.jumpLog();
+            this.showLoginForm = false;
+         }       
+      },
   },
   mounted (){
       // var wi=window.screen.width;

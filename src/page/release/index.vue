@@ -31,7 +31,7 @@
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
-import {UrlConfig} from 'src/common/js/globe';
+import {packOpt} from 'src/common/js/com_fun';
 export default {
 	  name: 'home',
   	components: {
@@ -58,26 +58,52 @@ export default {
              return false;
           }
           let form = this.userInfo;
-          let url = UrlConfig.serverUrl+"/login/"+form.address+"/"+form.userName+"/"+form.pwd+"/"+form.prikey;
-          axios.get(url, {}).then(res => {
-                if(res.data.status){
-                    this.$notify({
-                        title : '提示信息',
-                        message : '登录成功',
-                        type : 'success'
-                    });
-                }else {
-                    this.$notify({
-                        title : '提示信息',
-                        message : '登录失败，请重新登录！',
-                        type : 'error'
-                    });
-                    this.userInfo = {};
-                    this.form = {};
-                }
-          }).catch(err => {
-              console.log(err);
+          let requestPath = "/login/"+form.address+"/"+form.userName+"/"+form.pwd+"/"+form.prikey;
+          let option = packOpt(requestPath);
+          http.get(options, function(res){
+              res.on('data', (res) => {
+                  if (res.status) {
+                      let parsedData_1 = JSON.parse(data.toString());
+                      console.info("---request data------", parsedData_1);
+                      this.$notify({
+                          title : '提示信息',
+                          message : '登录成功',
+                          type : 'success'
+                      });
+                      this.$router.push({path:'/'})
+                  } else {
+                      this.$notify({
+                          title : '提示信息',
+                          message : '账号或密码错误',
+                          type : 'error'
+                      });
+                  }
+              });
           });
+          // axios.post('/login',JSON.stringify(this.userInfo)).then(res => {
+          //         console.log(res)
+          //         if(res.status == 200){
+          //             this.$store.commit('setToken',res.data);
+          //             localStorage.userName = this.userInfo.userName;
+          //             localStorage.token_expire = res.data.expire;
+          //             localStorage.token = res.data.token;
+          //             this.$notify({
+          //                 title : '提示信息',
+          //                 message : '登录成功',
+          //                 type : 'success'
+          //             });
+          //             this.$router.push({path:'/'})
+          //         }else {
+          //             this.$notify({
+          //                 title : '提示信息',
+          //                 message : '账号或密码错误',
+          //                 type : 'error'
+          //             });
+          //         }
+          // })
+          // .catch(err => {
+          //     console.log(err)
+          // })
       },
       jumpReg() {
           this.$router.push({path: 'register'}); 
