@@ -1,0 +1,125 @@
+<template>
+  	<div class="home_container">
+        <itemcontainer father-component="home"></itemcontainer>
+        <!--登录-->
+        <div id="bg" class="bg">
+          <div class="login">
+             <div class="form-horizontal login">
+              <div class="logo">欢迎来到租房空间</div>
+              <div class="form-group input-group input-group-lg ">
+                 <input type="text" class=" form-control" placeholder="请输入手机号" v-model="userInfo.userId">
+              </div>
+              <div class="form-group">
+                <el-button class="form-control" @click="generateAddr">生成地址</el-button>
+              </div>
+              <div class="form-group input-group input-group-lg">
+                <input type="text" class="widthContrl"  v-model="form.address">
+                <input type="text" class="widthContrl" v-model="form.prikey">
+              </div>
+               <!--<el-alert height="20px" title="请牢记地址和私钥，本系统不为用户保存地址和私钥！" type="info" :closable="false"></el-alert>-->
+            </div>
+          </div>
+        </div>
+    </div>
+</template>
+<script>
+import itemcontainer from '../../components/itemcontainer';
+import {generateAddress} from 'src/common/js/address';
+export default {
+	  name: 'home',
+  	components: {
+  		itemcontainer
+  	},
+    created(){
+        
+    },
+    data () {
+      return {
+        userInfo :{
+            userId: '',
+            userName : '',
+            pwd: '',
+            retpwd: ''
+        },
+        form: {
+           address: '',
+           prikey: ''
+        },
+        newMap: new Map(),
+      }
+   },
+   methods : {
+      generateAddr() {
+         console.log(this.userInfo.userId, this.newMap);
+         if (this.userInfo.userId == '') {
+             this.$notify({title : '提示信息',message : '手机号不能为空', type:'info'});
+             return false;
+         } 
+         let userId = this.userInfo.userId;
+         if (!this.checkId(userId)) {
+            this.$notify({title : '提示信息',message : '手机号不符合规则', type:'info'});
+             return false;
+         }
+         if (this.newMap.has(this.userInfo.userId)) {
+               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap.get(this.userInfo.userId),type : 'error'});
+               return false;
+          }
+          let [addr, prikey] = generateAddress();
+          this.form.address = addr;
+          this.form.prikey = prikey;
+          this.newMap.set(this.userInfo.userId, addr);
+          // this.newMap[this.userInfo.userId] = addr;
+      },
+      handleClose() {
+         if (this.showLoginForm) {
+            this.jumpLog();
+            this.showLoginForm = false;
+            this.dialogVisible = false;
+         } else {
+            this.$notify({title : '提示信息',message : '注册中，请稍后！',type : 'info'});
+         }     
+      },
+      checkId(userId) {
+         if (!(/^1[3456789]\d{9}$/.test(userId))) {
+             return false;
+         }
+         return true;
+      }
+  },
+  mounted (){
+      // var wi=window.screen.width;
+      var hi=window.screen.height;
+      // document.getElementById("bg").style.width=wi+"px";
+      document.getElementById("bg").style.height=hi+"px";
+  },
+}
+</script>
+
+<style lang="less" scoped>
+    .home_container{
+
+    }
+    .login {
+      position:absolute;
+      top: 40%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      width: 400px;
+    }
+    .login-btn {
+      font-size:20px;
+      background-color: whitesmoke;
+    }
+    .logo {
+      font-family: "DejaVu Sans Mono";
+      color: lightblue;
+      font-size: 30px;
+    }
+    .widthContrl {
+       width: 500px;
+    }
+</style>

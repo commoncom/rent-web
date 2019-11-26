@@ -15,5 +15,8 @@ export default [{
     }, {
         path: '/register',
         component: r => require.ensure([], () => r(require('../page/register')), 'register')
+    }, {
+        path: '/getaddr',
+        component: r => require.ensure([], () => r(require('../page/getaddr')), 'getaddr')
     }]
 }]

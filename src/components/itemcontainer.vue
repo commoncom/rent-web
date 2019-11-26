@@ -1,6 +1,7 @@
 <template>
   	<section>
     	<header class="top_tips">
+    	    <!---->
     	    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     		<span class="num_tip" v-if="fatherComponent == 'item'">欢迎来到区块链租房平台{{itemNum}}</span>
     	</header>

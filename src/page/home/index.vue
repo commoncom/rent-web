@@ -2,12 +2,12 @@
   	<div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
         <div v-if="showLoginForm == false" id="bg" class="bg">
-          <div class="login" @keyup.13="doLogin">
+          <div class="login">
              <div class="form-horizontal login">
               <div class="logo">欢迎来到租房空间</div>
               <div class="form-group input-group input-group-lg ">
                 <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                <input type="text" class=" form-control input_wid" placeholder="请输入地址" v-model="userInfo.address">
+                <input type="text" class=" form-control input_wid widthContrl" placeholder="请输入地址" v-model="userInfo.address">
               </div>
               <div class="form-group input-group input-group-lg ">
                 <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
@@ -41,18 +41,18 @@ export default {
         this.showLoginForm = false;
     },
     data () {
-    return {
-      userInfo :{
-          address: '',
-          userName : '',
-          password : '',
-          password: '',
-          retpassword: ''
-      },
-      showLoginForm : false,
-    }
-  },
-  methods : {
+      return {
+        userInfo :{
+            address: '',
+            userName : '',
+            password : '',
+            password: '',
+            retpassword: ''
+        },
+        showLoginForm : false,
+      }
+   },
+   methods : {
       doLogin (){
           if (!this.validateReLg()) {
              return false;
@@ -94,7 +94,7 @@ export default {
               alert('密码不能为空');
               return false
           }
-        },
+      },
   },
   mounted (){
       // var wi=window.screen.width;
@@ -132,6 +132,9 @@ export default {
     .input_wid {
        width:350px;
        font-size: 16px;
+    }
+    .widthContrl {
+       width: 400px;
     }
     .start{
         background-image: url(../../images/1-4.png);

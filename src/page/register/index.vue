@@ -3,48 +3,71 @@
         <itemcontainer father-component="home"></itemcontainer>
         <!--登录-->
         <div id="bg" class="bg">
-          <div class="login" @keyup.13="doLogin">
-             <div class="form-horizontal login">
+          <div class="login">
+             <div class="login">
               <div class="logo">欢迎来到租房空间</div>
-              <div class="form-group input-group input-group-lg ">
+              <!--<div class="form-group input-group input-group-lg">
                 <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
                 <input type="text" class=" form-control" placeholder="请输入用户名" v-model="userInfo.userName">
               </div>
               <div class="form-group input-group input-group-lg">
-                <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control" placeholder="请输入密码" v-model="userInfo.pwd">
+                <input type="text" class=" form-control" placeholder="请输入用户id" v-model="userInfo.userId">
+              </div>
+              <div class="form-group input-group input-group-lg">
+                <input type="text" class=" form-control widthContrl" placeholder="请输入地址" v-model="userInfo.addr">
+              </div>
+              <div class="form-group input-group input-group-lg">
+                <input type="pwd" class=" form-control" placeholder="请输入密码" v-model="userInfo.pwd">
               </div>
               <div class="form-group input-group input-group-lg">
                 <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control" placeholder="请输入确认密码" v-model="userInfo.retpwd">
+                <input type="pwd" class=" form-control" placeholder="请输入确认密码" v-model="userInfo.retpwd">
               </div>
               <div class="form-group">
                 <el-button class="form-control" @click="doRegister">注 册</el-button>
                 <el-button class="form-control" @click="jumpLog">登 录</el-button>
-              </div>
+              </div>-->
+              <el-form>
+                 <el-form-item label="用户名">
+                    <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
+                    <p>{{userInfo.nameErr}}</p>
+                </el-form-item>
+                 <el-form-item label="用户ID">
+                    <el-input type="text" id="userId" v-model="userInfo.userId" @blur="inputBlur('userId',userInfo.userId)"></el-input>
+                    <p>{{userInfo.idErr}}</p>
+                </el-form-item>
+                 <el-form-item label="地址">
+                    <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
+                    <p>{{userInfo.addrErr}}</p>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
+                    <p>{{userInfo.pwdErr}}</p>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">注册</el-button>
+                  <el-button @click="resetForm">重置</el-button>
+                </el-form-item>
+              </el-form>     
             </div>
           </div>
+          <el-dialog :title="regTitle" :visible.sync="dialogFormVisible" :show-close="false">
+            <el-form :model="form">
+              <el-form-item label="状态" :label-width="formLabelWidth">
+                <el-input v-model="form.status" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
+                <el-input v-model="form.data" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
+                <el-input v-model="form.err" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="closeBut">确 定</el-button>
+            </div>
+          </el-dialog>
         </div>
-        <el-dialog
-                  title="提示"
-                  :visible.sync="dialogVisible" :modal-append-to-body="false" 
-                  width="30%"
-                  :before-close="handleClose">
-                   <div slot="title" style="float:left;font-size:18px;">请牢记您的地址和密钥</div>
-                  <el-form :model="form">
-                    <el-form-item label="地址" :label-width="formLabelWidth">
-                      <el-input v-model="form.address" autocomplete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item label="密钥" :label-width="formLabelWidth">
-                      <el-input v-model="form.prikey" autocomplete="off"></el-input>
-                    </el-form-item>
-                    <el-form-item style="margin-left:160px;">
-                      <el-button @click="dialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-                    </el-form-item>
-                  </el-form>
-                  
-              </el-dialog>
     </div>
 </template>
 <script>
@@ -62,72 +85,82 @@ export default {
         
     },
     data () {
-    return {
-      userInfo :{
-          userName : '',
-          pwd: '',
-          retpwd: ''
-      },
-      form: {
-         address: '',
-         prikey: ''
-      },
-      dialogVisible: false,
-      showLoginForm : false,
-      formLabelWidth: '50px',
-      newMap: new Map(),
-    }
-  },
-  methods : {
+      return {
+        userInfo :{
+            userName: '',
+            userId : '',
+            addr: '',
+            pwd: '',
+            retpwd: '',
+            nameErr: '',
+            idErr: '',
+            addrErr: '',
+            pwdErr: '',
+            retpwd: '',
+            beDisabled: true
+        },
+        form: {
+           status: '',
+           data: '',
+           err: ''
+        },
+        dialogFormVisible: false,
+        showLoginForm : false,
+        isSus: false, //传值给父组件
+        formLabelWidth: '50px',
+        regTitle: "注册中",
+        newMap: new Map(),
+      }
+   },
+   methods : {
       doRegister () {
-          // console.log(this.userInfo)
           if (!this.validateReLg()) {
              return false;
           }
-          // console.log(this.userInfo.retpwd, this.userInfo.pwd, typeof(this.userInfo.retpwd), typeof(this.userInfo.pwd))
-          // if (this.userInfo.retpwd === this.userInfo.pwd){
-          //     alert('确认密码和密码不一致');
-          //     return false
-          // }
-          console.log(11111, typeof(this.newMap))
-          if (this.newMap.has(this.userInfo.userName)) {
-               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap[this.userInfo.userName],type : 'error'});
+          if (this.newMap.has(this.userInfo.userId)) {
+               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap[this.userInfo.userId],type : 'error'});
                return false;
           }
-          let [addr, prikey] = generateAddress();
-          this.form.address = addr;
-          this.form.prikey = prikey;
-          let url = UrlConfig.serverUrl+"/register/"+addr+"/"+this.userInfo.userName+"/"+this.userInfo.pwd+"/"+prikey;
-          this.dialogVisible = true;
+          let addr = this.userInfo.addr;
+          let url = UrlConfig.serverUrl+"/register/"+addr+"/"+this.userInfo.userName+"/"+this.userInfo.userId+"/"+this.userInfo.pwd;
           axios.get(url, {}).then(res => {
                 if(res.data.status){
-                    this.$notify({
-                        title : '提示信息',
-                        message : '注册成功',
-                        type : 'success'
-                    });
+                    this.regTitle = "注册结果";
+                    // this.$notify({
+                    //     title : '提示信息',
+                    //     message : '注册成功',
+                    //     type : 'success'
+                    // });
+                    this.newMap.set(this.userInfo.userId, addr);
+                    // this.userInfo = {};
+                    this.isSus = true;
                     this.showLoginForm = true;
-                    this.newMap.set(this.userInfo.userName, addr);
-                    this.userInfo = {};
-                    this.form = {};
+                    this.form = res.data;
                 }else {
-                    this.$notify({
-                        title : '提示信息',
-                        message : '注册失败，请重新注册！',
-                        type : 'error'
-                    });
-                    this.userInfo = {};
-                    this.form = {};
+                    console.log(res.data)
+                    // this.$notify({
+                    //     title : '提示信息',
+                    //     message : '注册失败，'+res.data.err,
+                    //     type : 'error'
+                    // });
+                    // this.userInfo = {};
+                    this.form = res.data;
                 }
           }).catch(err => {
               console.log(err);
           })
       },
+      closeBut() {
+          this.dialogFormVisible = false;
+          this.form = {};
+          this.userInfo = {};
+          this.jumpLog();
+      },
       jumpLog() {
          this.$router.push({path: '/'}); 
       },
       validateReLg() {
-          if (this.userInfo.userName == ''){
+          if (this.userInfo.userId == ''){
               alert('用户名不能为空');
               return false
           }
@@ -139,12 +172,77 @@ export default {
         },
       handleClose() {
          if (this.showLoginForm) {
-            this.jumpLog();
             this.showLoginForm = false;
-            this.dialogVisible = false;
+            this.jumpLog();
          } else {
             this.$notify({title : '提示信息',message : '注册中，请稍后！',type : 'info'});
          }     
+      },
+      resetForm:function(){
+          this.userInfo = {};
+      },
+      submitForm:function(formInfo){
+         console.log(this.userInfo, formInfo)
+         if (this.newMap.has(this.userInfo.userId)) {
+               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap[this.userInfo.userId],type : 'error'});
+               return false;
+          }
+          let addr = this.userInfo.addr;
+          console.log(addr, this.userInfo.userName)
+          let url = UrlConfig.serverUrl+"/register/"+addr+"/"+this.userInfo.userName+"/"+this.userInfo.userId+"/"+this.userInfo.pwd;
+          this.dialogFormVisible = true;
+          axios.get(url, {}).then(res => {
+                this.form = res.data;
+                this.regTitle = "注册结果";
+                this.isSus = true;
+                if(res.data.status) {
+                    this.newMap.set(this.userInfo.userId, addr);                
+                }
+          }).catch(err => {
+              console.log(err);
+          })
+      },
+      inputBlur:function(errorItem,inputContent){
+          let flag = true;
+          if (errorItem === 'name') {
+              if (inputContent === '') {
+                  this.userInfo.nameErr = '用户名不能为空';
+                  flag = false;
+              } else{
+                  this.userInfo.nameErr = '';
+              }
+          } else if (errorItem === 'userId') {
+              if (inputContent === '') {
+                  this.userInfo.idErr = '用户ID不能为空';
+                  flag = false;
+              } else if (!(/^0x[0-9a-fA-F]{40}$"/.test(inputContent))) {
+                 this.userInfo.idErr = '用户ID不合法';
+                 flag = false;
+              } else{
+                  this.userInfo.idErr = '';
+              }
+          } else if(errorItem === 'addr') {
+              if (inputContent === '') {
+                  this.userInfo.addrErr = '地址不能为空';
+                  flag = false;
+              }else{
+                  this.userInfo.addrErr = '';
+
+              }
+          } else if(errorItem === 'pwd') {
+              if (inputContent === '') {
+                  this.userInfo.pwdErr = '密码不能为空';
+                  flag = false;
+              } else{
+                  this.userInfo.pwdErr = '';
+              }
+          } 
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.userInfo.beDisabled = false;
+          }else{
+              this.userInfo.beDisabled = true;
+          }
       },
   },
   mounted (){
@@ -178,6 +276,9 @@ export default {
     .logo {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
-      font-size: 50px;
+      font-size: 30px;
+    }
+    .widthContrl {
+       width: 400px;
     }
 </style>
