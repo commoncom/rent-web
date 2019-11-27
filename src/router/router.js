@@ -21,5 +21,8 @@ export default [{
     }, {
         path: '/auth',
         component: r => require.ensure([], () => r(require('../page/auth')), 'auth')
+    }, {
+        path: '/release',
+        component: r => require.ensure([], () => r(require('../page/release')), 'release')
     }]
 }]

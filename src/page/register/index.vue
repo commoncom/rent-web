@@ -64,7 +64,7 @@ import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
 import {generateAddress} from 'src/common/js/address';
 export default {
-	  name: 'home',
+	  name: 'register',
   	components: {
   		itemcontainer
   	},
@@ -141,13 +141,19 @@ export default {
                 } else {
                     this.form.status = "失败"; 
                     this.isSus = false;
-                    this.form.err = res.data.err;
+                    console.log(res.data.err);
+                    if (typeof(res.data.err) == 'object') {
+                       this.form.err = res.data.err.message;
+                    } else {
+                       this.form.err = res.data.err;
+                    }
                 }
                 this.canClose = true;
           }).catch(err => {
-              this.form = err.data;
+              this.form.status = "失败";
               this.regTitle = "注册结果";
-              this.form.status = "服务繁忙，请稍后重试！"; 
+              console.log(err);
+              this.form.err = "服务繁忙，请稍后重试！"; 
               this.canClose = true;
           })
       },
@@ -229,7 +235,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 50%;
+      top: 60%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

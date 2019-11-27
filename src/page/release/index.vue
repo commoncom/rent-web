@@ -1,129 +1,229 @@
 <template>
-  	<div class="home_container">
+    <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
-        <div v-if="showLoginForm == false" id="bg" class="bg">
-          <div class="login" @keyup.13="doLogin">
-             <div class="form-horizontal login">
+        <!--登录-->
+        <div id="bg" class="bg">
+          <div class="login">
+             <div class="login">
               <div class="logo">欢迎来到租房空间</div>
-              <div class="form-group input-group input-group-lg ">
-                <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                <input type="text" class=" form-control input_wid" placeholder="请输入地址" v-model="userInfo.address">
-              </div>
-              <div class="form-group input-group input-group-lg ">
-                <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                <input type="text" class=" form-control input_wid" placeholder="请输入用户名" v-model="userInfo.userName">
-              </div>
-              <div class="form-group input-group input-group-lg">
-                <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                <input type="password" class=" form-control input_wid" placeholder="请输入密码" v-model="userInfo.password">
-              </div>
-              <div class="form-group">
-                <!--<el-button class="form-control" @click="doLogin">登 录</el-button>-->
-                <el-button class="form-control" @click="doLogin">登 录</el-button>
-                <el-button class="form-control" @click="jumpReg">注册</el-button>
-              </div>
+              <el-form>
+                 <el-form-item label="用户名">
+                    <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
+                    <p>{{userInfo.nameErr}}</p>
+                </el-form-item>
+                 <el-form-item label="用户ID">
+                    <el-input type="text" id="userId" v-model="userInfo.userId" @blur="inputBlur('userId',userInfo.userId)"></el-input>
+                    <p>{{userInfo.idErr}}</p>
+                </el-form-item>
+                 <el-form-item label="地址">
+                    <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
+                    <p>{{userInfo.addrErr}}</p>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
+                    <p>{{userInfo.pwdErr}}</p>
+                </el-form-item>
+                <el-form-item label="确认密码">
+                    <el-input type="password" id="pwd" v-model="userInfo.retpwd" @blur="inputBlur('retpwd',userInfo.retpwd)"></el-input>
+                    <p>{{userInfo.retpwdErr}}</p>
+                </el-form-item>
+                <el-form-item label="身份证号">
+                    <el-input type="text" id="idcard" v-model="userInfo.idcard" @blur="inputBlur('idcard',userInfo.idcard)"></el-input>
+                    <p>{{userInfo.idcardErr}}</p>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">注册</el-button>
+                  <el-button @click="resetForm">重置</el-button>
+                </el-form-item>
+              </el-form>     
             </div>
           </div>
-        </div>
+          <el-dialog :title="regTitle" :visible.sync="dialogFormVisible" :show-close="false">
+            <el-form :model="form">
+              <el-form-item label="状态" :label-width="formLabelWidth">
+                <el-input v-model="form.status"   autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
+                <el-input v-model="form.data"  :readonly="true" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
+                <el-input v-model="form.err"  :readonly="true" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="closeBut">确 定</el-button>
+            </div>
+          </el-dialog>
         </div>
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
-import {packOpt} from 'src/common/js/com_fun';
+import http from 'http';
+import {UrlConfig} from 'src/common/js/globe';
+import {generateAddress} from 'src/common/js/address';
 export default {
-	  name: 'home',
-  	components: {
-  		itemcontainer
-  	},
+    name: 'register',
+    components: {
+      itemcontainer
+    },
     created(){
-        this.showLoginForm = false;
+        
     },
     data () {
-    return {
-      userInfo :{
-          address: '',
-          userName : '',
-          password : '',
-          password: '',
-          retpassword: ''
-      },
-      showLoginForm : false,
-    }
-  },
-  methods : {
-      doLogin (){
-          if (!this.validateReLg()) {
-             return false;
-          }
-          let form = this.userInfo;
-          let requestPath = "/login/"+form.address+"/"+form.userName+"/"+form.pwd+"/"+form.prikey;
-          let option = packOpt(requestPath);
-          http.get(options, function(res){
-              res.on('data', (res) => {
-                  if (res.status) {
-                      let parsedData_1 = JSON.parse(data.toString());
-                      console.info("---request data------", parsedData_1);
-                      this.$notify({
-                          title : '提示信息',
-                          message : '登录成功',
-                          type : 'success'
-                      });
-                      this.$router.push({path:'/'})
-                  } else {
-                      this.$notify({
-                          title : '提示信息',
-                          message : '账号或密码错误',
-                          type : 'error'
-                      });
-                  }
-              });
-          });
-          // axios.post('/login',JSON.stringify(this.userInfo)).then(res => {
-          //         console.log(res)
-          //         if(res.status == 200){
-          //             this.$store.commit('setToken',res.data);
-          //             localStorage.userName = this.userInfo.userName;
-          //             localStorage.token_expire = res.data.expire;
-          //             localStorage.token = res.data.token;
-          //             this.$notify({
-          //                 title : '提示信息',
-          //                 message : '登录成功',
-          //                 type : 'success'
-          //             });
-          //             this.$router.push({path:'/'})
-          //         }else {
-          //             this.$notify({
-          //                 title : '提示信息',
-          //                 message : '账号或密码错误',
-          //                 type : 'error'
-          //             });
-          //         }
-          // })
-          // .catch(err => {
-          //     console.log(err)
-          // })
-      },
-      jumpReg() {
-          this.$router.push({path: 'register'}); 
-      },
-      validateReLg() {
-          if (!(/^0x[0-9a-fA-F]{40}$"/.test(this.userInfo.address))) {
-              alert('该地址不是以太坊地址');
-          }
-          if (this.userInfo.userName == ''){
-              alert('用户名不能为空');
-              return false
-          }
-          if (this.userInfo.password == ''){
-              alert('密码不能为空');
-              return false
-          }
+      return {
+        userInfo :{
+            userName: '',
+            userId : '',
+            addr: '',
+            pwd: '',
+            retpwd: '',
+            idcard: '',
+            nameErr: '',
+            idErr: '',
+            addrErr: '',
+            pwdErr: '',
+            retpwdErr: '',
+            beDisabled: true
         },
+        form: {
+           status: '',
+           data: '',
+           err: ''
+        },
+        dialogFormVisible: false,
+        canClose : false,
+        isSus: true, // 注册结果控制
+        regSus: false,
+        formLabelWidth: '80px',
+        regTitle: "注册中，请稍等.....",
+        newMap: new Map(),
+      }
+   },
+   methods : {
+      closeBut() {
+          if (this.canClose) {
+              this.dialogFormVisible = false;
+              this.form = {};
+              this.isSus = true;
+              this.canClose = false;
+              if (this.regSus) {
+                 this.jumpLog();
+              }
+          }
+      },
+      jumpLog() {
+         this.userInfo = {};
+         this.regSus = false;
+         this.$router.push({path: '/'}); 
+      },
+      resetForm:function(){
+          this.userInfo = {};
+      },
+      submitForm:function(formInfo){
+         console.log(this.userInfo, formInfo)
+         if (this.newMap.has(this.userInfo.userId)) {
+               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap.get(this.userInfo.userId),type : 'error'});
+               return false;
+          }
+          let addr = this.userInfo.addr;
+          console.log(addr, this.userInfo.userName)
+          let url = UrlConfig.serverUrl+"/register/"+addr+"/"+this.userInfo.userName+"/"+this.userInfo.userId+"/"+this.userInfo.pwd+"/"+this.userInfo.idcard;
+          this.dialogFormVisible = true;
+          axios.get(url, {}).then(res => {
+                this.regTitle = "注册结果";
+                console.log("rtn", res.data);
+                if(res.data.status) {
+                    this.isSus = true;
+                    this.newMap.set(this.userInfo.userId, addr); 
+                    this.form.data = res.data.data;
+                    this.form.status = "成功";   
+                    this.regSus = true;            
+                } else {
+                    this.form.status = "失败"; 
+                    this.isSus = false;
+                    console.log(res.data.err);
+                    if (typeof(res.data.err) == 'object') {
+                       this.form.err = res.data.err.message;
+                    } else {
+                       this.form.err = res.data.err;
+                    }
+                }
+                this.canClose = true;
+          }).catch(err => {
+              this.form.status = "失败";
+              this.regTitle = "注册结果";
+              console.log(err);
+              this.form.err = "服务繁忙，请稍后重试！"; 
+              this.canClose = true;
+          })
+      },
+      inputBlur:function(errorItem,inputContent){
+          let flag = true;
+          let reg =/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/;
+          if (errorItem === 'name') {
+              if (inputContent === '') {
+                  this.userInfo.nameErr = '用户名不能为空';
+                  flag = false;
+              } else{
+                  this.userInfo.nameErr = '';
+              }
+          } else if (errorItem === 'userId') {
+              if (inputContent === '') {
+                  this.userInfo.idErr = '用户ID不能为空';
+                  flag = false;
+              } else if (!(/^1(3|4|5|7|8)\d{9}$/.test(inputContent))) {
+                 this.userInfo.idErr = '用户ID不合法';
+                 flag = false;
+              } else{
+                  this.userInfo.idErr = '';
+              }
+          } else if(errorItem === 'addr') {
+              if (inputContent === '') {
+                  this.userInfo.addrErr = '地址不能为空';
+                  flag = false;
+              }else{
+                  this.userInfo.addrErr = '';
+
+              }
+          } else if(errorItem === 'pwd') {
+              if (inputContent === '') {
+                  this.userInfo.pwdErr = '密码不能为空';
+                  flag = false;
+              } else {
+                  this.userInfo.pwdErr = '';
+              }
+          } else if (errorItem === 'retpwd') {
+             if (inputContent === '') {
+                  this.userInfo.retpwdErr = '密码不能为空';
+                  flag = false;
+              } else if (inputContent !== this.userInfo.pwd) {
+                  this.userInfo.retpwdErr = '两次密码不一致';
+                  flag = false;
+              } else{
+                  this.userInfo.idcardErr = '';
+              }
+          } else if (errorItem === 'idcard') {
+             if (inputContent === '') {
+                  this.userInfo.idcardErr = '身份证号不能为空';
+                  flag = false;
+              } else if (!reg.test(inputContent)) {
+                  this.userInfo.idcardErr = '身份证号不规范';
+                  flag = false;
+              }else{
+                  this.userInfo.idcardErr = '';
+              }
+          }
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.userInfo.beDisabled = false;
+          }else{
+              this.userInfo.beDisabled = true;
+          }
+      },
   },
   mounted (){
-      // var wi=window.screen.width;
       var hi=window.screen.height;
       // document.getElementById("bg").style.width=wi+"px";
       document.getElementById("bg").style.height=hi+"px";
@@ -153,13 +253,9 @@ export default {
     .logo {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
-      font-size: 50px;
+      font-size: 30px;
     }
-    .input_wid {
-       width:350px;
-       font-size: 16px;
-    }
-    .start{
-        background-image: url(../../images/1-4.png);
+    .widthContrl {
+       width: 400px;
     }
 </style>
