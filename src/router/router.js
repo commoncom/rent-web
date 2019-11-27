@@ -18,5 +18,8 @@ export default [{
     }, {
         path: '/getaddr',
         component: r => require.ensure([], () => r(require('../page/getaddr')), 'getaddr')
+    }, {
+        path: '/auth',
+        component: r => require.ensure([], () => r(require('../page/auth')), 'auth')
     }]
 }]

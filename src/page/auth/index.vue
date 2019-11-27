@@ -1,5 +1,5 @@
 <template>
-  	<div class="home_container">
+    <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
         <!--登录-->
         <div id="bg" class="bg">
@@ -32,7 +32,7 @@
                     <p>{{userInfo.idcardErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">注册</el-button>
+                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">认证</el-button>
                   <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -41,13 +41,13 @@
           <el-dialog :title="regTitle" :visible.sync="dialogFormVisible" :show-close="false">
             <el-form :model="form">
               <el-form-item label="状态" :label-width="formLabelWidth">
-                <el-input v-model="form.status"   autocomplete="off"></el-input>
+                <el-input v-model="form.status"  :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
-                <el-input v-model="form.data"  :readonly="true" autocomplete="off"></el-input>
+                <el-input v-model="form.data"  :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
-                <el-input v-model="form.err"  :readonly="true" autocomplete="off"></el-input>
+                <el-input v-model="form.err"  :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -64,10 +64,10 @@ import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
 import {generateAddress} from 'src/common/js/address';
 export default {
-	  name: 'home',
-  	components: {
-  		itemcontainer
-  	},
+    name: 'auth',
+    components: {
+      itemcontainer
+    },
     created(){
         
     },
@@ -95,9 +95,8 @@ export default {
         dialogFormVisible: false,
         canClose : false,
         isSus: true, // 注册结果控制
-        regSus: false,
         formLabelWidth: '80px',
-        regTitle: "注册中，请稍等.....",
+        regTitle: "注册中",
         newMap: new Map(),
       }
    },
@@ -106,15 +105,12 @@ export default {
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.form = {};
+              this.userInfo = {};
               this.canClose = false;
-              if (this.regSus) {
-                 this.jumpLog();
-              }
+              this.jumpLog();
           }
       },
       jumpLog() {
-         this.userInfo = {};
-         this.regSus = false;
          this.$router.push({path: '/'}); 
       },
       resetForm:function(){
@@ -136,8 +132,7 @@ export default {
                 if(res.data.status) {
                     this.newMap.set(this.userInfo.userId, addr); 
                     this.form.data = res.data.data;
-                    this.form.status = "成功";   
-                    this.regSus = true;            
+                    this.form.status = "成功";               
                 } else {
                     this.form.status = "失败"; 
                     this.isSus = false;
@@ -147,7 +142,6 @@ export default {
           }).catch(err => {
               this.form = err.data;
               this.regTitle = "注册结果";
-              this.form.status = "服务繁忙，请稍后重试！"; 
               this.canClose = true;
           })
       },
@@ -229,7 +223,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 50%;
+      top: 70%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
