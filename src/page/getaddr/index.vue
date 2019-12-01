@@ -9,8 +9,9 @@
               <div class="form-group input-group input-group-lg ">
                  <input type="text" class=" form-control" placeholder="请输入手机号" v-model="userInfo.userId">
               </div>
-              <div class="form-group">
+              <div class="form-group"> 
                 <el-button class="form-control" @click="generateAddr">生成地址</el-button>
+                <el-button class="form-control" @click="queryAddr">查询地址</el-button>
               </div>
               <div class="form-group input-group input-group-lg">
                 <input type="text" class="widthContrl"  v-model="form.address">
@@ -24,7 +25,10 @@
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer';
+import axios from 'axios';
+import http from 'http';
 import {generateAddress} from 'src/common/js/address';
+import {UrlConfig} from 'src/common/js/globe';
 export default {
 	  name: 'home',
   	components: {
@@ -65,19 +69,53 @@ export default {
                return false;
           }
           let [addr, prikey] = generateAddress();
-          this.form.address = addr;
-          this.form.prikey = prikey;
-          this.newMap.set(this.userInfo.userId, addr);
-          // this.newMap[this.userInfo.userId] = addr;
+          let url = UrlConfig.serverUrl+"/bindaddr/"+this.userInfo.userId+"/"+addr;
+          axios.get(url, {}).then(res => {
+                console.log(res.data.status)
+                if(res.data.status == 200) { // 插入成功
+                    this.form.address = addr;
+                    this.form.prikey = prikey;
+                    this.newMap.set(this.userInfo.userId, addr);             
+                } else if (res.data.status == 201) { // 已经生成过地址
+                    this.form.address = res.data.data;
+                    this.$notify({title : '提示信息',message : '已经生成过地址！', type : 'info'});
+                } else {
+                    console.log(res.data);
+                    this.$notify({title : '提示信息',message : '生成失败，请查看是否已经生成过地址！', type:'error'});
+                }
+          }).catch(err => {
+              console.log("bind error", err);
+              this.$notify({title : '提示信息',message : "请检查网络状况!", type:'error'});
+          });
       },
-      handleClose() {
-         if (this.showLoginForm) {
-            this.jumpLog();
-            this.showLoginForm = false;
-            this.dialogVisible = false;
-         } else {
-            this.$notify({title : '提示信息',message : '注册中，请稍后！',type : 'info'});
-         }     
+      queryAddr() {
+         console.log(this.userInfo.userId, this.newMap);
+         if (this.userInfo.userId == '') {
+             this.$notify({title : '提示信息',message : '手机号不能为空', type:'info'});
+             return false;
+         } 
+         let userId = this.userInfo.userId;
+         if (!this.checkId(userId)) {
+            this.$notify({title : '提示信息',message : '手机号不符合规则', type:'info'});
+             return false;
+         }
+         if (this.newMap.has(this.userInfo.userId)) { 
+               this.form.address = this.newMap.get(this.userInfo.userId);
+               return;
+          }
+          let url = UrlConfig.serverUrl+"/getaddr/"+this.userInfo.userId;
+          axios.get(url, {}).then(res => {
+                if(res.data.status ) {
+                    this.form.address = res.data.data; 
+                    // this.$notify({title : '提示信息',message : '地址为:'+res.data.data,duration: 0, type : 'error'});          
+                } else {
+                    console.log(res.data);
+                    
+                }
+          }).catch(err => {
+              console.log("bind error", err);
+              this.$notify({title : '提示信息',message : "请检查网络状况!", type:'error'});
+          });
       },
       checkId(userId) {
          if (!(/^1[3456789]\d{9}$/.test(userId))) {

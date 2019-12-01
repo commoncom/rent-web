@@ -1,38 +1,38 @@
 <template>
     <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
-        <!--登录-->
+        <!--认证-->
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到租房空间</div>
+              <div class="logo">欢迎来到租房认证</div>
               <el-form>
-                 <el-form-item label="用户名">
-                    <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
-                    <p>{{userInfo.nameErr}}</p>
+                 <el-form-item label="房屋唯一码">
+                    <el-input type="text" id="guid" v-model="houseInfo.guid" @blur="inputBlur('guid',houseInfo.guid)"></el-input>
+                    <p>{{houseInfo.guidErr}}</p>
                 </el-form-item>
-                 <el-form-item label="用户ID">
-                    <el-input type="text" id="userId" v-model="userInfo.userId" @blur="inputBlur('userId',userInfo.userId)"></el-input>
-                    <p>{{userInfo.idErr}}</p>
+                 <el-form-item label="用户身份证号">
+                    <el-input type="text" id="idCard" v-model="houseInfo.idCard" @blur="inputBlur('idCard',houseInfo.idCard)"></el-input>
+                    <p>{{houseInfo.idCardErr}}</p>
                 </el-form-item>
-                 <el-form-item label="地址">
-                    <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
-                    <p>{{userInfo.addrErr}}</p>
+                <el-form-item label="用户姓名">
+                    <el-input type="text" id="userName" v-model="houseInfo.userName" @blur="inputBlur('userName',houseInfo.userName)"></el-input>
+                    <p>{{houseInfo.usernameErr}}</p>
                 </el-form-item>
-                <el-form-item label="密码">
-                    <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
-                    <p>{{userInfo.pwdErr}}</p>
+                <el-form-item label="用户ID">
+                    <el-input type="text" id="userId" v-model="houseInfo.userId" @blur="inputBlur('userId',houseInfo.userId)"></el-input>
+                    <p>{{houseInfo.userIdErr}}</p>
                 </el-form-item>
-                <el-form-item label="确认密码">
-                    <el-input type="password" id="pwd" v-model="userInfo.retpwd" @blur="inputBlur('retpwd',userInfo.retpwd)"></el-input>
-                    <p>{{userInfo.retpwdErr}}</p>
+                <el-form-item label="用户地址">
+                    <el-input type="text" id="addr" v-model="houseInfo.addr" @blur="inputBlur('addr',houseInfo.addr)"></el-input>
+                    <p>{{houseInfo.addrErr}}</p>
                 </el-form-item>
-                <el-form-item label="身份证号">
-                    <el-input type="text" id="idcard" v-model="userInfo.idcard" @blur="inputBlur('idcard',userInfo.idcard)"></el-input>
-                    <p>{{userInfo.idcardErr}}</p>
+                <el-form-item label="私钥">
+                    <el-input type="pwd" id="prikey" v-model="houseInfo.prikey" @blur="inputBlur('prikey',houseInfo.prikey)"></el-input>
+                    <p>{{houseInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">认证</el-button>
+                  <el-button type="primary" @click="submitForm('houseInfo')" v-bind:disabled="houseInfo.beDisabled">认证</el-button>
                   <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -41,13 +41,13 @@
           <el-dialog :title="regTitle" :visible.sync="dialogFormVisible" :show-close="false">
             <el-form :model="form">
               <el-form-item label="状态" :label-width="formLabelWidth">
-                <el-input v-model="form.status"  :disabled="true" autocomplete="off"></el-input>
+                <el-input v-model="form.status"  :readonly="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
-                <el-input v-model="form.data"  :disabled="true" autocomplete="off"></el-input>
+                <el-input v-model="form.data"  :readonly="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
-                <el-input v-model="form.err"  :disabled="true" autocomplete="off"></el-input>
+                <el-input v-model="form.err"  :readonly="true" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -73,18 +73,19 @@ export default {
     },
     data () {
       return {
-        userInfo :{
-            userName: '',
-            userId : '',
+        houseInfo :{
+            guid: '',
             addr: '',
-            pwd: '',
-            retpwd: '',
-            idcard: '',
-            nameErr: '',
-            idErr: '',
+            prikey: '',
+            idCard : '',
+            userName: '',
+            userId: '',
+            guidErr: '',
             addrErr: '',
-            pwdErr: '',
-            retpwdErr: '',
+            prikeyErr: '',
+            idCardErr: '',
+            userNameErr: '',
+            userIdErr: '',
             beDisabled: true
         },
         form: {
@@ -96,7 +97,7 @@ export default {
         canClose : false,
         isSus: true, // 注册结果控制
         formLabelWidth: '80px',
-        regTitle: "注册中",
+        regTitle: "认证中",
         newMap: new Map(),
       }
    },
@@ -104,33 +105,35 @@ export default {
       closeBut() {
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.form = {};
-              this.userInfo = {};
               this.canClose = false;
+              this.form = {};
               this.jumpLog();
           }
       },
       jumpLog() {
-         this.$router.push({path: '/'}); 
+         if (this.isSus) {
+            this.$router.push({path: 'release'}); 
+            this.houseInfo = {};
+         }
       },
       resetForm:function(){
-          this.userInfo = {};
+          this.houseInfo = {};
       },
       submitForm:function(formInfo){
-         console.log(this.userInfo, formInfo)
-         if (this.newMap.has(this.userInfo.userId)) {
-               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap.get(this.userInfo.userId),type : 'error'});
+         console.log(this.houseInfo, formInfo)
+         if (this.newMap.has(this.houseInfo.userId)) {
+               this.$notify({title : '提示信息',message : '已经认证，认证Hash为！'+this.newMap.get(this.houseInfo.userId),type : 'error'});
                return false;
           }
-          let addr = this.userInfo.addr;
-          console.log(addr, this.userInfo.userName)
-          let url = UrlConfig.serverUrl+"/register/"+addr+"/"+this.userInfo.userName+"/"+this.userInfo.userId+"/"+this.userInfo.pwd+"/"+this.userInfo.idcard;
+          let info = this.houseInfo;
+          let url = UrlConfig.serverUrl+"/auth/"+info.addr+"/"+info.idCard+"/"+info.guid+"/"+info.userName+"/"+info.userId+"/"+info.prikey;
+          console.log(url);
           this.dialogFormVisible = true;
           axios.get(url, {}).then(res => {
-                this.regTitle = "注册结果";
+                this.regTitle = "认证结果";
                 console.log("rtn", res.data);
                 if(res.data.status) {
-                    this.newMap.set(this.userInfo.userId, addr); 
+                    this.newMap.set(this.houseInfo.userId, res.data.data); 
                     this.form.data = res.data.data;
                     this.form.status = "成功";               
                 } else {
@@ -141,71 +144,75 @@ export default {
                 this.canClose = true;
           }).catch(err => {
               this.form = err.data;
-              this.regTitle = "注册结果";
+              this.regTitle = "认证结果";
               this.canClose = true;
-          })
+          });
       },
       inputBlur:function(errorItem,inputContent){
           let flag = true;
           let reg =/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/;
-          if (errorItem === 'name') {
+          let guidReg = /^\d{12,64}$/;
+          let addrReg = /^0x[0-9a-fA-F]{40}$/;
+          if (errorItem === 'guid') {
               if (inputContent === '') {
-                  this.userInfo.nameErr = '用户名不能为空';
+                  this.houseInfo.guidErr = '房屋唯一编码不能为空！';
+                  flag = false;
+              } else if (guidReg.test(inputContent)) {
+                  this.houseInfo.guidErr = '房屋唯一编码不符合规范！';
                   flag = false;
               } else{
-                  this.userInfo.nameErr = '';
+                  this.houseInfo.guidErr = '';
               }
           } else if (errorItem === 'userId') {
               if (inputContent === '') {
-                  this.userInfo.idErr = '用户ID不能为空';
+                  this.houseInfo.userIdErr = '用户ID不能为空';
                   flag = false;
               } else if (!(/^1(3|4|5|7|8)\d{9}$/.test(inputContent))) {
-                 this.userInfo.idErr = '用户ID不合法';
+                 this.houseInfo.userIdErr = '用户ID不合法';
                  flag = false;
               } else{
-                  this.userInfo.idErr = '';
+                  this.houseInfo.userIdErr = '';
               }
           } else if(errorItem === 'addr') {
               if (inputContent === '') {
-                  this.userInfo.addrErr = '地址不能为空';
+                  this.houseInfo.addrErr = '地址不能为空';
                   flag = false;
-              }else{
-                  this.userInfo.addrErr = '';
-
-              }
-          } else if(errorItem === 'pwd') {
-              if (inputContent === '') {
-                  this.userInfo.pwdErr = '密码不能为空';
+              } else if (!addrReg.test(inputContent)) {
+                  this.houseInfo.addrErr = '地址不符合规则';
                   flag = false;
               } else {
-                  this.userInfo.pwdErr = '';
+                  this.houseInfo.addrErr = '';
               }
-          } else if (errorItem === 'retpwd') {
-             if (inputContent === '') {
-                  this.userInfo.retpwdErr = '密码不能为空';
+          } else if(errorItem === 'prikey') {
+              if (inputContent === '') {
+                  this.houseInfo.prikeyErr = '私钥不能为空';
                   flag = false;
-              } else if (inputContent !== this.userInfo.pwd) {
-                  this.userInfo.retpwdErr = '两次密码不一致';
-                  flag = false;
-              } else{
-                  this.userInfo.idcardErr = '';
+              } else {
+                  this.houseInfo.prikeyErr = '';
               }
-          } else if (errorItem === 'idcard') {
+          } else if (errorItem === 'idCard') {
              if (inputContent === '') {
-                  this.userInfo.idcardErr = '身份证号不能为空';
+                  this.houseInfo.idCardErr = '身份证号不能为空';
                   flag = false;
               } else if (!reg.test(inputContent)) {
-                  this.userInfo.idcardErr = '身份证号不规范';
+                  this.userInfo.idCardErr = '身份证号不规范';
                   flag = false;
-              }else{
-                  this.userInfo.idcardErr = '';
+              } else{
+                  this.houseInfo.idCardErr = '';
+              }
+          } else if (errorItem === 'userName') {
+             if (inputContent === '') {
+                  this.houseInfo.userNameErr = '用户名不能为空';
+                  flag = false;
+              } else{
+                  this.houseInfo.userNameErr = '';
               }
           }
           //对于按钮的状态进行修改
           if (flag) {
-              this.userInfo.beDisabled = false;
+              this.houseInfo.beDisabled = false;
           }else{
-              this.userInfo.beDisabled = true;
+              this.houseInfo.beDisabled = true;
           }
       },
   },
@@ -223,7 +230,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 70%;
+      top: 60%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

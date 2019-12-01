@@ -1,42 +1,26 @@
 <template>
     <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
-        <!--发布房源-->
+        <!--登录-->
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到租房认证</div>
+              <div class="logo">欢迎来到租房空间</div>
               <el-form>
-                 <el-form-item label="地址">
-                    <el-input type="text" id="addr" v-model="houseInfo.addr" @blur="inputBlur('addr',houseInfo.addr)"></el-input>
-                    <p>{{houseInfo.addrErr}}</p>
-                 </el-form-item>
-                 <el-form-item label="房屋描述">
-                    <el-input type="text" id="describe" v-model="houseInfo.describe" @blur="inputBlur('describe',houseInfo.describe)"></el-input>
-                    <p>{{houseInfo.describeErr}}</p>
+                 <el-form-item label="房屋唯一码">
+                    <el-input type="text" id="guid" v-model="houseInfo.guid" @blur="inputBlur('guid',houseInfo.guid)"></el-input>
+                    <p>{{houseInfo.nameErr}}</p>
                 </el-form-item>
-                 <el-form-item label="房东介绍">
-                    <el-input type="text" id="info" v-model="houseInfo.info" @blur="inputBlur('info',houseInfo.info)"></el-input>
-                    <p>{{houseInfo.infoErr}}</p>
+                 <el-form-item label="用户身份证号">
+                    <el-input type="text" id="idcard" v-model="houseInfo.idcard" @blur="inputBlur('idcard',houseInfo.idcard)"></el-input>
+                    <p>{{houseInfo.idcardErr}}</p>
                 </el-form-item>
-                <el-form-item label="租期">
-                    <el-input type="text" id="tenancy" v-model="houseInfo.tenancy" @blur="inputBlur('tenancy',houseInfo.tenancy)"></el-input>
-                    <p>{{houseInfo.tenancyErr}}</p>
-                </el-form-item>
-                <el-form-item label="租金">
-                    <el-input type="text" id="rental" v-model="houseInfo.rental" @blur="inputBlur('rental',houseInfo.rental)"></el-input>
-                    <p>{{houseInfo.rentalErr}}</p>
-                </el-form-item>
-                <el-form-item label="对你的期待">
-                    <el-input type="text" id="hopeYou" v-model="houseInfo.hopeYou" @blur="inputBlur('hopeYou',houseInfo.hopeYou)"></el-input>
-                    <p>{{houseInfo.hopeYouErr}}</p>
-                </el-form-item>
-                <el-form-item label="私钥">
-                    <el-input type="pwd" id="prikey" v-model="houseInfo.prikey" @blur="inputBlur('prikey',houseInfo.prikey)"></el-input>
-                    <p>{{houseInfo.prikeyErr}}</p>
+                 <el-form-item label="用户姓名">
+                    <el-input type="text" id="username" v-model="houseInfo.username" @blur="inputBlur('username',houseInfo.username)"></el-input>
+                    <p>{{houseInfo.usernameErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('houseInfo')" v-bind:disabled="houseInfo.beDisabled">发布房源</el-button>
+                  <el-button type="primary" @click="submitForm('houseInfo')" v-bind:disabled="houseInfo.beDisabled">认证</el-button>
                   <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -45,13 +29,13 @@
           <el-dialog :title="regTitle" :visible.sync="dialogFormVisible" :show-close="false">
             <el-form :model="form">
               <el-form-item label="状态" :label-width="formLabelWidth">
-                <el-input v-model="form.status"  :readonly="true" autocomplete="off"></el-input>
+                <el-input v-model="form.status"  :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
-                <el-input v-model="form.data"  :readonly="true" autocomplete="off"></el-input>
+                <el-input v-model="form.data"  :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
-                <el-input v-model="form.err"  :readonly="true" autocomplete="off"></el-input>
+                <el-input v-model="form.err"  :disabled="true" autocomplete="off"></el-input>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -66,6 +50,7 @@ import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
+import {generateAddress} from 'src/common/js/address';
 export default {
     name: 'auth',
     components: {
@@ -77,20 +62,18 @@ export default {
     data () {
       return {
         houseInfo :{
+            guid: '',
             addr: '',
-            describe: '',
             prikey: '',
-            info : '',
-            tenancy: '',
-            rental: '',
-            hopeYou: '',
+            idCard : '',
+            userName: '',
+            userId: '',
+            guidErr: '',
             addrErr: '',
-            describeErr: '',
             prikeyErr: '',
-            infoErr: '',
-            tenancyErr: '',
-            rentalErr: '',
-            hopeYouErr: '',
+            idCardErr: '',
+            userNameErr: '',
+            userIdErr: '',
             beDisabled: true
         },
         form: {
@@ -102,7 +85,7 @@ export default {
         canClose : false,
         isSus: true, // 注册结果控制
         formLabelWidth: '80px',
-        regTitle: "发布房源中",
+        regTitle: "认证中",
         newMap: new Map(),
       }
    },
@@ -124,19 +107,19 @@ export default {
       },
       submitForm:function(formInfo){
          console.log(this.houseInfo, formInfo)
-         if (this.newMap.has(this.houseInfo.addr)) {
-               this.$notify({title : '提示信息',message : '该房源已经发布，发布的Hash为！'+this.newMap.get(this.houseInfo.addr),type : 'error'});
+         if (this.newMap.has(this.houseInfo.userId)) {
+               this.$notify({title : '提示信息',message : '已经认证，认证Hash为！'+this.newMap.get(this.houseInfo.userId),type : 'error'});
                return false;
           }
           let info = this.houseInfo;
-          let url = UrlConfig.serverUrl+"/release/"+info.addr+"/"+info.prikey+"/"+info.info+"/"+info.guid+"/"+info.userName+"/"+info.userId;
-          console.log(url);
+          console.log(addr, this.houseInfo.userName)
+          let url = UrlConfig.serverUrl+"/auth/"+info.addr+"/"+info.prikey+"/"+info.idCard+"/"+info.guid+"/"+info.userName+"/"+info.userId;
           this.dialogFormVisible = true;
           axios.get(url, {}).then(res => {
-                this.regTitle = "发布结果";
+                this.regTitle = "认证结果";
                 console.log("rtn", res.data);
                 if(res.data.status) {
-                    this.newMap.set(this.houseInfo.addr, res.data.data); 
+                    this.newMap.set(this.houseInfo.userId, res.data.data); 
                     this.form.data = res.data.data;
                     this.form.status = "成功";               
                 } else {
@@ -147,68 +130,64 @@ export default {
                 this.canClose = true;
           }).catch(err => {
               this.form = err.data;
-              this.regTitle = "发布结果";
+              this.regTitle = "认证结果";
               this.canClose = true;
-          });
+          })
       },
       inputBlur:function(errorItem,inputContent){
           let flag = true;
           let reg =/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/;
-          let guidReg = /^\d{12,64}$/;
-          let addrReg = /^0x[0-9a-fA-F]{40}$/;
-          if (errorItem === 'guid') {
+          if (errorItem === 'name') {
               if (inputContent === '') {
-                  this.houseInfo.guidErr = '房屋唯一编码不能为空！';
-                  flag = false;
-              } else if (guidReg.test(inputContent)) {
-                  this.houseInfo.guidErr = '房屋唯一编码不符合规范！';
+                  this.houseInfo.nameErr = '用户名不能为空';
                   flag = false;
               } else{
-                  this.houseInfo.guidErr = '';
+                  this.houseInfo.nameErr = '';
               }
           } else if (errorItem === 'userId') {
               if (inputContent === '') {
-                  this.houseInfo.userIdErr = '用户ID不能为空';
+                  this.houseInfo.idErr = '用户ID不能为空';
                   flag = false;
               } else if (!(/^1(3|4|5|7|8)\d{9}$/.test(inputContent))) {
-                 this.houseInfo.userIdErr = '用户ID不合法';
+                 this.houseInfo.idErr = '用户ID不合法';
                  flag = false;
               } else{
-                  this.houseInfo.userIdErr = '';
+                  this.houseInfo.idErr = '';
               }
           } else if(errorItem === 'addr') {
               if (inputContent === '') {
                   this.houseInfo.addrErr = '地址不能为空';
                   flag = false;
-              } else if (!addrReg.test(inputContent)) {
-                  this.houseInfo.addrErr = '地址不符合规则';
-                  flag = false;
-              } else {
+              }else{
                   this.houseInfo.addrErr = '';
+
               }
-          } else if(errorItem === 'prikey') {
+          } else if(errorItem === 'pwd') {
               if (inputContent === '') {
-                  this.houseInfo.prikeyErr = '私钥不能为空';
+                  this.houseInfo.pwdErr = '密码不能为空';
                   flag = false;
               } else {
-                  this.houseInfo.prikeyErr = '';
+                  this.houseInfo.pwdErr = '';
               }
-          } else if (errorItem === 'info') {
+          } else if (errorItem === 'retpwd') {
              if (inputContent === '') {
-                  this.houseInfo.idCardErr = '身份证号不能为空';
+                  this.houseInfo.retpwdErr = '密码不能为空';
+                  flag = false;
+              } else if (inputContent !== this.houseInfo.pwd) {
+                  this.houseInfo.retpwdErr = '两次密码不一致';
+                  flag = false;
+              } else{
+                  this.houseInfo.idcardErr = '';
+              }
+          } else if (errorItem === 'idcard') {
+             if (inputContent === '') {
+                  this.houseInfo.idcardErr = '身份证号不能为空';
                   flag = false;
               } else if (!reg.test(inputContent)) {
-                  this.userInfo.idcardErr = '身份证号不规范';
+                  this.houseInfo.idcardErr = '身份证号不规范';
                   flag = false;
-              } else{
-                  this.houseInfo.idCardErr = '';
-              }
-          } else if (errorItem === 'userName') {
-             if (inputContent === '') {
-                  this.houseInfo.userNameErr = '用户名不能为空';
-                  flag = false;
-              } else{
-                  this.houseInfo.userNameErr = '';
+              }else{
+                  this.houseInfo.idcardErr = '';
               }
           }
           //对于按钮的状态进行修改
@@ -233,7 +212,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 60%;
+      top: 70%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

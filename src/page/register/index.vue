@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到租房空间</div>
+              <div class="logo">欢迎来到租房注册</div>
               <el-form>
                  <el-form-item label="用户名">
                     <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
@@ -159,6 +159,7 @@ export default {
       },
       inputBlur:function(errorItem,inputContent){
           let flag = true;
+          let addrReg = /^0x[0-9a-fA-F]{40}$/;
           let reg =/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/;
           if (errorItem === 'name') {
               if (inputContent === '') {
@@ -181,11 +182,14 @@ export default {
               if (inputContent === '') {
                   this.userInfo.addrErr = '地址不能为空';
                   flag = false;
-              }else{
+              } else if (!addrReg.test(inputContent)) {
+                  this.houseInfo.addrErr = '地址不符合规则';
+                  flag = false;
+              } else{
                   this.userInfo.addrErr = '';
 
               }
-          } else if(errorItem === 'pwd') {
+          } else if(errorItem === 'pwd') { // /^.*(?=.{6,})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).*$/
               if (inputContent === '') {
                   this.userInfo.pwdErr = '密码不能为空';
                   flag = false;

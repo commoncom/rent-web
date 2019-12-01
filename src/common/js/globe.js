@@ -1,3 +1,3 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.156:8080"
+  serverUrl: "http://192.168.218.157:8080"
 }
