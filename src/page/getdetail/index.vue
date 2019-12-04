@@ -6,24 +6,6 @@
           <div class="login">
              <div class="login">
               <div class="logo">欢迎来到房屋浏览</div>
-                    <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
-                      <el-form :inline="true" :model="filters">
-                              <el-form-item :span="6">
-                                  <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
-                              </el-form-item>
-                              <!-- 操作类型下拉查询-->
-                              <el-form-item :span="3">
-                                  <el-select v-model="filters.type" clearable placeholder="房屋状态">
-                                      <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
-                                      </el-option>
-                                  </el-select>
-                              </el-form-item>
-                              <!-- 设置查询Form-->
-                              <el-form-item >
-                                  <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
-                              </el-form-item>
-                      </el-form>
-                  </el-col>
                     <el-table
                     :data="tableData"
                     @expand='expand'
@@ -76,7 +58,7 @@
                     </el-table-column>
                     <el-table-column
                       label="租金"
-                      prop="tenancy">
+                      prop="rental">
                     </el-table-column>
                     <el-table-column label="操作" width="160">
                       <template slot-scope="scope">
@@ -116,7 +98,7 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig, OPTION_TYPE} from 'src/common/js/globe';
 export default {
-    name: 'gethouse',
+    name: 'getdetail',
     components: {
       itemcontainer
     },
@@ -170,6 +152,11 @@ export default {
       }
    },
    methods : {
+      getParans() {
+         let routerParams = this.$route.params.msgKey;
+         this.tableData = routerParams;
+         console.log(this.tableData);
+      },
       initData(){
           try{
               this.getHouseData();
@@ -269,6 +256,10 @@ export default {
         this.selectIndex = index;
         this.selectMenu = this.menuOptions[index];
       },
+  },
+   watch: {  
+    // 监测路由变化,只要变化了就调用获取路由参数方法将数据存储本组件即可  
+      '$route': 'getParams'  
   },
   mounted (){
       var hi=window.screen.height;

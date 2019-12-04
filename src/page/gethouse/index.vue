@@ -24,7 +24,7 @@
                               </el-form-item>
                       </el-form>
                   </el-col>
-                    <el-table
+                   <el-table
                     :data="tableData"
                     @expand='expand'
                     :expand-row-keys='expendRow'
@@ -76,35 +76,14 @@
                     </el-table-column>
                     <el-table-column
                       label="租金"
-                      prop="tenancy">
+                      prop="rental">
                     </el-table-column>
                     <el-table-column label="操作" width="160">
                       <template slot-scope="scope">
-                         <router-link :to="{ 
-                             path: '',     
-                             params: {   
-                                key: 'value',}}"> <button type="button">跳转</button> 
-                          </router-link> 
-                        <!--<el-button
-                          size="small"
-                          @click="getDetail(scope.row)">详情</el-button>
-                        <el-button
-                          size="small"
-                          type="danger"
-                          @click="breakRent(scope.$index, scope.row)">毁约</el-button>-->
+                         <el-button size="small" @click="jumpDetail(scope.row)">详情</el-button>
                       </template>
                     </el-table-column>
-                </el-table>
-                <!--<div class="Pagination">
-                    <el-pagination
-                      @size-change="handleSizeChange"
-                      @current-change="handleCurrentChange"
-                      :current-page="currentPage"
-                      :page-size="20"
-                      layout="total, prev, pager, next"
-                      :total="count">
-                    </el-pagination>
-                </div> --->   
+                </el-table>  
             </div>
           </div>
         </div>
@@ -151,11 +130,7 @@ export default {
            err: ''
         },
         dialogFormVisible: false,
-        canClose : false,
-        isSus: true, // 注册结果控制
         formLabelWidth: '80px',
-        regTitle: "发布房源中",
-        newMap: new Map(), 
         offset: 0, // new
         limit: 20,
         count: 0,
@@ -223,9 +198,12 @@ export default {
           }
           return '';
       },
-      getDetail(data) {
-         this.houseInfo = {};
-         this.$router.push({path: '/'}); 
+      jumpDetail(row) {
+         console.log(row);
+         this.$router.push({path:'getdetail', params: {   
+                key: 'key',   
+                msgKey: row
+          }}); 
       },
       resetForm:function(){
           this.houseInfo = {};
