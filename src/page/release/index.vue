@@ -74,7 +74,7 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
 export default {
-    name: 'auth',
+    name: 'release',
     components: {
       itemcontainer
     },
