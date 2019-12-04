@@ -83,7 +83,17 @@
                          <el-button size="small" @click="jumpDetail(scope.row)">详情</el-button>
                       </template>
                     </el-table-column>
-                </el-table>  
+                </el-table>
+                <!--<div class="Pagination">
+                    <el-pagination
+                      @size-change="handleSizeChange"
+                      @current-change="handleCurrentChange"
+                      :current-page="currentPage"
+                      :page-size="20"
+                      layout="total, prev, pager, next"
+                      :total="count">
+                    </el-pagination>
+                </div> --->   
             </div>
           </div>
         </div>

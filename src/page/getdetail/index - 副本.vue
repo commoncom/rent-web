@@ -2,9 +2,52 @@
     <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
         <!--发布房源-->
-        <el-table
+        <div id="bg" class="bg">
+          <div class="login">
+             <div class="login">
+              <div class="logo">欢迎来到房屋浏览</div>
+                    <el-table
                     :data="tableData"
+                    @expand='expand'
+                    :expand-row-keys='expendRow'
+                    :row-key="row => row.index"
                     style="width: 100%">
+                    <el-table-column type="expand">
+                      <template slot-scope="props">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                          <el-form-item label="房屋地址">
+                            <span>{{props.row.houseAddr}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋描述">
+                            <span>{{ props.row.describe}}</span>
+                          </el-form-item>
+                          <el-form-item label="房东信息">
+                            <span>{{ props.row.info}}</span>
+                          </el-form-item>
+                          <el-form-item label="租期">
+                            <span>{{ props.row.tenancy }}</span>
+                          </el-form-item>
+                          <el-form-item label="租金">
+                            <span>{{ props.row.rental}}</span>
+                          </el-form-item>
+                          <el-form-item label="期待你的样子">
+                            <span>{{ props.row.hopeYou }}</span>
+                          </el-form-item>
+                          <el-form-item label="房东地址">
+                            <span>{{ props.row.addr}}</span>
+                          </el-form-item>
+                          <el-form-item label="房东名字">
+                            <span>{{props.row.userId}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋链上ID">
+                            <span>{{props.row.houseId}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋交易Hash">
+                            <span>{{props.row.txHash}}</span>
+                          </el-form-item>
+                        </el-form>
+                      </template>
+                    </el-table-column>
                     <el-table-column
                       label="房屋链上ID"
                       prop="houseId">
@@ -19,10 +62,34 @@
                     </el-table-column>
                     <el-table-column label="操作" width="160">
                       <template slot-scope="scope">
-                         <el-button size="small" @click.native.prevent="jumpDetail(scope.row)">详情</el-button>
+                         <router-link :to="{ 
+                             path: '',     
+                             params: {   
+                                key: 'value',}}"> <button type="button">跳转</button> 
+                          </router-link> 
+                        <!--<el-button
+                          size="small"
+                          @click="getDetail(scope.row)">详情</el-button>
+                        <el-button
+                          size="small"
+                          type="danger"
+                          @click="breakRent(scope.$index, scope.row)">毁约</el-button>-->
                       </template>
                     </el-table-column>
                 </el-table>
+                <!--<div class="Pagination">
+                    <el-pagination
+                      @size-change="handleSizeChange"
+                      @current-change="handleCurrentChange"
+                      :current-page="currentPage"
+                      :page-size="20"
+                      layout="total, prev, pager, next"
+                      :total="count">
+                    </el-pagination>
+                </div> --->   
+            </div>
+          </div>
+        </div>
     </div>
 </template>
 <script>
@@ -31,7 +98,7 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig, OPTION_TYPE} from 'src/common/js/globe';
 export default {
-    name: 'gethouse',
+    name: 'getdetail',
     components: {
       itemcontainer
     },
@@ -66,7 +133,11 @@ export default {
            err: ''
         },
         dialogFormVisible: false,
+        canClose : false,
+        isSus: true, // 注册结果控制
         formLabelWidth: '80px',
+        regTitle: "发布房源中",
+        newMap: new Map(), 
         offset: 0, // new
         limit: 20,
         count: 0,
@@ -81,6 +152,11 @@ export default {
       }
    },
    methods : {
+      getParans() {
+         let routerParams = this.$route.params.msgKey;
+         this.tableData = routerParams;
+         console.log(this.tableData);
+      },
       initData(){
           try{
               this.getHouseData();
@@ -134,12 +210,9 @@ export default {
           }
           return '';
       },
-      jumpDetail(row) {
-         console.log(row);
-         this.$router.push({path:'getdetail', params: {   
-                key: 'key',   
-                msgKey: row
-          }}); 
+      getDetail(data) {
+         this.houseInfo = {};
+         this.$router.push({path: '/'}); 
       },
       resetForm:function(){
           this.houseInfo = {};
@@ -184,10 +257,14 @@ export default {
         this.selectMenu = this.menuOptions[index];
       },
   },
+   watch: {  
+    // 监测路由变化,只要变化了就调用获取路由参数方法将数据存储本组件即可  
+      '$route': 'getParams'  
+  },
   mounted (){
-      // var hi=window.screen.height;
-      // // document.getElementById("bg").style.width=wi+"px";
-      // document.getElementById("bg").style.height=hi+"px";
+      var hi=window.screen.height;
+      // document.getElementById("bg").style.width=wi+"px";
+      document.getElementById("bg").style.height=hi+"px";
   },
 }
 </script>
