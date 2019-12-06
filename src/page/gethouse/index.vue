@@ -24,7 +24,7 @@
                               </el-form-item>
                       </el-form>
                   </el-col>
-                   <el-table
+                    <el-table
                     :data="tableData"
                     @expand='expand'
                     :expand-row-keys='expendRow'
@@ -37,31 +37,38 @@
                             <span>{{props.row.houseAddr}}</span>
                           </el-form-item>
                           <el-form-item label="房屋描述">
-                            <span>{{ props.row.describe}}</span>
+                            <span>{{props.row.describe}}</span>
                           </el-form-item>
                           <el-form-item label="房东信息">
-                            <span>{{ props.row.info}}</span>
+                            <span>{{props.row.info}}</span>
                           </el-form-item>
                           <el-form-item label="租期">
-                            <span>{{ props.row.tenancy }}</span>
+                            <span>{{props.row.tenancy}}</span>
                           </el-form-item>
                           <el-form-item label="租金">
-                            <span>{{ props.row.rental}}</span>
+                            <span>{{props.row.rental}}</span>
                           </el-form-item>
                           <el-form-item label="期待你的样子">
-                            <span>{{ props.row.hopeYou }}</span>
+                            <span>{{props.row.hopeYou}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋评级等级">
+                            <span>{{props.row.huxing}}</span>
                           </el-form-item>
                           <el-form-item label="房东地址">
-                            <span>{{ props.row.addr}}</span>
-                          </el-form-item>
-                          <el-form-item label="房东名字">
-                            <span>{{props.row.userId}}</span>
+                            <span>{{props.row.userAddr}}</span>
                           </el-form-item>
                           <el-form-item label="房屋链上ID">
                             <span>{{props.row.houseId}}</span>
                           </el-form-item>
                           <el-form-item label="房屋交易Hash">
                             <span>{{props.row.txHash}}</span>
+                          </el-form-item>
+                          <el-form-item>
+                          </el-form-item>
+                          <el-form-item>
+                            <el-button
+                                size="medium"
+                                @click="jumpDetail(props.row)">预定</el-button>
                           </el-form-item>
                         </el-form>
                       </template>
@@ -78,24 +85,46 @@
                       label="租金"
                       prop="rental">
                     </el-table-column>
-                    <el-table-column label="操作" width="160">
-                      <template slot-scope="scope">
-                         <el-button size="small" @click="jumpDetail(scope.row)">详情</el-button>
-                      </template>
+                    <el-table-column label="房屋描述" width="160" prop="describe">
                     </el-table-column>
-                </el-table>
-                <!--<div class="Pagination">
-                    <el-pagination
-                      @size-change="handleSizeChange"
-                      @current-change="handleCurrentChange"
-                      :current-page="currentPage"
-                      :page-size="20"
-                      layout="total, prev, pager, next"
-                      :total="count">
-                    </el-pagination>
-                </div> --->   
+                </el-table> 
             </div>
           </div>
+           <el-dialog title="预定房租" :visible.sync="dialogFormVisible">
+                <el-form :model="form">
+                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
+                    <el-input v-model="form.houseId"   autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="租金" :label-width="formLabelWidth">
+                    <el-input v-model="form.rental"  autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="地址" :label-width="formLabelWidth">
+                    <el-input v-model="form.addr"   autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="私钥" :label-width="formLabelWidth">
+                    <el-input v-model="form.prikey" autocomplete="off"></el-input>
+                  </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="comfirmSub">确 定</el-button>
+              </div>
+          </el-dialog>
+          <el-dialog :title="regTitle" :visible.sync="dialogVisible" top :show-close="false">
+            <el-form :model="form">
+              <el-form-item label="状态" :label-width="formLabelWidth">
+                <el-input v-model="dialogForm.status"   autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
+                <el-input v-model="dialogForm.data"  :readonly="true" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
+                <el-input v-model="dialogForm.err"  :readonly="true" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="closeBut">确 定</el-button>
+            </div>
+          </el-dialog>
         </div>
     </div>
 </template>
@@ -134,13 +163,21 @@ export default {
             beDisabled: true
         },
         form: {
+           houseId: '',
+           rental: '',
+           addr: '',
+           prikey: ''
+        },
+        dialogForm: {
            status: '',
            data: '',
-           houseId: '',
            err: ''
         },
+        regTitle: '预约结果',
         dialogFormVisible: false,
-        formLabelWidth: '80px',
+        dialogVisible: false,
+        isSus: false,
+        formLabelWidth: '100px',
         offset: 0, // new
         limit: 20,
         count: 0,
@@ -162,6 +199,9 @@ export default {
               console.log('获取数据失败', err);
           }
       },
+      closeBut() {
+         this.dialogVisible = false;
+      },
       getHouseData() {
           this.tableData = [];
           let houseId = this.filters.houseId;
@@ -170,6 +210,7 @@ export default {
           }
           console.log("house hash", this.filters.houseId)
           let url = UrlConfig.serverUrl+"/gethouse/"+houseId+"/"+this.filters.type;
+          console.log(url);
           axios.get(url, {}).then(res => {
                 if(res.data.status) {
                     let releaseInfo = res.data.data; 
@@ -184,6 +225,7 @@ export default {
                         tableData.hopeYou = item.hope_you;
                         tableData.addr = item.addr;
                         tableData.houseId = item.house_id;
+                        tableData.userAddr = item.addr;
                         tableData.txHash = item.tx_hash;
                         tableData.index = index;
                         this.tableData.push(tableData);
@@ -197,7 +239,6 @@ export default {
           });
       },
       search() {
-          // this.page.currentPage = 1;
           this.getHouseData();
       },
       tableRowClassName(row, index) {
@@ -208,15 +249,56 @@ export default {
           }
           return '';
       },
+      comfirmSub() {
+          console.log("comfirm Sub", this.form);
+          this.dialogVisible = true;
+          let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status) {
+                    console.log(res.data);       
+                } else {
+                    console.log(res.data);            
+                }
+          }).catch(err => {
+              console.log("bind error", err);
+              this.$notify({title : '提示信息', message : "请检查网络状况!", type:'error'});
+          });
+      },
       jumpDetail(row) {
          console.log(row);
-         this.$router.push({path:'getdetail', params: {   
-                key: 'key',   
-                msgKey: row
-          }}); 
+         this.dialogFormVisible = true;
+         this.form.houseId = row.houseId;
+         this.form.rental = row.rental;
       },
-      resetForm:function(){
+      resetForm(){
           this.houseInfo = {};
+      },
+      inputBlur(errorItem,inputContent) {
+          let flag = true;
+          if (errorItem === 'name') {
+              if (inputContent === '') {
+                  this.userInfo.nameErr = '用户名不能为空';
+                  flag = false;
+              } else{
+                  this.userInfo.nameErr = '';
+              }
+          } else if(errorItem === 'addr') {
+              if (inputContent === '') {
+                  this.userInfo.addrErr = '地址不能为空';
+                  flag = false;
+              }else{
+                  this.userInfo.addrErr = '';
+
+              }
+          } 
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.userInfo.beDisabled = false;
+          }else{
+              this.userInfo.beDisabled = true;
+          }
       },
       deleteSpecs(index){
         this.specs.splice(index, 1);

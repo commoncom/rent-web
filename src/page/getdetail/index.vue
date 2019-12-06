@@ -2,27 +2,120 @@
     <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
         <!--发布房源-->
-        <el-table
-                    :data="tableData"
-                    style="width: 100%">
-                    <el-table-column
-                      label="房屋链上ID"
-                      prop="houseId">
-                    </el-table-column>
-                    <el-table-column
-                      label="房屋地址"
-                      prop="addr">
-                    </el-table-column>
-                    <el-table-column
-                      label="租金"
-                      prop="rental">
-                    </el-table-column>
-                    <el-table-column label="操作" width="160">
-                      <template slot-scope="scope">
-                         <el-button size="small" @click.native.prevent="jumpDetail(scope.row)">详情</el-button>
-                      </template>
-                    </el-table-column>
-                </el-table>
+        <div id="bg" class="bg">
+          <div class="login">
+             <div class="login">
+              <div class="logo">欢迎来到房屋浏览</div>
+              <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
+                <el-form :inline="true" :model="filters">
+                        <el-form-item :span="6">
+                            <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                        </el-form-item>
+                        <!-- 操作类型下拉查询-->
+                        <el-form-item :span="3">
+                            <el-select v-model="filters.type" clearable placeholder="房屋状态">
+                                <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <!-- 设置查询Form-->
+                        <el-form-item >
+                            <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
+                        </el-form-item>
+                </el-form>
+              </el-col>
+             <!-- <el-table
+                  :data="tableData"
+                  @expand='expand'
+                  :expand-row-keys='expendRow'
+                  :row-key="row => row.index"
+                  style="width: 100%">
+                  <el-table-column type="expand">
+                    <template slot-scope="props">
+                      <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="房屋地址">
+                          <span>{{props.row.houseAddr}}</span>
+                        </el-form-item>
+                        <el-form-item label="房屋描述">
+                          <span>{{ props.row.describe}}</span>
+                        </el-form-item>
+                        <el-form-item label="房东信息">
+                          <span>{{ props.row.info}}</span>
+                        </el-form-item>
+                        <el-form-item label="租期">
+                          <span>{{ props.row.tenancy }}</span>
+                        </el-form-item>
+                        <el-form-item label="租金">
+                          <span>{{ props.row.rental}}</span>
+                        </el-form-item>
+                        <el-form-item label="期待你的样子">
+                          <span>{{ props.row.hopeYou }}</span>
+                        </el-form-item>
+                        <el-form-item label="房东地址">
+                          <span>{{ props.row.addr}}</span>
+                        </el-form-item>
+                        <el-form-item label="房东名字">
+                          <span>{{props.row.userId}}</span>
+                        </el-form-item>
+                        <el-form-item label="房屋链上ID">
+                          <span>{{props.row.houseId}}</span>
+                        </el-form-item>
+                        <el-form-item label="房屋交易Hash">
+                          <span>{{props.row.txHash}}</span>
+                        </el-form-item>
+                      </el-form>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="房屋链上ID"
+                    prop="houseId">
+                  </el-table-column>
+                  <el-table-column
+                    label="房屋地址"
+                    prop="addr">
+                  </el-table-column>
+                  <el-table-column
+                    label="租金"
+                    prop="rental">
+                  </el-table-column>
+                  <el-table-column label="操作" width="160">
+                    <template slot-scope="scope">
+                       <el-button size="small" @click="jumpDetail(scope.row)">详情</el-button>
+                    </template>
+                  </el-table-column>
+            </el-table>-->
+               
+
+               <el-table
+              :data="tableData"
+              style="width: 100%">
+              <el-table-column
+                label="房屋链上ID"
+                width="180" prop="houseId">
+              </el-table-column>
+              <el-table-column
+                label="房屋地址"
+                width="180" prop="addr">
+              </el-table-column>
+              <el-table-column
+                label="租金"
+                width="180" prop="rental">
+              </el-table-column>
+               <el-table-column
+                label="房屋地址位置"
+                 prop="describe">
+              </el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button
+                    size="mini"
+                    @click="jumpDetail(scope.row)">编辑</el-button>
+                </template>
+              </el-table-column>
+          </el-table>
+            </div>
+          </div>
+        </div>
     </div>
 </template>
 <script>
@@ -135,13 +228,13 @@ export default {
           return '';
       },
       jumpDetail(row) {
-         console.log(row);
-         this.$router.push({path:'getdetail', params: {   
-                key: 'key',   
-                msgKey: row
-          }}); 
+         console.log("jump detail", row)
+         // this.$router.push({path: 'getdetail', params: {   
+         //        key: 'key',   
+         //        msgKey: row
+         //  }}); 
       },
-      resetForm:function(){
+      resetForm(){
           this.houseInfo = {};
       },
       deleteSpecs(index){
@@ -185,9 +278,9 @@ export default {
       },
   },
   mounted (){
-      // var hi=window.screen.height;
-      // // document.getElementById("bg").style.width=wi+"px";
-      // document.getElementById("bg").style.height=hi+"px";
+      var hi=window.screen.height;
+      // document.getElementById("bg").style.width=wi+"px";
+      document.getElementById("bg").style.height=hi+"px";
   },
 }
 </script>

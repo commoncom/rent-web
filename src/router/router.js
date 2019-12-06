@@ -30,5 +30,11 @@ export default [{
     }, {
         path: '/getdetail',
         component: r => require.ensure([], () => r(require('../page/getdetail')), 'getdetail')
+    }, {
+        path: '/signagree',
+        component: r => require.ensure([], () => r(require('../page/signagree')), 'signagree')
+    }, {
+        path: '/withdraw',
+        component: r => require.ensure([], () => r(require('../page/withdraw')), 'withdraw')
     }]
 }]
