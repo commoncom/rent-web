@@ -61,20 +61,40 @@
                             <span>{{props.row.huxing}}</span>
                           </el-form-item>
                           <el-form-item>
-                            <el-button
+                            <el-button v-if="btnStatus == 0"
                                 size="medium"
                                 @click="jumpDetail(props.row)">预定</el-button>
+                            <el-button v-else-if="btnStatus == 1"
+                                size="medium"
+                                @click="inspectBreak(props.row)">签订合同</el-button>
+                            <el-button v-else-if="btnStatus == 2"
+                                size="medium"
+                                @click="achieveRent(props.row)">完成租赁</el-button>
+                            <el-button v-else-if="btnStatus == 3"
+                                size="medium"
+                                @click="breakContract(props.row)">毁约</el-button>
+                            <el-button v-else-if="btnStatus == 4"
+                                size="medium"
+                                @click="inspectBreak(props.row)">审核</el-button>
+                            <el-button v-else
+                                size="medium"
+                                @click="withdrawRent(props.row)">退回押金</el-button>
+                            <el-button
+                                size="medium"
+                                @click="cacle(props.row)">撤销租赁</el-button>
                           </el-form-item>
                         </el-form>
                       </template>
                     </el-table-column>
                     <el-table-column
-                      label="房屋链上ID"
-                      prop="houseId">
+                      label="房屋链上ID">  
+                        <template slot-scope="scope">
+                          {{scope.row.houseId | limitLen}}
+                        </template>
                     </el-table-column>
                     <el-table-column
                       label="房屋地址"
-                      prop="addr">
+                      prop="houseAddr">
                     </el-table-column>
                     <el-table-column
                       label="租金"
@@ -172,10 +192,8 @@ export default {
         dialogFormVisible: false,
         dialogVisible: false,
         isSus: false,
+        btnStatus: 0,
         formLabelWidth: '100px',
-        offset: 0, // new
-        limit: 20,
-        count: 0,
         tableData: [],
         currentPage: 1,
         expendRow: [],
@@ -186,13 +204,22 @@ export default {
         }
       }
    },
+   filters: {
+      limitLen(src){
+          let a = src.split('', 10);
+          let b = a.join('');
+          if (src.length <= 10) {
+            return b;
+          }
+          return b + '...';
+      }
+   },
    methods : {
       initData(){
           try{
               this.getHouseData();
           } catch(err){
               console.log('获取数据失败', err);
-              // this.$notify({title : '提示信息',message : "获取数据失败!", type:'error'});
           }
       },
       closeBut() {
@@ -207,6 +234,7 @@ export default {
           console.log("house hash", this.filters.houseId)
           let url = UrlConfig.serverUrl+"/gethouse/"+houseId+"/"+this.filters.type;
           console.log(url);
+          this.btnStatus = this.filters.type;
           axios.get(url, {}).then(res => {
                 if(res.data.status) {
                     let releaseInfo = res.data.data; 
@@ -224,6 +252,7 @@ export default {
                         tableData.userAddr = item.addr;
                         tableData.txHash = item.tx_hash;
                         tableData.index = index;
+                        tableData.huxing = item.huxing;
                         this.tableData.push(tableData);
                     })        
                 } else {
@@ -274,43 +303,20 @@ export default {
          this.form.houseId = row.houseId;
          this.form.rental = row.rental;
       },
-      resetForm(){
-          this.houseInfo = {};
+      cancle(row) {
+         console.log("cancle", row);
       },
-      inputBlur(errorItem,inputContent) {
-          let flag = true;
-          if (errorItem === 'name') {
-              if (inputContent === '') {
-                  this.userInfo.nameErr = '用户名不能为空';
-                  flag = false;
-              } else{
-                  this.userInfo.nameErr = '';
-              }
-          } else if(errorItem === 'addr') {
-              if (inputContent === '') {
-                  this.userInfo.addrErr = '地址不能为空';
-                  flag = false;
-              }else{
-                  this.userInfo.addrErr = '';
-
-              }
-          } 
-          //对于按钮的状态进行修改
-          if (flag) {
-              this.userInfo.beDisabled = false;
-          }else{
-              this.userInfo.beDisabled = true;
-          }
+      breakContract(row) {
+         console.log("break", row);
       },
-      deleteSpecs(index){
-        this.specs.splice(index, 1);
+      inspectBreak(row) {
+         console.log("inspect", row);
       },
-      handleSizeChange(val) {
-          console.log(`每页 ${val} 条`);
+      achieveRent(row) {
+         console.log("achieveRent", row);
       },
-      handleCurrentChange(val) {
-          this.currentPage = val;
-          this.offset = (val - 1)*this.limit;
+      withdrawRent(row) {
+         console.log("withdrawRent", row);
       },
       expand(row, status){
         if (status) {
@@ -356,7 +362,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 20%;
+      top: 50%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

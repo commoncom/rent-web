@@ -1,5 +1,5 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.165:8080"
+  serverUrl: "http://192.168.218.166:8080"
 }
 
 export const OPTION_TYPE = [{
@@ -16,9 +16,9 @@ export const OPTION_TYPE = [{
 		label: '完成租赁'
 	}, {
 		value: '4',
-		label: '取消租赁'
+		label: '解除租赁' 
 	}, {
 		value: '5',
-		label: '解除租赁'
+		label: '取消租赁'
 	}
 ];

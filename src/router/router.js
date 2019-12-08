@@ -39,5 +39,8 @@ export default [{
     }, {
         path: '/breakcontract',
         component: r => require.ensure([], () => r(require('../page/breakcontract')), 'breakcontract')
+    }, {
+        path: '/checkbreak',
+        component: r => require.ensure([], () => r(require('../page/checkbreak')), 'checkbreak')
     }] 
 }]
