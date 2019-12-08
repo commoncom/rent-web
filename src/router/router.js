@@ -21,6 +21,19 @@ export default [{
     }, {
         path: '/auth',
         component: r => require.ensure([], () => r(require('../page/auth')), 'auth')
+        // children: [
+        //     {
+        //       path: '',
+        //       name: '认证'
+        //       src: '../page/auth'
+        //     }, {
+        //       path: 'getauth',
+        //       name: '获取认证信息'
+        //     }
+        // ]
+    }, {
+        path: '/auth/getauth',
+        component: r => require.ensure([], () => r(require('../page/auth/getauth.vue')), 'getauth')
     }, {
         path: '/release',
         component: r => require.ensure([], () => r(require('../page/release')), 'release')

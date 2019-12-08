@@ -11,13 +11,6 @@
                               <el-form-item :span="6">
                                   <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
                               </el-form-item>
-                              <!-- 操作类型下拉查询-->
-                              <el-form-item :span="3">
-                                  <el-select v-model="filters.type" clearable placeholder="房屋状态">
-                                      <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
-                                      </el-option>
-                                  </el-select>
-                              </el-form-item>
                               <!-- 设置查询Form-->
                               <el-form-item >
                                   <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
@@ -25,101 +18,34 @@
                       </el-form>
                   </el-col>
                     <el-table
-                    :data="tableData"
-                    @expand='expand'
-                    :expand-row-keys='expendRow'
-                    :row-key="row => row.index"
-                    style="width: 100%">
-                    <el-table-column type="expand">
-                      <template slot-scope="props">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                          <el-form-item label="房屋位置">
-                            <span>{{props.row.houseAddr}}</span>
-                          </el-form-item>
-                          <el-form-item label="房屋链上ID">
-                            <span>{{props.row.houseId}}</span>
-                          </el-form-item>
-                          <el-form-item label="房屋交易Hash">
-                            <span>{{props.row.txHash}}</span>
-                          </el-form-item>
-                          <el-form-item label="房东信息">
-                            <span>{{props.row.info}}</span>
-                          </el-form-item>
-                          <el-form-item label="租期">
-                            <span>{{props.row.tenancy}}</span>
-                          </el-form-item>
-                          <el-form-item label="租金">
-                            <span>{{props.row.rental}}</span>
-                          </el-form-item>
-                          <el-form-item label="房东地址">
-                            <span>{{props.row.userAddr}}</span>
-                          </el-form-item>
-                          <el-form-item label="期待你的样子">
-                            <span>{{props.row.hopeYou}}</span>
-                          </el-form-item>
-                           <el-form-item label="房屋描述">
-                            <span>{{props.row.describe}}</span>
-                          </el-form-item>
-                          <el-form-item>
-                            <el-button v-if="btnStatus == 0"
-                                size="medium"
-                                @click="jumpDetail(props.row)">预定</el-button>
-                            <el-button v-else-if="btnStatus == 1"
-                                size="medium"
-                                @click="inspectBreak(props.row)">签订合同</el-button>
-                            <el-button v-else-if="btnStatus == 2"
-                                size="medium"
-                                @click="achieveRent(props.row)">完成租赁</el-button>
-                            <el-button v-else-if="btnStatus == 4"
-                                size="medium"
-                                @click="inspectBreak(props.row)">审核</el-button>
-                            <el-button v-else
-                                size="medium"
-                                @click="withdrawRent(props.row)">退回押金</el-button>
-                            <el-button v-if="btnStatus != 0"
-                                size="medium"
-                                @click="breakContract(props.row)">毁约合同</el-button>
-                            <el-button v-if="btnStatus != 0"
-                                size="medium"
-                                @click="lookAuth(props.row)">请求查看认证信息</el-button>
-                            <el-button v-if="btnStatus == 0"
-                                size="medium"
-                                @click="cacle(props.row)">撤销租赁</el-button>
-                          </el-form-item>
-                        </el-form>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="房屋地址"
-                      prop="houseAddr">
-                    </el-table-column>
+                    :data="tableData">
                     <el-table-column
                       label="房屋链上ID">  
                         <template slot-scope="scope">
-                          {{scope.row.houseId | limitLen}}
+                          {{scope.row.houseId}}
                         </template>
                     </el-table-column>
                     <el-table-column
-                      label="租金"
-                      prop="rental">
+                      label="请求授权方地址"
+                      prop="leaserAddr">
+                     <el-table-column label="房东地址" width="160" prop="landlordAddr">
                     </el-table-column>
-                    <el-table-column label="房屋描述" width="160" prop="describe">
                     </el-table-column>
-                    <el-table-column label="房屋评价等级" width="160" prop="huxing">
+                    <el-table-column label="授权访问状态" width="160" prop="state">
                     </el-table-column>
                 </el-table> 
             </div>
           </div>
-           <el-dialog title="预定房租" :visible.sync="dialogFormVisible">
+           <el-dialog title="授权访问" :visible.sync="dialogFormVisible">
                 <el-form :model="form">
                   <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
                     <el-input v-model="form.houseId"   autocomplete="off"></el-input>
                   </el-form-item>
-                  <el-form-item label="租金" :label-width="formLabelWidth">
-                    <el-input v-model="form.rental"  autocomplete="off"></el-input>
+                  <el-form-item label="请求授权方地址" :label-width="formLabelWidth">
+                    <el-input v-model="form.leaserAddr"   autocomplete="off"></el-input>
                   </el-form-item>
-                  <el-form-item label="地址" :label-width="formLabelWidth">
-                    <el-input v-model="form.addr"   autocomplete="off"></el-input>
+                  <el-form-item label="房东地址" :label-width="formLabelWidth">
+                    <el-input v-model="form.landlordAddr"  autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="私钥" :label-width="formLabelWidth">
                     <el-input v-model="form.prikey" autocomplete="off"></el-input>
@@ -152,7 +78,7 @@
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig, OPTION_TYPE} from 'src/common/js/globe';
+import {UrlConfig} from 'src/common/js/globe';
 export default {
     name: 'gethouse',
     components: {
@@ -164,28 +90,15 @@ export default {
     data () {
       return {
         houseInfo :{
-            houseAddr: '',
-            describe: '',
-            info : '',
-            tenancy: '',
-            rental: '',
-            hopeYou: '',
-            addr: '',
-            prikey: '',
-            houseAddrErr: '',
-            describeErr: '',
-            infoErr: '',
-            tenancyErr: '',
-            rentalErr: '',
-            hopeYouErr: '',
-            addrErr: '',
-            prikeyErr: '',
-            beDisabled: true
+            houseId: '',
+            leaserAddr: '',
+            landlordAddr : '',
+            state: ''
         },
         form: {
            houseId: '',
-           rental: '',
-           addr: '',
+           leaserAddr: '',
+           landlordAddr: '',
            prikey: ''
         },
         dialogForm: {
@@ -193,7 +106,7 @@ export default {
            data: '',
            err: ''
         },
-        regTitle: '预约结果',
+        regTitle: '授权结果',
         dialogFormVisible: false,
         dialogVisible: false,
         isSus: false,
@@ -202,7 +115,6 @@ export default {
         tableData: [],
         currentPage: 1,
         expendRow: [],
-        options: OPTION_TYPE,
         filters: {
             houseId: '',
             type: '0'
@@ -222,7 +134,7 @@ export default {
    methods : {
       initData(){
           try{
-              this.getHouseData();
+              this.gethAuthData();
           } catch(err){
               console.log('获取数据失败', err);
           }
@@ -230,7 +142,7 @@ export default {
       closeBut() {
          this.dialogVisible = false;
       },
-      getHouseData() {
+      gethAuthData() {
           this.tableData = [];
           let houseId = this.filters.houseId;
           if (!this.filters.houseId || this.filters.houseId == '') {
@@ -242,24 +154,17 @@ export default {
           this.btnStatus = this.filters.type;
           axios.get(url, {}).then(res => {
                 if(res.data.status) {
-                    let releaseInfo = res.data.data; 
-                    console.log(releaseInfo);
-                    releaseInfo.forEach((item, index) => {
+                    let authInfo = res.data.data; 
+                    console.log(authInfo);
+                    authInfo.forEach((item, index) => {
                         const tableData = {};
-                        tableData.houseAddr = item.house_addr;
-                        tableData.describe = item.describe;
-                        tableData.info = item.info;
-                        tableData.tenancy = item.tenancy;
-                        tableData.rental = item.rental;
-                        tableData.hopeYou = item.hope_you;
-                        tableData.addr = item.addr;
                         tableData.houseId = item.house_id;
-                        tableData.userAddr = item.addr;
-                        tableData.txHash = item.tx_hash;
+                        tableData.leaserAddr = item.leaser_addr;
+                        tableData.landlordAddr = item.landlord_addr;
                         tableData.index = index;
-                        tableData.huxing = item.huxing;
+                        tableData.state = item.state;
                         this.tableData.push(tableData);
-                    })        
+                    });        
                 } else {
                     console.log(res.data);            
                 }
@@ -269,7 +174,7 @@ export default {
           });
       },
       search() {
-          this.getHouseData();
+          this.gethAuthData();
       },
       tableRowClassName(row, index) {
           if (index === 1) {
@@ -282,8 +187,8 @@ export default {
       comfirmSub() {
           console.log("comfirm Sub", this.form);
           this.dialogVisible = true;
-          let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
-          console.log(url)
+          let url = UrlConfig.serverUrl+"/requestauth/"+this.form.houseId+"/"+this.form.leaserAddr+"/"+this.form.landlordAddr+"/"+this.form.prikey;
+          console.log(url);
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
                 if(res.data.status) {
@@ -308,53 +213,6 @@ export default {
          this.form.houseId = row.houseId;
          this.form.rental = row.rental;
       },
-      cancle(row) {
-         console.log("cancle", row);
-      },
-      breakContract(row) {
-         console.log("break", row);
-      },
-      inspectBreak(row) {
-         console.log("inspect", row);
-      },
-      achieveRent(row) {
-         console.log("achieveRent", row);
-      },
-      withdrawRent(row) {
-         console.log("withdrawRent", row);
-      },
-      lookAuth(row) {
-         console.log("look auth", row);
-      },
-      expand(row, status){
-        if (status) {
-          this.getSelectItemData(row)
-        }else{
-              const index = this.expendRow.indexOf(row.index);
-              this.expendRow.splice(index, 1)
-          }
-      },
-      getDetail(row) {
-          this.getSelectItemData(row, 'edit')
-          this.dialogFormVisible = true;
-      },
-      async getSelectItemData(row, type){
-        const restaurant = await getResturantDetail(row.restaurant_id);
-        const category = await getMenuById(row.category_id)
-          this.selectTable = {...row, ...{restaurant_name: restaurant.name, restaurant_address: restaurant.address, category_name: category.name}};
-          this.selectMenu = {label: category.name, value: row.category_id}
-          this.tableData.splice(row.index, 1, {...this.selectTable});
-          this.$nextTick(() => {
-              this.expendRow.push(row.index);
-          })
-          if (type == 'edit' && this.restaurant_id != row.restaurant_id) {
-            this.getMenu();
-          }
-      },
-      handleSelect(index){
-        this.selectIndex = index;
-        this.selectMenu = this.menuOptions[index];
-      },
   },
   mounted (){
       var hi=window.screen.height;
@@ -370,7 +228,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 30%;
+      top: 50%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
