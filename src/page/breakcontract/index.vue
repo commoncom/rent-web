@@ -1,46 +1,30 @@
 <template>
     <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
-        <!--发布房源-->
+        <!--认证-->
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋发布</div>
+              <div class="logo">欢迎来到租房毁约</div>
               <el-form>
-                 <el-form-item label="房屋地址">
-                    <el-input type="text" id="houseAddr" v-model="houseInfo.houseAddr" @blur="inputBlur('houseAddr',houseInfo.houseAddr)"></el-input>
-                    <p>{{houseInfo.houseAddrErr}}</p>
+                 <el-form-item label="房屋链上ID">
+                    <el-input type="text" id="houseId" v-model="houseInfo.houseId" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                    <p>{{houseInfo.houseIdErr}}</p>
                  </el-form-item>
-                 <el-form-item label="房屋描述">
-                    <el-input type="textarea" id="describe" v-model="houseInfo.describe" @blur="inputBlur('describe',houseInfo.describe)"></el-input>
-                    <p>{{houseInfo.describeErr}}</p>
-                </el-form-item>
-                 <el-form-item label="房东介绍">
-                    <el-input type="textarea" id="info" v-model="houseInfo.info" @blur="inputBlur('info',houseInfo.info)"></el-input>
-                    <p>{{houseInfo.infoErr}}</p>
-                </el-form-item>
-                <el-form-item label="租期">
-                    <el-input type="text" id="tenancy" v-model="houseInfo.tenancy" @blur="inputBlur('tenancy',houseInfo.tenancy)"></el-input>
-                    <p>{{houseInfo.tenancyErr}}</p>
-                </el-form-item>
-                <el-form-item label="租金">
-                    <el-input type="text" id="rental" v-model="houseInfo.rental" @blur="inputBlur('rental',houseInfo.rental)"></el-input>
-                    <p>{{houseInfo.rentalErr}}</p>
-                </el-form-item>
-                <el-form-item label="对你的期待">
-                    <el-input type="textarea" id="hopeYou" v-model="houseInfo.hopeYou" @blur="inputBlur('hopeYou',houseInfo.hopeYou)"></el-input>
-                    <p>{{houseInfo.hopeYouErr}}</p>
-                </el-form-item>
-                <el-form-item label="地址">
+                 <el-form-item label="数量">
+                    <el-input type="text" id="amount" v-model="houseInfo.amount" @blur="inputBlur('amount',houseInfo.amount)"></el-input>
+                    <p>{{houseInfo.amountErr}}</p>
+                 </el-form-item>
+                <el-form-item label="用户地址">
                     <el-input type="text" id="addr" v-model="houseInfo.addr" @blur="inputBlur('addr',houseInfo.addr)"></el-input>
                     <p>{{houseInfo.addrErr}}</p>
-                 </el-form-item>
+                </el-form-item>
                 <el-form-item label="私钥">
                     <el-input type="pwd" id="prikey" v-model="houseInfo.prikey" @blur="inputBlur('prikey',houseInfo.prikey)"></el-input>
                     <p>{{houseInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('houseInfo')" v-bind:disabled="houseInfo.beDisabled">发布房源</el-button>
+                  <el-button type="primary" @click="submitForm('houseInfo')" v-bind:disabled="houseInfo.beDisabled">毁约</el-button>
                   <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -50,9 +34,6 @@
             <el-form :model="form">
               <el-form-item label="状态" :label-width="formLabelWidth">
                 <el-input v-model="form.status"  :readonly="true" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item v-show = "isSus" label="房屋ID" :label-width="formLabelWidth">
-                <el-input v-model="form.houseId"  :readonly="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
                 <el-input v-model="form.data"  :readonly="true" autocomplete="off"></el-input>
@@ -74,7 +55,7 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
 export default {
-    name: 'release',
+    name: 'breakcontract',
     components: {
       itemcontainer
     },
@@ -84,20 +65,12 @@ export default {
     data () {
       return {
         houseInfo :{
-            houseAddr: '',
-            describe: '',
-            info : '',
-            tenancy: '',
-            rental: '',
-            hopeYou: '',
+            houseId: '',
+            amount: '',
             addr: '',
             prikey: '',
-            houseAddrErr: '',
-            describeErr: '',
-            infoErr: '',
-            tenancyErr: '',
-            rentalErr: '',
-            hopeYouErr: '',
+            houseIdErr: '',
+            amountErr: '',
             addrErr: '',
             prikeyErr: '',
             beDisabled: true
@@ -105,14 +78,13 @@ export default {
         form: {
            status: '',
            data: '',
-           houseId: '',
            err: ''
         },
         dialogFormVisible: false,
         canClose : false,
         isSus: true, // 注册结果控制
         formLabelWidth: '80px',
-        regTitle: "发布房源中",
+        regTitle: "毁约中",
         newMap: new Map(),
       }
    },
@@ -120,37 +92,31 @@ export default {
       closeBut() {
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.form = {};
               this.canClose = false;
-              if (this.isSus) {
-                 this.jumpLog();
-              }
+              this.form = {};
+              this.jumpLog();
           }
       },
       jumpLog() {
-         this.houseInfo = {};
-         this.$router.push({path: 'gethouse'}); 
+         if (this.isSus) {
+            this.$router.push({path: 'release'}); 
+            this.houseInfo = {};
+         }
       },
       resetForm:function(){
           this.houseInfo = {};
       },
       submitForm:function(formInfo){
-         console.log(this.houseInfo, formInfo)
-         if (this.newMap.has(this.houseInfo.addr)) {
-               this.$notify({title : '提示信息',message : '该房源已经发布，房屋Hash为：'+this.newMap.get(this.houseInfo.addr).houseId,type : 'error'});
-               return false;
-          }
+          console.log("==submitForm==", this.houseInfo);
           let info = this.houseInfo;
-          let url = UrlConfig.serverUrl+"/release/"+info.addr+"/"+info.prikey+"/"+info.houseAddr+"/"+info.describe+"/"+info.info+"/"+info.tenancy+"/"+info.rental+"/"+info.hopeYou;
+          let url = UrlConfig.serverUrl+"/break/"+info.addr+"/"+info.prikey+"/"+info.houseId+"/"+info.reason;
           console.log(url);
           this.dialogFormVisible = true;
           axios.get(url, {}).then(res => {
-                this.regTitle = "发布结果";
+                this.regTitle = "毁约结果";
                 console.log("rtn", res.data);
-                if(res.data.status) {
-                    this.newMap.set(this.houseInfo.addr, res.data.data); 
-                    this.form.data = res.data.data.trans;
-                    this.form.houseId = res.data.data.houseId;
+                if(res.data.status) { 
+                    this.form.data = res.data.data;
                     this.form.status = "成功";               
                 } else {
                     this.form.status = "失败"; 
@@ -160,8 +126,7 @@ export default {
                 this.canClose = true;
           }).catch(err => {
               this.form = err.data;
-              this.regTitle = "发布结果";
-              this.isSus = false;
+              this.regTitle = "毁约结果";
               this.canClose = true;
           });
       },
@@ -170,66 +135,38 @@ export default {
           let reg =/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/;
           let guidReg = /^\d{12,64}$/;
           let addrReg = /^0x[0-9a-fA-F]{40}$/;
-          if (errorItem === 'houseAddr') {
+          if (errorItem === 'guid') {
               if (inputContent === '') {
-                  this.houseInfo.houseAddrErr = '房屋地址不能为空！';
-                  flag = false;
-              } else{
-                  this.houseInfo.houseAddrErr = '';
-              }
-          } else if (errorItem === 'describe') {
-              if (inputContent === '') {
-                  this.houseInfo.describeErr = '房屋描述不能为空！';
+                  this.houseInfo.houseIdErr = '房屋链上ID不能为空！';
                   flag = false;
               }  else{
-                  this.houseInfo.describeErr = '';
+                  this.houseInfo.houseIdErr = '';
+              }
+          } else if (errorItem === 'amount') {
+              if (inputContent === '') {
+                  this.houseInfo.amountErr = '数量不能为空';
+                  flag = false;
+              } else{
+                  this.houseInfo.userIdErr = '';
               }
           } else if(errorItem === 'addr') {
               if (inputContent === '') {
-                  this.houseInfo.addrErr = '地址不能为空！';
+                  this.houseInfo.addrErr = '地址不能为空';
                   flag = false;
               } else if (!addrReg.test(inputContent)) {
-                  this.houseInfo.addrErr = '地址不符合规则！';
+                  this.houseInfo.addrErr = '地址不符合规则';
                   flag = false;
               } else {
                   this.houseInfo.addrErr = '';
               }
           } else if(errorItem === 'prikey') {
               if (inputContent === '') {
-                  this.houseInfo.prikeyErr = '私钥不能为空！';
+                  this.houseInfo.prikeyErr = '私钥不能为空';
                   flag = false;
               } else {
                   this.houseInfo.prikeyErr = '';
               }
-          } else if (errorItem === 'info') {
-             if (inputContent === '') {
-                  this.houseInfo.infoErr = '房东信息不能为空！';
-                  flag = false;
-              }  else{
-                  this.houseInfo.infoErr = '';
-              }
-          } else if (errorItem === 'tenancy') {
-             if (inputContent === '') {
-                  this.houseInfo.rentalErr = '租期不能为空！';
-                  flag = false;
-              }  else{
-                  this.houseInfo.rentalErr = '';
-              }
-          } else if (errorItem === 'rental') {
-             if (inputContent === '') {
-                  this.houseInfo.rentalErr = '租金不能为空！';
-                  flag = false;
-              }  else{
-                  this.houseInfo.rentalErr = '';
-              }
-          } else if (errorItem === 'hopeYou') {
-             if (inputContent === '') {
-                  this.houseInfo.hopeYouErr = '对你的期待不能为空！';
-                  flag = false;
-              } else{
-                  this.houseInfo.hopeYouErr = '';
-              }
-          }
+          } 
           //对于按钮的状态进行修改
           if (flag) {
               this.houseInfo.beDisabled = false;
@@ -252,7 +189,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 75%;
+      top: 60%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

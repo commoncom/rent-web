@@ -36,5 +36,8 @@ export default [{
     }, {
         path: '/withdraw',
         component: r => require.ensure([], () => r(require('../page/withdraw')), 'withdraw')
-    }]
+    }, {
+        path: '/breakcontract',
+        component: r => require.ensure([], () => r(require('../page/breakcontract')), 'breakcontract')
+    }] 
 }]

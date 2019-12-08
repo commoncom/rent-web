@@ -24,80 +24,39 @@
                               </el-form-item>
                       </el-form>
                   </el-col>
-                    <el-table
-                    :data="tableData"
-                    @expand='expand'
-                    :expand-row-keys='expendRow'
-                    :row-key="row => row.index"
-                    style="width: 100%">
-                    <el-table-column type="expand">
-                      <template slot-scope="props">
-                        <el-form label-position="left" inline class="demo-table-expand">
-                          <el-form-item label="房屋地址">
-                            <span>{{props.row.houseAddr}}</span>
-                          </el-form-item>
-                          <el-form-item label="房屋交易Hash">
-                            <span>{{props.row.txHash}}</span>
-                          </el-form-item>
-                          <el-form-item label="房东信息">
-                            <span>{{props.row.info}}</span>
-                          </el-form-item>
-                          <el-form-item label="期待你的样子">
-                            <span>{{props.row.hopeYou}}</span>
-                          </el-form-item>
-                          <el-form-item label="租期">
-                            <span>{{props.row.tenancy}}</span>
-                          </el-form-item>
-                          <el-form-item label="租金">
-                            <span>{{props.row.rental}}</span>
-                          </el-form-item>
-                          <el-form-item label="房东地址">
-                            <span>{{props.row.userAddr}}</span>
-                          </el-form-item>
-                           <el-form-item label="房屋描述">
-                            <span>{{props.row.describe}}</span>
-                          </el-form-item>
-                          <el-form-item label="房屋评级等级">
-                            <span>{{props.row.huxing}}</span>
-                          </el-form-item>
-                          <el-form-item>
-                            <el-button
-                                size="medium"
-                                @click="jumpDetail(props.row)">预定</el-button>
-                          </el-form-item>
-                        </el-form>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="房屋链上ID"
-                      prop="houseId">
-                    </el-table-column>
-                    <el-table-column
-                      label="房屋地址"
-                      prop="addr">
-                    </el-table-column>
-                    <el-table-column
-                      label="租金"
-                      prop="rental">
-                    </el-table-column>
-                    <el-table-column label="房屋描述" width="160" prop="describe">
-                    </el-table-column>
-                </el-table> 
+                    <el-table :data="tableData" >
+                        <el-table-column
+                          label="房屋链上ID"
+                          prop="houseId">
+                        </el-table-column>
+                        <el-table-column
+                          label="房屋地址"
+                          prop="addr">
+                        </el-table-column>
+                        <el-table-column
+                          label="惩罚地址"
+                          prop="punishAddr">
+                        </el-table-column>
+                        <el-table-column label="房屋描述" width="160" prop="punishAmount">
+                        </el-table-column>
+                        <el-table-column label="操作">
+                          <template slot-scope="scope">
+                            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                          </template>
+                        </el-table-column>
+                   </el-table> 
             </div>
           </div>
-           <el-dialog title="预定房租" :visible.sync="dialogFormVisible">
+           <el-dialog title="审核" :visible.sync="dialogFormVisible">
                 <el-form :model="form">
                   <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
                     <el-input v-model="form.houseId"   autocomplete="off"></el-input>
                   </el-form-item>
-                  <el-form-item label="租金" :label-width="formLabelWidth">
+                  <el-form-item label="惩罚数量" :label-width="formLabelWidth">
                     <el-input v-model="form.rental"  autocomplete="off"></el-input>
                   </el-form-item>
-                  <el-form-item label="地址" :label-width="formLabelWidth">
+                  <el-form-item label="惩罚地址" :label-width="formLabelWidth">
                     <el-input v-model="form.addr"   autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="私钥" :label-width="formLabelWidth">
-                    <el-input v-model="form.prikey" autocomplete="off"></el-input>
                   </el-form-item>
               </el-form>
               <div slot="footer" class="dialog-footer">
@@ -192,7 +151,6 @@ export default {
               this.getHouseData();
           } catch(err){
               console.log('获取数据失败', err);
-              // this.$notify({title : '提示信息',message : "获取数据失败!", type:'error'});
           }
       },
       closeBut() {
@@ -253,22 +211,16 @@ export default {
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
                 if(res.data.status) {
-                    this.dialogForm.status = "成功";
-                    this.dialogForm.data = res.data.data; 
-                    this.dialogFormVisible = false;
-                    this.dialogVisible = false;  
+                    console.log(res.data);       
                 } else {
-                    this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;
                     console.log(res.data);            
                 }
           }).catch(err => {
-              console.log("get house error", err);
-              this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;
+              console.log("bind error", err);
+              this.$notify({title : '提示信息', message : "请检查网络状况!", type:'error'});
           });
       },
-      jumpDetail(row) {
+      checkBreak(row) {
          console.log(row);
          this.dialogFormVisible = true;
          this.form.houseId = row.houseId;

@@ -151,6 +151,7 @@ export default {
       },
       inputBlur:function(errorItem,inputContent){
           let flag = true;
+          let addrReg = /^0x[0-9a-fA-F]{40}$/;
           if (errorItem === 'name') {
               if (inputContent === '') {
                   this.userInfo.nameErr = '用户名不能为空';
@@ -162,7 +163,10 @@ export default {
               if (inputContent === '') {
                   this.userInfo.addrErr = '地址不能为空';
                   flag = false;
-              }else{
+              } else if (!addrReg.test(inputContent)) {
+                  this.houseInfo.addrErr = '地址不符合规则';
+                  flag = false;
+              } else{
                   this.userInfo.addrErr = '';
 
               }
@@ -176,6 +180,9 @@ export default {
           } else if(errorItem === 'prikey') {
               if (inputContent === '') {
                   this.userInfo.prikeyErr = '私钥不能为空';
+                  flag = false;
+              } else if (!inputContent.startsWith('0x')) {
+                  this.userInfo.prikeyErr = '私钥没有0x开头，需要补上0x!';
                   flag = false;
               } else {
                   this.userInfo.prikeyErr = '';
