@@ -6,23 +6,29 @@
           <div class="login">
              <div class="login">
               <div class="logo">用户链上活动状态</div>
+              <el-form :inline="true" :model="filters">
+                  <el-form-item>
+                   <el-input type="text" id="addr" :readonly="true" placeholder="地址" style="width:260px;" v-model="filters.addr" @blur="inputBlur('addr', filters.addr)"></el-input>
+                 </el-form-item>
+                 <el-form-item >
+                    <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
+                 </el-form-item>
+              </el-form>  
               <el-form>
-                 <el-form-item label="地址">
-                    <el-input type="text" id="addr" :readonly="true" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
+                <el-form-item>
+                    <span style="font-size:16px;">是否已创建</span>
+                    <span style="font-size:16px;">是否已创建</span>
+                    <el-tag type="success" effect="dark" style="margin-left:40px;width:80px;">{{userInfo.isCreate}}</el-tag>
                 </el-form-item>
-                <el-form-item label="是否已创建">
-                    <span></span>
-                    <el-tag type="success" effect="dark" style="width:80px;">{{userInfo.isCreate}}</el-tag>
-                </el-form-item>
-                <el-form-item label="是否已登录">
-                    <span></span>
-                    <el-tag type="success" effect="dark" style="width:80px;">{{userInfo.isLogin}}</el-tag>
+                <el-form-item>
+                    <span style="font-size:16px;">是否已登录</span>
+                    <el-tag type="success" effect="dark" style="margin-left:40px;width:80px;">{{userInfo.isLogin}}</el-tag>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="goCreate()"  v-bind:disabled="userInfo.noCreate">注册</el-button>
                     <el-button type="primary" @click="goLogin()" v-bind:disabled="userInfo.noLogin">登录</el-button>
                 </el-form-item>
-              </el-form>     
+              </el-form> 
             </div>
           </div>
         </div>
@@ -38,7 +44,8 @@ export default {
   		itemcontainer
   	},
     created(){
-       this.initData();
+       let addr = "0x"; // 后续通过session获得
+       this.initData(addr);
     },
     data () {
       return {
@@ -48,6 +55,9 @@ export default {
             isLogin: '',
             noCreate: false,
             noLogin: false
+        },
+        filters: {
+           addr: ''
         },
         formLabelWidth: '80px',
       }
@@ -59,11 +69,10 @@ export default {
       goLogin() {
          this.$router.push({path: 'login'}); 
       },
-      initData(){
-          let addr = this.userInfo.addr;
-          if (!addr || addr == '') {
-               addr = "0x";
-          }
+      search() {
+          this.initData(this.filters.addr);
+      },
+      initData(addr){
           let url = UrlConfig.serverUrl+"/getstatus/"+addr;
           console.log(url);
           axios.get(url, {}).then(res => {
