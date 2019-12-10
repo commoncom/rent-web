@@ -7,16 +7,17 @@
                     <template slot="title">
                       <span class="el-icon-user">登录注册</span>
                     </template>
-                    <el-menu-item-group style="margin-left:40px;">
+                    <el-menu-item-group style="margin-left:30px;">
                       <el-menu-item index="/">登录</el-menu-item>
                       <el-menu-item index="/register">注册</el-menu-item>
+                      <el-menu-item index="/register/getstatus">登录状态</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="2">
                     <template slot="title">
                       <span class="el-icon-menu">房源管理</span>
                     </template>
-                    <el-menu-item-group style="margin-left:40px;">
+                    <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/release">发布房源</el-menu-item>
                        <el-menu-item index="/gethouse">获取房源</el-menu-item>
                        <el-menu-item index="/breakcontract">毁约房源</el-menu-item>
@@ -26,7 +27,7 @@
                     <template slot="title">
                       <span class="el-icon-tickets">认证管理</span>
                     </template>
-                    <el-menu-item-group style="margin-left:40px;">
+                    <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/auth">房屋认证</el-menu-item>
                        <el-menu-item index="/auth/getauth">获取认证</el-menu-item>
                     </el-menu-item-group>
@@ -35,7 +36,7 @@
                     <template slot="title">
                       <span class="el-icon-s-comment">评论管理</span>
                     </template>
-                    <el-menu-item-group style="margin-left:40px;">
+                    <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/auth">评论房源</el-menu-item>
                        <el-menu-item index="/auth/getauth">获取评论</el-menu-item>
                     </el-menu-item-group>
@@ -44,7 +45,7 @@
                     <template slot="title">
                       <span class="el-icon-coin">通证管理</span>
                     </template>
-                    <el-menu-item-group style="margin-left:40px;">
+                    <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/auth">转账</el-menu-item>
                        <el-menu-item index="/auth/getauth">余额</el-menu-item>
                     </el-menu-item-group>
@@ -111,7 +112,7 @@ export default {
     /* padding-top: 10px; */
     background-color: #fff;
     z-index: 1000;
-    /* padding: 0 32px 0 40px; */
+    /* padding: 0 32px 0 30px; */
     overflow: hidden;
     -webkit-transition: all ease-in-out 1s;
     -o-transition: all ease-in-out 1s;
@@ -129,7 +130,7 @@ export default {
     line-height: 60px;
     background-color: #fff;
     z-index: 1000;
-    padding: 0 32px 0 40px;
+    padding: 0 32px 0 30px;
     overflow: hidden;
     -webkit-transition: all ease-in-out 1s;
     -o-transition: all ease-in-out 1s;
@@ -307,7 +308,7 @@ export default {
 .idsvs.svg-icon {
     width: 5em !important;
     height: 4em !important;
-    transform: translate(40px, -10px)
+    transform: translate(30px, -10px)
 }
 
 .title {
@@ -317,7 +318,7 @@ export default {
     /* text-overflow: ellipsis; */
     white-space: nowrap;
     /* font-size: 1.5em; */
-    font-size: 40px;
+    font-size: 30px;
     color: rgb(163, 177, 191);
     font-weight: bold;
     text-decoration: none;

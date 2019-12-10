@@ -82,7 +82,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 60%;
+      top: 39%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

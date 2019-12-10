@@ -16,6 +16,9 @@ export default [{
         path: '/register',
         component: r => require.ensure([], () => r(require('../page/register')), 'register')
     }, {
+        path: '/register/getstatus',
+        component: r => require.ensure([], () => r(require('../page/register/getstauts.vue')), 'getstatus')
+    }, {
         path: '/getaddr',
         component: r => require.ensure([], () => r(require('../page/getaddr')), 'getaddr')
     }, {
