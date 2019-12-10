@@ -28,3 +28,11 @@ export const APPROVE_STATUS = {
 	1: "已授权",
 	2: "拒绝授权"
 }
+
+export const COMMENT_REMARK = {
+	0: 'R1',
+	1: 'R2',
+	2: 'R3',
+	3: 'R4',
+	4: 'R5'
+}

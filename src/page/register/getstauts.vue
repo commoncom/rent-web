@@ -8,15 +8,19 @@
               <div class="logo">用户链上活动状态</div>
               <el-form>
                  <el-form-item label="地址">
-                    <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
+                    <el-input type="text" id="addr" :readonly="true" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
                 </el-form-item>
                 <el-form-item label="是否已创建">
-                    <el-input type="text" id="isCreate" v-model="userInfo.isCreate" @blur="inputBlur('isCreate',userInfo.isCreate)"></el-input>
-                    <el-button type="primary" @click="goCreate()" v-bind:disabled="userInfo.noCreate">注册</el-button>
+                    <span></span>
+                    <el-tag type="success" effect="dark" style="width:80px;">{{userInfo.isCreate}}</el-tag>
                 </el-form-item>
                 <el-form-item label="是否已登录">
-                    <el-input type="text" id="isLogin" v-model="userInfo.isLogin" @blur="inputBlur('isLogin',userInfo.isLogin)"></el-input>
-                    <el-button type="primary" @click="goLogin()" v-bind:disabled="userInfo.noLogin">注册</el-button>
+                    <span></span>
+                    <el-tag type="success" effect="dark" style="width:80px;">{{userInfo.isLogin}}</el-tag>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="goCreate()"  v-bind:disabled="userInfo.noCreate">注册</el-button>
+                    <el-button type="primary" @click="goLogin()" v-bind:disabled="userInfo.noLogin">登录</el-button>
                 </el-form-item>
               </el-form>     
             </div>
@@ -57,15 +61,52 @@ export default {
       },
       initData(){
           let addr = this.userInfo.addr;
+          if (!addr || addr == '') {
+               addr = "0x";
+          }
           let url = UrlConfig.serverUrl+"/getstatus/"+addr;
           console.log(url);
           axios.get(url, {}).then(res => {
-                this.userInfo.noCreate = res.data.createStatus;
-                this.userInfo.noLogin = res.data.loginStatus;  
+                console.log(res.data);
+                if (res.data.status) {
+                  let tempStatus = parseInt(res.data.data);
+                  if (tempStatus == 0) { // 只绑定
+                      this.userInfo.noCreate = true;
+                      this.userInfo.isCreate = "否"
+                      this.userInfo.isLogin = "否"
+                  } else if (tempStatus == 1) { // 已创建
+                      this.userInfo.noLogin = true;
+                      this.userInfo.isCreate = "是";
+                      this.userInfo.isLogin = "否";
+                  } else {
+                      this.userInfo.isCreate = "是";
+                      this.userInfo.isLogin = "是";
+                  }
+                } 
           }).catch(err => {
               console.log("init data error", err);
               this.$notify({title : '提示信息',message : '网络异常！', type : 'error'});
           });
+      },
+      inputBlur:function(errorItem,inputContent){
+          if(errorItem === 'addr') {
+              if (inputContent === '') {
+                  this.userInfo.addrErr = '地址不能为空';
+                  flag = false;
+              } else if (!addrReg.test(inputContent)) {
+                  this.houseInfo.addrErr = '请输入正确的地址！';
+                  flag = false;
+              } else{
+                  this.userInfo.addrErr = '';
+
+              }
+          } 
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.userInfo.beDisabled = false;
+          }else{
+              this.userInfo.beDisabled = true;
+          }
       },
   },
   mounted (){

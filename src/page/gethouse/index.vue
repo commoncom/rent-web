@@ -3,9 +3,8 @@
         <itemcontainer father-component="home"></itemcontainer>
         <!--发布房源-->
         <div id="bg" class="bg">
-          <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋浏览</div>
+                  <div class="logo moveCenter">欢迎来到房屋浏览</div>
                     <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
                       <el-form :inline="true" :model="filters">
                               <el-form-item :span="6">
@@ -24,7 +23,7 @@
                               </el-form-item>
                       </el-form>
                   </el-col>
-                    <el-table
+                   <el-table
                     :data="tableData"
                     @expand='expand'
                     :expand-row-keys='expendRow'
@@ -105,7 +104,10 @@
                     </el-table-column>
                     <el-table-column label="房屋描述" width="160" prop="describe">
                     </el-table-column>
-                    <el-table-column label="房屋评价等级" width="80" prop="huxing">
+                    <el-table-column label="房屋评价等级" width="80"> 
+                       <template slot-scope="scope">
+                          {{remarks[scope.row.huxing]}}
+                        </template>
                     </el-table-column>
                 </el-table> 
             </div>
@@ -145,14 +147,13 @@
               <el-button type="primary" @click="closeBut">确 定</el-button>
             </div>
           </el-dialog>
-        </div>
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig, OPTION_TYPE} from 'src/common/js/globe';
+import {UrlConfig, OPTION_TYPE, COMMENT_REMARK} from 'src/common/js/globe';
 export default {
     name: 'gethouse',
     components: {
@@ -203,6 +204,7 @@ export default {
         currentPage: 1,
         expendRow: [],
         options: OPTION_TYPE,
+        remarks: COMMENT_REMARK,
         filters: {
             houseId: '',
             type: '0'
@@ -377,7 +379,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 30%;
+      top: 20%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
@@ -394,6 +396,9 @@ export default {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
       font-size: 30px;
+    }
+    .moveCenter {
+       margin-left: 250px;
     }
     .widthContrl {
        width: 400px;

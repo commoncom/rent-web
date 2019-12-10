@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋浏览</div>
+              <div class="logo moveCenter">欢迎来到授权查看认证</div>
                     <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
                       <el-form :inline="true" :model="filters">
                               <el-form-item :span="6">
@@ -245,7 +245,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 30%;
+      top: 26%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
@@ -262,6 +262,9 @@ export default {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
       font-size: 30px;
+    }
+    .moveCenter {
+       margin-left: 250px;
     }
     .widthContrl {
        width: 400px;
