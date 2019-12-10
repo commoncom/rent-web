@@ -24,10 +24,10 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                      label="请求授权方地址" width="200"
+                      label="请求授权方地址" width="240"
                       prop="leaserAddr">
                     </el-table-column> 
-                    <el-table-column label="房东地址" width="200" prop="landlordAddr">
+                    <el-table-column label="房东地址" width="222" prop="landlordAddr">
                     </el-table-column>
                     <el-table-column label="授权访问状态" width="80">
                        <template slot-scope="scope">
@@ -252,7 +252,7 @@ export default {
       -ms-transform: translate(-50%, -50%);
       -o-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
-      width: 900px;
+      width: 950px;
     }
     .login-btn {
       font-size:20px;

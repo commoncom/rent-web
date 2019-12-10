@@ -96,7 +96,7 @@ export default {
 	.top_tips{
 		position: absolute;
 		height: 7.35rem;
-		width: 3.25rem;
+		width: 0;
 		top: -1.3rem;
 		right: 1.6rem;
 		background-size: 100% 100%;
