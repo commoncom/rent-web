@@ -16,26 +16,29 @@
                                   <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
                               </el-form-item>
                       </el-form>
-                  </el-col>
+                    </el-col>
                     <el-table :data="tableData">
-                    <el-table-column
-                      label="房屋链上ID">  
+                    <el-table-column label="房屋链上ID" width="242">  
                         <template slot-scope="scope">
                           {{scope.row.houseId}}
                         </template>
                     </el-table-column>
                     <el-table-column
-                      label="请求授权方地址"
+                      label="请求授权方地址" width="200"
                       prop="leaserAddr">
+                    </el-table-column> 
+                    <el-table-column label="房东地址" width="200" prop="landlordAddr">
                     </el-table-column>
-                    <el-table-column label="房东地址" width="160" prop="landlordAddr">
-                    </el-table-column>
-                    <el-table-column label="授权访问状态" width="80" prop="state">
+                    <el-table-column label="授权访问状态" width="80">
+                       <template slot-scope="scope">
+                          {{approveList[scope.row.state]}}
+                        </template>
                     </el-table-column>
                     <el-table-column label="操作" width="160">
                       <template slot-scope="scope">
                         <el-button
-                          size="small" type="primary "
+                          size="small"
+                          type="danger"
                           @click="approve(scope.row)">授权</el-button>
                         <el-button
                           size="small"
@@ -88,7 +91,7 @@
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig} from 'src/common/js/globe';
+import {UrlConfig, APPROVE_STATUS} from 'src/common/js/globe';
 export default {
     name: 'gethouse',
     components: {
@@ -116,7 +119,8 @@ export default {
            data: '',
            err: ''
         },
-        regTitle: '授权结果',
+        approveList: APPROVE_STATUS,
+        regTitle: '授权中，请等待...',
         dialogFormVisible: false,
         dialogVisible: false,
         isSus: false,
@@ -126,8 +130,7 @@ export default {
         currentPage: 1,
         expendRow: [],
         filters: {
-            houseId: '',
-            type: '0'
+            houseId: ''
         }
       }
    },
@@ -159,9 +162,8 @@ export default {
               houseId = '0x';
           }
           console.log("house hash", this.filters.houseId)
-          let url = UrlConfig.serverUrl+"/gethouse/"+houseId+"/"+this.filters.type;
+          let url = UrlConfig.serverUrl+"/getauth/"+houseId;
           console.log(url);
-          this.btnStatus = this.filters.type;
           axios.get(url, {}).then(res => {
                 if(res.data.status) {
                     let authInfo = res.data.data; 
@@ -197,8 +199,9 @@ export default {
       comfirmSub() {
           console.log("comfirm Sub", this.form);
           this.dialogVisible = true;
-          let url = UrlConfig.serverUrl+"/requestauth/"+this.form.houseId+"/"+this.form.leaserAddr+"/"+this.form.landlordAddr+"/"+this.form.prikey;
+          let url = UrlConfig.serverUrl+"/approve/"+this.form.houseId+"/"+this.form.leaserAddr+"/"+this.form.landlordAddr+"/"+this.form.prikey;
           console.log(url);
+          this.regTitle = "授权结果";
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
                 if(res.data.status) {
@@ -214,20 +217,18 @@ export default {
           }).catch(err => {
               console.log("get house error", err);
               this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;
+              this.dialogForm.err = res.data.err;
           });
       },
       approve(row) {
           console.log("approve row", row);
+          this.dialogFormVisible = true;
+          this.dialogVisible = false;
       },
       rejectApprove(row) {
           console.log("rejectApprove row", row);
-      },
-      jumpDetail(row) {
-         console.log(row);
-         this.dialogFormVisible = true;
-         this.form.houseId = row.houseId;
-         this.form.rental = row.rental;
+          this.dialogFormVisible = false;
+          this.dialogVisible = true;
       },
   },
   mounted (){
