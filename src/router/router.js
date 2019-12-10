@@ -41,9 +41,6 @@ export default [{
         path: '/gethouse',
         component: r => require.ensure([], () => r(require('../page/gethouse')), 'gethouse')
     }, {
-        path: '/getdetail',
-        component: r => require.ensure([], () => r(require('../page/getdetail')), 'getdetail')
-    }, {
         path: '/signagree',
         component: r => require.ensure([], () => r(require('../page/signagree')), 'signagree')
     }, {

@@ -9,7 +9,7 @@
                     <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
                       <el-form :inline="true" :model="filters">
                               <el-form-item :span="6">
-                                  <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                                  <el-input type="text" style="width:400px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
                               </el-form-item>
                               <!-- 设置查询Form-->
                               <el-form-item >
@@ -17,8 +17,7 @@
                               </el-form-item>
                       </el-form>
                   </el-col>
-                    <el-table
-                    :data="tableData">
+                    <el-table :data="tableData">
                     <el-table-column
                       label="房屋链上ID">  
                         <template slot-scope="scope">
@@ -28,10 +27,21 @@
                     <el-table-column
                       label="请求授权方地址"
                       prop="leaserAddr">
-                     <el-table-column label="房东地址" width="160" prop="landlordAddr">
                     </el-table-column>
+                    <el-table-column label="房东地址" width="160" prop="landlordAddr">
                     </el-table-column>
-                    <el-table-column label="授权访问状态" width="160" prop="state">
+                    <el-table-column label="授权访问状态" width="80" prop="state">
+                    </el-table-column>
+                    <el-table-column label="操作" width="160">
+                      <template slot-scope="scope">
+                        <el-button
+                          size="small" type="primary "
+                          @click="approve(scope.row)">授权</el-button>
+                        <el-button
+                          size="small"
+                          type="danger"
+                          @click="rejectApprove(scope.row)">拒绝</el-button>
+                      </template>
                     </el-table-column>
                 </el-table> 
             </div>
@@ -155,7 +165,7 @@ export default {
           axios.get(url, {}).then(res => {
                 if(res.data.status) {
                     let authInfo = res.data.data; 
-                    console.log(authInfo);
+                    console.log(authInfo);  
                     authInfo.forEach((item, index) => {
                         const tableData = {};
                         tableData.houseId = item.house_id;
@@ -207,6 +217,12 @@ export default {
                     this.dialogForm.err = res.data.err;
           });
       },
+      approve(row) {
+          console.log("approve row", row);
+      },
+      rejectApprove(row) {
+          console.log("rejectApprove row", row);
+      },
       jumpDetail(row) {
          console.log(row);
          this.dialogFormVisible = true;
@@ -228,14 +244,14 @@ export default {
     }
     .login {
       position:absolute;
-      top: 50%;
+      top: 30%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
       -o-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
-      width: 800px;
+      width: 900px;
     }
     .login-btn {
       font-size:20px;

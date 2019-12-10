@@ -22,3 +22,9 @@ export const OPTION_TYPE = [{
 		label: '取消租赁'
 	}
 ];
+
+export const APPROVE_STATUS = {
+	0: "未授权",
+	1: "已授权",
+	2: "拒绝授权"
+}

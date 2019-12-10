@@ -62,28 +62,28 @@
                           </el-form-item>
                           <el-form-item>
                             <el-button v-if="btnStatus == 0"
-                                size="medium"
-                                @click="jumpDetail(props.row)">预定</el-button>
+                                size="small" type="primary"
+                                @click="orderHouse(props.row)">预定房屋</el-button>
                             <el-button v-else-if="btnStatus == 1"
-                                size="medium"
+                                size="small" type="primary"
                                 @click="inspectBreak(props.row)">签订合同</el-button>
                             <el-button v-else-if="btnStatus == 2"
-                                size="medium"
+                                size="small" type="success "
                                 @click="achieveRent(props.row)">完成租赁</el-button>
                             <el-button v-else-if="btnStatus == 4"
-                                size="medium"
-                                @click="inspectBreak(props.row)">审核</el-button>
+                                size="small" type="warning "
+                                @click="inspectBreak(props.row)">审核毁约</el-button>
                             <el-button v-else
-                                size="medium"
+                                size="small" type="primary"
                                 @click="withdrawRent(props.row)">退回押金</el-button>
                             <el-button v-if="btnStatus != 0"
-                                size="medium"
+                                size="small" type="danger"
                                 @click="breakContract(props.row)">毁约合同</el-button>
-                            <el-button v-if="btnStatus != 0"
-                                size="medium"
-                                @click="lookAuth(props.row)">请求查看认证信息</el-button>
-                            <el-button v-if="btnStatus == 0"
-                                size="medium"
+                            <el-button v-if="btnStatus != 0" type="primary"
+                                size="small"
+                                @click="lookAuth(props.row)">查看认证</el-button>
+                            <el-button v-if="btnStatus == 0" type="primary"
+                                size="small"
                                 @click="cacle(props.row)">撤销租赁</el-button>
                           </el-form-item>
                         </el-form>
@@ -105,7 +105,7 @@
                     </el-table-column>
                     <el-table-column label="房屋描述" width="160" prop="describe">
                     </el-table-column>
-                    <el-table-column label="房屋评价等级" width="160" prop="huxing">
+                    <el-table-column label="房屋评价等级" width="80" prop="huxing">
                     </el-table-column>
                 </el-table> 
             </div>
@@ -302,7 +302,7 @@ export default {
                     this.dialogForm.err = res.data.err;
           });
       },
-      jumpDetail(row) {
+      orderHouse(row) {
          console.log(row);
          this.dialogFormVisible = true;
          this.form.houseId = row.houseId;
@@ -325,6 +325,13 @@ export default {
       },
       lookAuth(row) {
          console.log("look auth", row);
+         this.$router.push({
+            path: 'auth/getauth',
+            params: {
+              key: 'key',
+              msgKey: row
+            }
+         });
       },
       expand(row, status){
         if (status) {
