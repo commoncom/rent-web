@@ -16,7 +16,7 @@
 ## 项目运行（nodejs 6.0+）
 ``` bash
 # 克隆到本地
-git clone https://github.com/bailicangdu/vue2-happyfri.git
+git clone hhttps://github.com/commoncom/rent-web.git
 
 # 进入文件夹
 cd vue2-happyfri
