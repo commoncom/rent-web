@@ -8,7 +8,8 @@
               <div class="logo">用户链上活动状态</div>
               <el-form :inline="true" :model="filters">
                   <el-form-item>
-                   <el-input type="text" id="addr" :readonly="true" placeholder="地址" style="width:260px;" v-model="filters.addr" @blur="inputBlur('addr', filters.addr)"></el-input>
+                   <el-input type="text" id="addr" placeholder="地址" style="width:260px;" v-model="filters.addr" @blur="inputBlur('addr', filters.addr)"></el-input>
+                   <p>{{filters.addrErr}}</p>
                  </el-form-item>
                  <el-form-item >
                     <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
@@ -16,7 +17,6 @@
               </el-form>  
               <el-form>
                 <el-form-item>
-                    <span style="font-size:16px;">是否已创建</span>
                     <span style="font-size:16px;">是否已创建</span>
                     <el-tag type="success" effect="dark" style="margin-left:40px;width:80px;">{{userInfo.isCreate}}</el-tag>
                 </el-form-item>
@@ -57,7 +57,8 @@ export default {
             noLogin: false
         },
         filters: {
-           addr: ''
+           addr: '',
+           addrErr: ''
         },
         formLabelWidth: '80px',
       }
@@ -70,7 +71,9 @@ export default {
          this.$router.push({path: 'login'}); 
       },
       search() {
-          this.initData(this.filters.addr);
+          if (this.userInfo.beDisabled) {
+              this.initData(this.filters.addr);
+          }
       },
       initData(addr){
           let url = UrlConfig.serverUrl+"/getstatus/"+addr;
@@ -98,16 +101,16 @@ export default {
           });
       },
       inputBlur:function(errorItem,inputContent){
+          let flag = true;
           if(errorItem === 'addr') {
               if (inputContent === '') {
-                  this.userInfo.addrErr = '地址不能为空';
+                  this.filters.addrErr = '地址不能为空';
                   flag = false;
               } else if (!addrReg.test(inputContent)) {
-                  this.houseInfo.addrErr = '请输入正确的地址！';
+                  this.filters.addrErr = '请输入正确的地址！';
                   flag = false;
               } else{
-                  this.userInfo.addrErr = '';
-
+                  this.filters.addrErr = '';
               }
           } 
           //对于按钮的状态进行修改
