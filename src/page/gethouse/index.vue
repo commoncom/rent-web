@@ -83,7 +83,7 @@
                                 @click="lookAuth(props.row)">查看认证</el-button>
                             <el-button v-if="btnStatus == 0" type="primary"
                                 size="small"
-                                @click="cacle(props.row)">撤销租赁</el-button>
+                                @click="cancle(props.row)">撤销租赁</el-button>
                           </el-form-item>
                         </el-form>
                       </template>
@@ -164,6 +164,27 @@
                   </el-form-item>
               </el-form>
           </el-dialog>
+          <el-dialog :title="breakTitle" :visible.sync="breakDialogVisible" @close="closeBreak">
+            <el-form :model="breakForm">
+              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
+                <el-input v-model="breakForm.houseId"  autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item  label="原因" :label-width="formLabelWidth">
+                <el-input v-model="breakForm.reason"  id="reason" @blur="inputBlur('reason', breakForm.reason)"  autocomplete="off"></el-input>
+                 {{breakForm.reasonErr}}
+              </el-form-item>
+              <el-form-item  label="地址" :label-width="formLabelWidth">
+                <el-input v-model="breakForm.addr"  :readonly="true" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item  label="私钥" :label-width="formLabelWidth">
+                <el-input v-model="breakForm.prikey" id="prikey" @blur="inputBlur('prikey', breakForm.prikey)"  autocomplete="off"></el-input>
+                {{breakForm.prikeyErr}}
+              </el-form-item>
+              <el-form-item>
+                 <el-button type="primary" @click="subBreak" v-bind:disabled="breakForm.beDisabled" style="float:right;">确 定</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
     </div>
 </template>
 <script>
@@ -218,10 +239,21 @@ export default {
            addrErr: '',
            beDisabled: true
         },
+        breakForm: {
+           houseId: '',
+           reason: '',
+           addr: '',
+           prikey: '',
+           reasonErr: '',
+           prikeyErr: '',
+           beDisabled: true
+        },
         regTitle: '预约结果',
+        breakTitle: '',
         dialogFormVisible: false,
         dialogVisible: false,
         authVisible: false,
+        breakDialogVisible: false,
         isSus: false,
         btnStatus: 0,
         formLabelWidth: '100px',
@@ -256,6 +288,9 @@ export default {
       },
       closeBut() {
          this.dialogVisible = false;
+      },
+      closeBreak() {
+         this.breakForm = {};
       },
       getHouseData() {
           this.tableData = [];
@@ -335,11 +370,73 @@ export default {
          this.form.houseId = row.houseId;
          this.form.rental = row.rental;
       },
+      subBreak() {
+          let url = UrlConfig.serverUrl+"/break/"+this.breakForm.houseId+"/"+this.breakForm.reason+"/"+this.breakForm.addr+"/"+this.breakForm.prikey;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status == 200) {
+                    this.$notify({
+                        message: "撤销房屋发布成功！",
+                        type: 'success',
+                        duration: 2000,
+                        onClose: action => {
+                          this.breakDialogVisible = false;
+                          this.breakForm = {};
+                          this.getHouseData();
+                        }
+                    });
+                } else if (res.data.status == 201) {
+                    this.$notify({
+                        message: "撤销房屋发布失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.breakDialogVisible = false;
+                          this.breakForm = {};
+                        }
+                    });
+                } else {
+                    this.$notify({
+                      message: "撤销房屋发布失败："+res.data.err,
+                      type: 'warning',
+                      duration: 2000,
+                      onClose: action => {
+                         this.breakDialogVisible = false;
+                         this.breakForm = {};
+                      }
+                    });          
+                }
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                message: "撤销房屋发布失败："+err.message,
+                type: 'warning',
+                duration: 2000,
+                onClose: action => {
+                   this.breakDialogVisible = false;
+                   this.breakForm = {};
+                }
+              }); 
+          });
+      },
       cancle(row) {
          console.log("cancle", row);
+         if (row) {
+            this.breakForm.houseId = row.houseId;
+            this.breakForm.addr = row.addr;
+         }
+         this.breakTitle = "撤销发布房屋租赁";
+         this.breakDialogVisible = true;
       },
       breakContract(row) {
-         console.log("break", row);
+          console.log("break", row);
+          if (row) {
+            this.breakForm.houseId = row.houseId;
+            this.breakForm.addr = row.addr;
+         }
+         this.breakTitle = "毁约房屋租赁合同";
+         this.breakDialogVisible = true;
       },
       inspectBreak(row) {
          console.log("inspect", row);
@@ -457,12 +554,28 @@ export default {
               } else {
                   this.authForm.addrErr = '';
               }
+          } else if(errorItem === 'reason') { 
+              if (inputContent === '') {
+                  this.breakForm.reasonErr = '地址不能为空';
+                  flag = false;
+              }  else {
+                  this.breakForm.reasonErr = '';
+              }
+          } else if(errorItem === 'prikey') { 
+              if (inputContent === '') {
+                  this.breakForm.prikeyErr = '私钥不能为空';
+                  flag = false;
+              }  else {
+                  this.breakForm.prikeyErr = '';
+              }
           } 
           //对于按钮的状态进行修改
           if (flag) {
               this.authForm.beDisabled = false;
-          } else{
+              this.breakForm.beDisabled = false;
+          } else {
               this.authForm.beDisabled = true;
+              this.breakForm.beDisabled = true;
           }
       },
   },
