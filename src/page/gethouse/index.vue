@@ -78,7 +78,7 @@
                             <el-button v-if="btnStatus != 0"
                                 size="small" type="danger"
                                 @click="breakContract(props.row)">毁约合同</el-button>
-                            <el-button v-if="btnStatus != 0" type="primary"
+                            <el-button type="primary"
                                 size="small"
                                 @click="lookAuth(props.row)">查看认证</el-button>
                             <el-button v-if="btnStatus == 0" type="primary"
@@ -147,6 +147,23 @@
               <el-button type="primary" @click="closeBut">确 定</el-button>
             </div>
           </el-dialog>
+          <el-dialog title="请求查看认证" top :visible.sync="authVisible">
+                <el-form :model="authForm">
+                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="房东地址" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.landlordAddr" :readyonly="true"  autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="地址" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.addr" id="addr" @blur="inputBlur('addr', authForm.addr)" autocomplete="off"></el-input>
+                    {{authForm.addrErr}}
+                  </el-form-item>
+                  <el-form-item>
+                     <el-button type="primary" @click="requireAuth" v-bind:disabled="authForm.beDisabled" style="float:right;">确 定</el-button>
+                  </el-form-item>
+              </el-form>
+          </el-dialog>
     </div>
 </template>
 <script>
@@ -194,9 +211,17 @@ export default {
            data: '',
            err: ''
         },
+        authForm: {
+           houseId: '',
+           landlordAddr: '',
+           addr: '',
+           addrErr: '',
+           beDisabled: true
+        },
         regTitle: '预约结果',
         dialogFormVisible: false,
         dialogVisible: false,
+        authVisible: false,
         isSus: false,
         btnStatus: 0,
         formLabelWidth: '100px',
@@ -327,13 +352,67 @@ export default {
       },
       lookAuth(row) {
          console.log("look auth", row);
-         this.$router.push({
-            path: 'auth/getauth',
-            params: {
-              key: 'key',
-              msgKey: row
-            }
-         });
+         this.authForm.houseId = row.houseId;
+         this.authForm.landlordAddr = row.addr;
+         this.authVisible = true;
+      },
+      requireAuth(){
+          console.log("requireAuth", this.authForm);
+          let url = UrlConfig.serverUrl+"/requestapprove/"+this.authForm.houseId+"/"+this.authForm.landlordAddr+"/"+this.authForm.addr;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status == 200) {
+                    this.$notify({
+                        message: "已成功请求查看房屋授权",
+                        type: 'success',
+                        duration: 2000,
+                        onClose: action => {
+                            this.$router.push({
+                                path: 'auth/getauth',
+                                params: {
+                                  key: 'key',
+                                  msgKey: this.authForm
+                                }
+                            });
+                        }
+                    });
+                } else if (res.data.status == 201) {
+                    this.$notify({
+                        message: "已请求过查看房屋授权",
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                            this.$router.push({
+                                path: 'auth/getauth',
+                                params: {
+                                  key: 'key',
+                                  msgKey: this.authForm
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    this.$notify({
+                      message: "请求查看授权失败",
+                      type: 'warning',
+                      duration: 2000,
+                      onClose: action => {
+                         this.authForm.addr = "";
+                      }
+                    });          
+                }
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                message: "请求查看授权失败"+err.message,
+                type: 'warning',
+                duration: 2000,
+                onClose: action => {
+                   this.authForm.addr = "";
+                }
+              }); 
+          });
       },
       expand(row, status){
         if (status) {
@@ -363,6 +442,28 @@ export default {
       handleSelect(index){
         this.selectIndex = index;
         this.selectMenu = this.menuOptions[index];
+      },
+      inputBlur:function(errorItem,inputContent){
+          let flag = true;
+          let addrReg = /^0x[0-9a-fA-F]{40}$/;
+          console.log(inputContent, addrReg.test(inputContent));
+          if(errorItem === 'addr') {
+              if (inputContent === '') {
+                  this.authForm.addrErr = '地址不能为空';
+                  flag = false;
+              } else if (!addrReg.test(inputContent)) {
+                  this.authForm.addrErr = '请输入正确的地址！';
+                  flag = false;
+              } else {
+                  this.authForm.addrErr = '';
+              }
+          } 
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.authForm.beDisabled = false;
+          } else{
+              this.authForm.beDisabled = true;
+          }
       },
   },
   mounted (){

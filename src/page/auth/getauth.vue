@@ -9,7 +9,7 @@
                     <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
                       <el-form :inline="true" :model="filters">
                               <el-form-item :span="6">
-                                  <el-input type="text" style="width:400px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                                  <el-input type="text" style="width:400px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',filters.houseId)"></el-input>
                               </el-form-item>
                               <!-- 设置查询Form-->
                               <el-form-item >
@@ -36,11 +36,11 @@
                     </el-table-column>
                     <el-table-column label="操作" width="160">
                       <template slot-scope="scope">
-                        <el-button
+                        <el-button v-if="scope.row.state == 0"
                           size="small"
-                          type="danger"
+                          type="primary" 
                           @click="approve(scope.row)">授权</el-button>
-                        <el-button
+                        <el-button v-if="scope.row.state == 0"
                           size="small"
                           type="danger"
                           @click="rejectApprove(scope.row)">拒绝</el-button>
@@ -49,24 +49,25 @@
                 </el-table> 
             </div>
           </div>
-           <el-dialog title="授权访问" :visible.sync="dialogFormVisible">
+           <el-dialog top title="授权访问" :visible.sync="dialogFormVisible">
                 <el-form :model="form">
                   <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
-                    <el-input v-model="form.houseId"   autocomplete="off"></el-input>
+                    <el-input v-model="form.houseId" :readonly="true"  autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="请求授权方地址" :label-width="formLabelWidth">
-                    <el-input v-model="form.leaserAddr"   autocomplete="off"></el-input>
+                    <el-input v-model="form.leaserAddr"  :readonly="true"  autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="房东地址" :label-width="formLabelWidth">
-                    <el-input v-model="form.landlordAddr"  autocomplete="off"></el-input>
+                    <el-input v-model="form.landlordAddr"  :readonly="true" autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="私钥" :label-width="formLabelWidth">
-                    <el-input v-model="form.prikey" autocomplete="off"></el-input>
+                    <el-input v-model="form.prikey" autocomplete="off" id="prikey" @blur="inputBlur('prikey',form.prikey)"></el-input>
+                    {{form.prikeyErr}}
+                  </el-form-item>
+                   <el-form-item :label-width="formLabelWidth">
+                     <el-button style="float:right;" type="primary" v-bind:disabled="form.beDisabled" @click="comfirmSub">确 定</el-button>
                   </el-form-item>
               </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="comfirmSub">确 定</el-button>
-              </div>
           </el-dialog>
           <el-dialog :title="regTitle" :visible.sync="dialogVisible" top :show-close="false">
             <el-form :model="form">
@@ -102,17 +103,13 @@ export default {
     },
     data () {
       return {
-        houseInfo :{
-            houseId: '',
-            leaserAddr: '',
-            landlordAddr : '',
-            state: ''
-        },
         form: {
            houseId: '',
            leaserAddr: '',
            landlordAddr: '',
-           prikey: ''
+           prikey: '',
+           prikeyErr: '',
+           beDisabled: true
         },
         dialogForm: {
            status: '',
@@ -125,7 +122,7 @@ export default {
         dialogVisible: false,
         isSus: false,
         btnStatus: 0,
-        formLabelWidth: '100px',
+        formLabelWidth: '140px',
         tableData: [],
         currentPage: 1,
         expendRow: [],
@@ -153,6 +150,7 @@ export default {
           }
       },
       closeBut() {
+         this.dialogForm = {};
          this.dialogVisible = false;
       },
       gethAuthData() {
@@ -222,6 +220,9 @@ export default {
       },
       approve(row) {
           console.log("approve row", row);
+          this.form.houseId = row.houseId;
+          this.form.leaserAddr = row.leaserAddr;
+          this.form.landlordAddr = row.landlordAddr;
           this.dialogFormVisible = true;
           this.dialogVisible = false;
       },
@@ -229,6 +230,43 @@ export default {
           console.log("rejectApprove row", row);
           this.dialogFormVisible = false;
           this.dialogVisible = true;
+          let url = UrlConfig.serverUrl+"/reject/"+this.form.houseId+"/"+this.form.leaserAddr;
+          console.log(url);
+          this.regTitle = "授权结果";
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status) {
+                    this.dialogForm.status = "成功";
+                    this.dialogForm.data = res.data.data; 
+                    this.dialogFormVisible = false;
+                    this.dialogVisible = false;  
+                } else {
+                    this.dialogForm.status = "失败";
+                    this.dialogForm.err = res.data.err;
+                    console.log(res.data);            
+                }
+          }).catch(err => {
+              console.log("get house error", err);
+              this.dialogForm.status = "失败";
+              this.dialogForm.err = res.data.err;
+          });
+      },
+      inputBlur:function(errorItem,inputContent){
+          let flag = true;
+          if(errorItem === 'prikey') {
+              if (inputContent === '') {
+                  this.form.prikeyErr = '私钥不能为空！';
+                  flag = false;
+              } else {
+                  this.form.prikeyErr = '';
+              }
+          } 
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.form.beDisabled = false;
+          }else{
+              this.form.beDisabled = true;
+          }
       },
   },
   mounted (){

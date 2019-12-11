@@ -1,7 +1,7 @@
 <template>
 <div class="header">
     <div style="display:inline-block;height:100%;width:118px">
-        <div style="float:left;width:140px">
+        <div style="float:left;width:160px">
             <el-menu :default-active="activeIndex" :active="activeIndex" mode="vertical" router>
                  <el-submenu index="1">
                     <template slot="title">

@@ -187,7 +187,6 @@ export default {
                   flag = false;
               } else{
                   this.userInfo.addrErr = '';
-
               }
           } else if(errorItem === 'pwd') { // /^.*(?=.{6,})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).*$/
               if (inputContent === '') {
