@@ -65,7 +65,7 @@
                                 @click="orderHouse(props.row)">预定房屋</el-button>
                             <el-button v-else-if="btnStatus == 1"
                                 size="small" type="primary"
-                                @click="inspectBreak(props.row)">签订合同</el-button>
+                                @click="signAgree(props.row)">签订合同</el-button>
                             <el-button v-else-if="btnStatus == 2"
                                 size="small" type="success "
                                 @click="achieveRent(props.row)">完成租赁</el-button>
@@ -77,7 +77,7 @@
                                 @click="withdrawRent(props.row)">退回押金</el-button>
                             <el-button v-if="btnStatus != 0"
                                 size="small" type="danger"
-                                @click="breakContract(props.row)">毁约合同</el-button>
+                                @click="breakContract(props.row)">毁约租赁</el-button>
                             <el-button type="primary"
                                 size="small"
                                 @click="lookAuth(props.row)">查看认证</el-button>
@@ -101,7 +101,7 @@
                     <el-table-column
                       label="租金"
                       prop="rental">
-                    </el-table-column>
+                    </el-table-column> 
                     <el-table-column label="房屋描述" width="160" prop="describe">
                     </el-table-column>
                     <el-table-column label="房屋评价等级" width="80"> 
@@ -319,6 +319,7 @@ export default {
                         tableData.userAddr = item.addr;
                         tableData.txHash = item.tx_hash;
                         tableData.index = index;
+                        tableData.houseState = item.house_state;
                         tableData.huxing = item.huxing;
                         this.tableData.push(tableData);
                     })        
@@ -351,17 +352,17 @@ export default {
                 if(res.data.status) {
                     this.dialogForm.status = "成功";
                     this.dialogForm.data = res.data.data; 
-                    this.dialogFormVisible = false;
+                    // this.dialogFormVisible = false; // dialogFormVisible
                     this.dialogVisible = false;  
                 } else {
+                    console.log("request error:", res.data.err);  
                     this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;
-                    console.log(res.data);            
+                    this.dialogForm.err = res.data.err.err;          
                 }
           }).catch(err => {
               console.log("get house error", err);
               this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;
+              this.dialogForm.err = res.data.err;
           });
       },
       orderHouse(row) {
@@ -369,6 +370,10 @@ export default {
          this.dialogFormVisible = true;
          this.form.houseId = row.houseId;
          this.form.rental = row.rental;
+      },
+      signAgree(row) {
+         console.log("sign agree", row);
+         this.$router.push({name: 'signagree', params: {data: row}});
       },
       subBreak() {
           let url = UrlConfig.serverUrl+"/break/"+this.breakForm.houseId+"/"+this.breakForm.reason+"/"+this.breakForm.addr+"/"+this.breakForm.prikey;

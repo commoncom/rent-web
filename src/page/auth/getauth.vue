@@ -18,13 +18,13 @@
                       </el-form>
                     </el-col>
                     <el-table :data="tableData">
-                    <el-table-column label="房屋链上ID" width="242">  
+                    <el-table-column label="房屋链上ID" width="265">  
                         <template slot-scope="scope">
                           {{scope.row.houseId}}
                         </template>
                     </el-table-column>
                     <el-table-column
-                      label="请求授权方地址" width="240"
+                      label="请求授权方地址" width="220"
                       prop="leaserAddr">
                     </el-table-column> 
                     <el-table-column label="房东地址" width="222" prop="landlordAddr">
@@ -40,6 +40,10 @@
                           size="small"
                           type="primary" 
                           @click="approve(scope.row)">授权</el-button>
+                        <el-button v-if="scope.row.state == 1"
+                          size="small"
+                          type="primary" 
+                          @click="inspectApprove(scope.row)">查看授权</el-button>
                         <el-button v-if="scope.row.state == 0"
                           size="small"
                           type="danger"
@@ -85,6 +89,25 @@
               <el-button type="primary" @click="closeBut">确 定</el-button>
             </div>
           </el-dialog>
+          <el-dialog top title="认证信息" :visible.sync="authInfoVisible">
+              <el-form :model="authForm">
+                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.houseId" :readonly="true"  autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="房屋唯一码" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.guid"  :readonly="true"  autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="房东名字" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.ownerName"  :readonly="true" autocomplete="off"></el-input>
+                  </el-form-item>
+                  <el-form-item label="房东身份证号" :label-width="formLabelWidth">
+                    <el-input v-model="authForm.idCard" :readonly="true" autocomplete="off"></el-input>
+                  </el-form-item>
+                   <el-form-item :label-width="formLabelWidth">
+                     <el-button style="float:right;" type="primary" v-bind:disabled="form.beDisabled" @click="comfirmSub">确 定</el-button>
+                  </el-form-item>
+              </el-form>
+          </el-dialog>
         </div>
     </div>
 </template>
@@ -116,10 +139,18 @@ export default {
            data: '',
            err: ''
         },
+        authForm: {
+           houseId: '',
+           guid: '',
+           idCard: '',
+           ownerName: '',
+           beDisabled: true
+        },
         approveList: APPROVE_STATUS,
         regTitle: '授权中，请等待...',
         dialogFormVisible: false,
         dialogVisible: false,
+        authInfoVisible: false,
         isSus: false,
         btnStatus: 0,
         formLabelWidth: '140px',
@@ -152,6 +183,8 @@ export default {
       closeBut() {
          this.dialogForm = {};
          this.dialogVisible = false;
+          this.dialogFormVisible = false; 
+         this.gethAuthData();
       },
       gethAuthData() {
           this.tableData = [];
@@ -226,20 +259,47 @@ export default {
           this.dialogFormVisible = true;
           this.dialogVisible = false;
       },
+      inspectApprove(row) {
+          console.log("inspect approve", row);
+          let url = UrlConfig.serverUrl+"/getAuthInfo/"+row.houseId+"/"+row.leaserAddr;
+          console.log(url);
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status) {
+                    this.authInfoVisible = true;
+                    console.log(res.data.data);
+                    this.authForm.idCard = res.data.data[0];
+                    this.authForm.guid = res.data.data[1]; 
+                    this.authForm.ownerName = res.data.data[2]; 
+                    this.authForm.houseId = res.data.data[3];  
+                } else {
+                    this.$notify({
+                        message: "查看授权失败："+res.data.err,
+                        type: 'error',
+                        duration: 2000
+                    });
+                    console.log(res.data);            
+                }
+          }).catch(err => {
+              console.log("get auth error", err);
+              this.$notify({
+                  message: "查看授权失败："+res.data.err,
+                  type: 'error',
+                  duration: 2000
+              });
+          });
+      },
       rejectApprove(row) {
           console.log("rejectApprove row", row);
           this.dialogFormVisible = false;
           this.dialogVisible = true;
-          let url = UrlConfig.serverUrl+"/reject/"+this.form.houseId+"/"+this.form.leaserAddr;
+          let url = UrlConfig.serverUrl+"/reject/"+row.houseId+"/"+row.leaserAddr;
           console.log(url);
           this.regTitle = "授权结果";
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
                 if(res.data.status) {
-                    this.dialogForm.status = "成功";
                     this.dialogForm.data = res.data.data; 
-                    this.dialogFormVisible = false;
-                    this.dialogVisible = false;  
                 } else {
                     this.dialogForm.status = "失败";
                     this.dialogForm.err = res.data.err;
@@ -283,7 +343,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 26%;
+      top: 20%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

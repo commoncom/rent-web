@@ -10,6 +10,7 @@
                     <el-menu-item-group style="margin-left:30px;">
                       <el-menu-item index="/">登录</el-menu-item>
                       <el-menu-item index="/register">注册</el-menu-item>
+                      <el-menu-item index="/getaddr">获取地址</el-menu-item>
                       <el-menu-item index="/register/getstatus">登录状态</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
@@ -20,6 +21,7 @@
                     <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/release">发布房源</el-menu-item>
                        <el-menu-item index="/gethouse">获取房源</el-menu-item>
+                       <el-menu-item index="/signagree">签订合同</el-menu-item>
                        <el-menu-item index="/breakcontract">毁约房源</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
