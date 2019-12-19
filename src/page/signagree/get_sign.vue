@@ -10,13 +10,6 @@
                               <el-form-item :span="6">
                                   <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
                               </el-form-item>
-                              <!-- 操作类型下拉查询-->
-                              <el-form-item :span="3">
-                                  <el-select v-model="filters.type" clearable placeholder="房屋状态">
-                                      <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
-                                      </el-option>
-                                  </el-select>
-                              </el-form-item>
                               <!-- 设置查询Form-->
                               <el-form-item >
                                   <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
@@ -72,6 +65,9 @@
                             <el-button v-else-if="btnStatus == 4"
                                 size="small" type="warning "
                                 @click="inspectBreak(props.row)">审核毁约</el-button>
+                            <el-button v-else-if="btnStatus == 6"
+                                size="small" type="primary"
+                                @click="leaserSign(props.row)">租客签订</el-button>
                             <el-button v-else
                                 size="small" type="primary"
                                 @click="withdrawRent(props.row)">退回押金</el-button>
@@ -349,11 +345,22 @@ export default {
           console.log(url)
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
-                if(res.data.status) {
+                if(res.data.status == 200) {
                     this.dialogForm.status = "成功";
                     this.dialogForm.data = res.data.data; 
-                    // this.dialogFormVisible = false; // dialogFormVisible
                     this.dialogVisible = false;  
+                } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
+                    this.$notify({
+                        message: "预定房屋失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.form = {};
+                          this.dialogVisible = false; 
+                          this.dialogFormVisible = false;
+                          this.getHouseData();
+                        }
+                    });      
                 } else {
                     console.log("request error:", res.data.err);  
                     this.dialogForm.status = "失败";
@@ -374,6 +381,10 @@ export default {
       signAgree(row) {
          console.log("sign agree", row);
          this.$router.push({name: 'signagree', params: {data: row}});
+      },
+      leaserSign(row) {
+         console.log("leaser sign", row);
+         this.$router.push({name: 'sign', params: {data: row}});
       },
       subBreak() {
           let url = UrlConfig.serverUrl+"/break/"+this.breakForm.houseId+"/"+this.breakForm.reason+"/"+this.breakForm.addr+"/"+this.breakForm.prikey;

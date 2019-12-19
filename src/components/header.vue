@@ -22,7 +22,7 @@
                        <el-menu-item index="/release">发布房源</el-menu-item>
                        <el-menu-item index="/gethouse">获取房源</el-menu-item>
                        <el-menu-item index="/signagree">房东签约</el-menu-item>
-                       <el-menu-item index="/signagree/sign">租客签约</el-menu-item>
+                       <el-menu-item index="/signagree/getsign">租客签约</el-menu-item>
                        <el-menu-item index="/breakcontract">毁约房源</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>

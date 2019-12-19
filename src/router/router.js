@@ -32,9 +32,9 @@ export default [{
         name: 'signagree',
         component: r => require.ensure([], () => r(require('../page/signagree')), 'signagree')
     }, {
-        path: '/signagree/sign',
-        name: 'sign',
-        component: r => require.ensure([], () => r(require('../page/signagree/get_sign.vue')), 'sign')
+        path: '/signagree/getsign',
+        name: 'getsign',
+        component: r => require.ensure([], () => r(require('../page/signagree/get_sign.vue')), 'getsign')
     }, {
         path: '/withdraw',
         component: r => require.ensure([], () => r(require('../page/withdraw')), 'withdraw')
