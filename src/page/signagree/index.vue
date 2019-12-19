@@ -7,7 +7,7 @@
              <div class="login">
               <div class="logo">欢迎来到房屋合同</div>
               <el-form>
-                 <el-form-item label="出租方(甲方)">
+                 <el-form-item label="出租方(甲方，填写真实姓名)">
                     <el-input type="text" id="userName" v-model="agreeInfo.userName" @blur="inputBlur('userName',agreeInfo.userName)"></el-input>
                     <p>{{agreeInfo.userNameErr}}</p>
                  </el-form-item>
@@ -114,6 +114,9 @@ export default {
             houseUse : '',
             falsify: '',
             houseDeadline: '',
+            rentStartTime: '',
+            rentEndTime: '',
+            landlordSignTime: '',
             addr: '',
             prikey: '',
             userNameErr: '',
@@ -126,6 +129,7 @@ export default {
             houseUseErr: '',
             falsifyErr: '',
             houseDeadlineErr: '',
+            landlordSignTimeErr: '',
             addrErr: '',
             prikeyErr: '',
             beDisabled: true
@@ -160,10 +164,11 @@ export default {
           this.agreeInfo.houseAddr = data.houseAddr;
           this.agreeInfo.rental = data.rental;
           this.agreeInfo.tenacy = data.tenancy;
+          this.agreeInfo.addr = data.addr;
       },
       jumpLog() {
          this.agreeInfo = {};
-         this.$router.push({path: '/'}); 
+         this.$router.push({path: '/release'}); 
       },
       resetForm:function(){
           this.agreeInfo = {};
@@ -173,17 +178,16 @@ export default {
           let info = this.agreeInfo; 
           console.log("info--", info);
           // /sign/:username/:idcard/:phonenum/:rental/:tenacy/:houseid/:houseaddr/:falsify/:housedeadline/:addr/:prikey
-          // http://192.168.218.162:8080/sign/zs/428919199008092839/18802982910/3200/12/0x6c5e6077b9c85e1d8d8a26a05fd80c1a25f290b0563bac5c189b7182e1e3c421/house
-          let url = UrlConfig.serverUrl+"/sign/"+info.userName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.rental+"/"+info.tenacy+"/"+info.houseId+"/"+info.houseAddr+"/"+info.falsify+"/"+info.houseDeadline+"/"+info.addr+"/"+info.prikey;
+          let url = UrlConfig.serverUrl+"/sign/"+info.userName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.rental+"/"+info.tenacy+"/"+info.houseId+"/"+info.houseAddr+"/"+info.falsify+"/"+info.houseDeadline+"/"+info.houseUse+"/"+info.addr+"/"+info.prikey;
           console.log(url);
+          this.form.houseId = info.houseId;
           this.dialogFormVisible = true;
           axios.get(url, {}).then(res => {
                 this.regTitle = "签订结果";
                 console.log("rtn", res.data);
                 if(res.data.status) {
                     this.newMap.set(this.agreeInfo.addr, res.data.data); 
-                    this.form.data = res.data.data.trans;
-                    this.form.houseId = res.data.data.houseId;
+                    this.form.data = res.data.data;
                     this.form.status = "成功";               
                 } else {
                     this.form.status = "失败"; 
@@ -297,7 +301,7 @@ export default {
           //对于按钮的状态进行修改
           if (flag) {
               this.agreeInfo.beDisabled = false;
-          }else{
+          } else{
               this.agreeInfo.beDisabled = true;
           }
       },

@@ -34,7 +34,7 @@ export default [{
     }, {
         path: '/signagree/sign',
         name: 'sign',
-        component: r => require.ensure([], () => r(require('../page/signagree/leaser_sign.vue')), 'leaser_sign')
+        component: r => require.ensure([], () => r(require('../page/signagree/get_sign.vue')), 'sign')
     }, {
         path: '/withdraw',
         component: r => require.ensure([], () => r(require('../page/withdraw')), 'withdraw')

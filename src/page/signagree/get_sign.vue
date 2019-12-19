@@ -349,22 +349,11 @@ export default {
           console.log(url)
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
-                if(res.data.status == 200) {
+                if(res.data.status) {
                     this.dialogForm.status = "成功";
                     this.dialogForm.data = res.data.data; 
+                    // this.dialogFormVisible = false; // dialogFormVisible
                     this.dialogVisible = false;  
-                } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
-                    this.$notify({
-                        message: "预定房屋失败："+res.data.err,
-                        type: 'info',
-                        duration: 2000,
-                        onClose: action => {
-                          this.form = {};
-                          this.dialogVisible = false; 
-                          this.dialogFormVisible = false;
-                          this.getHouseData();
-                        }
-                    });      
                 } else {
                     console.log("request error:", res.data.err);  
                     this.dialogForm.status = "失败";

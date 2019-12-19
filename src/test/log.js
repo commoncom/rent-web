@@ -1,3 +1,5 @@
+http://192.168.218.168:8080/sign/lvzym2070/428930198009203823/18810230936/32000/12/0x6eff8e3db86afe6dbcde6c10b81fbce7b7d6b88e77516d1ba644816a21e76868/Los/30/3/自住/0x431c9b7c0496a5fabefe52ec0a50f2c01a1bf5b2/0x5507a83808f6515e06aae83fbca97ae2a1bec0d350cdfb5e3f8ba69f5a48f083
+
 CREATE TABLE `house_transaction_record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `userid` varchar(18) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '房东手机号',
