@@ -4,11 +4,11 @@
         <!--发布房源-->
         <div id="bg" class="bg">
              <div class="login">
-                  <div class="logo moveCenter">欢迎来到房屋浏览</div>
+                  <div class="logo moveCenter">欢迎来到签订租房</div>
                     <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
                       <el-form :inline="true" :model="filters">
                               <el-form-item :span="6">
-                                  <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                                  <el-input type="text" style="width:300px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
                               </el-form-item>
                               <!-- 设置查询Form-->
                               <el-form-item >
@@ -28,14 +28,14 @@
                           <el-form-item label="房屋位置">
                             <span>{{props.row.houseAddr}}</span>
                           </el-form-item>
-                          <el-form-item label="房屋链上ID">
-                            <span>{{props.row.houseId}}</span>
-                          </el-form-item>
                           <el-form-item label="房屋交易Hash">
                             <span>{{props.row.txHash}}</span>
                           </el-form-item>
-                          <el-form-item label="房东信息">
-                            <span>{{props.row.info}}</span>
+                          <el-form-item label="房东地址">
+                            <span>{{props.row.addr}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋链上ID">
+                            <span>{{props.row.houseId}}</span>
                           </el-form-item>
                           <el-form-item label="租期">
                             <span>{{props.row.tenancy}}</span>
@@ -43,49 +43,33 @@
                           <el-form-item label="租金">
                             <span>{{props.row.rental}}</span>
                           </el-form-item>
-                          <el-form-item label="房东地址">
-                            <span>{{props.row.userAddr}}</span>
+                          <el-form-item label="房屋用途">
+                            <span>{{props.row.houseUse}}</span>
                           </el-form-item>
-                          <el-form-item label="期待你的样子">
-                            <span>{{props.row.hopeYou}}</span>
+                          <el-form-item label="交付期限">
+                            <span>{{props.row.payDeadline}}天</span>
                           </el-form-item>
-                           <el-form-item label="房屋描述">
-                            <span>{{props.row.describe}}</span>
+                          <el-form-item label="日常维修方">
+                            <span>{{props.row.payOne}}</span>
+                          </el-form-item>
+                           <el-form-item label="违约金(Token/日)">
+                            <span>{{props.row.flsify_month}}个</span>
                           </el-form-item>
                           <el-form-item>
-                            <el-button v-if="btnStatus == 0"
-                                size="small" type="primary"
-                                @click="orderHouse(props.row)">预定房屋</el-button>
-                            <el-button v-else-if="btnStatus == 1"
-                                size="small" type="primary"
-                                @click="signAgree(props.row)">签订合同</el-button>
-                            <el-button v-else-if="btnStatus == 2"
-                                size="small" type="success "
-                                @click="achieveRent(props.row)">完成租赁</el-button>
-                            <el-button v-else-if="btnStatus == 4"
-                                size="small" type="warning "
-                                @click="inspectBreak(props.row)">审核毁约</el-button>
-                            <el-button v-else-if="btnStatus == 6"
+                          </el-form-item>
+                          <el-form-item>
+                            <el-button v-if="ctlFlag == true"
                                 size="small" type="primary"
                                 @click="leaserSign(props.row)">租客签订</el-button>
-                            <el-button v-else
-                                size="small" type="primary"
-                                @click="withdrawRent(props.row)">退回押金</el-button>
-                            <el-button v-if="btnStatus != 0"
+                            <el-button 
                                 size="small" type="danger"
                                 @click="breakContract(props.row)">毁约租赁</el-button>
-                            <el-button type="primary"
-                                size="small"
-                                @click="lookAuth(props.row)">查看认证</el-button>
-                            <el-button v-if="btnStatus == 0" type="primary"
-                                size="small"
-                                @click="cancle(props.row)">撤销租赁</el-button>
                           </el-form-item>
                         </el-form>
                       </template>
                     </el-table-column>
                     <el-table-column
-                      label="房屋地址"
+                      label="房屋位置"
                       prop="houseAddr">
                     </el-table-column>
                     <el-table-column
@@ -95,20 +79,20 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                      label="租金"
+                      label="租金" width="60"
                       prop="rental">
                     </el-table-column> 
-                    <el-table-column label="房屋描述" width="160" prop="describe">
+                    <el-table-column label="房东地址" prop="addr">
                     </el-table-column>
-                    <el-table-column label="房屋评价等级" width="80"> 
+                    <el-table-column label="房东签订日期" width="90"> 
                        <template slot-scope="scope">
-                          {{remarks[scope.row.huxing]}}
+                          {{scope.row.landlordSignTime}}
                         </template>
                     </el-table-column>
                 </el-table> 
             </div>
           </div>
-           <el-dialog title="预定房租" :visible.sync="dialogFormVisible">
+          <!--<el-dialog title="预定房租" :visible.sync="dialogFormVisible">
                 <el-form :model="form">
                   <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
                     <el-input v-model="form.houseId"   autocomplete="off"></el-input>
@@ -143,23 +127,6 @@
               <el-button type="primary" @click="closeBut">确 定</el-button>
             </div>
           </el-dialog>
-          <el-dialog title="请求查看认证" top :visible.sync="authVisible">
-                <el-form :model="authForm">
-                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
-                    <el-input v-model="authForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="房东地址" :label-width="formLabelWidth">
-                    <el-input v-model="authForm.landlordAddr" :readyonly="true"  autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="地址" :label-width="formLabelWidth">
-                    <el-input v-model="authForm.addr" id="addr" @blur="inputBlur('addr', authForm.addr)" autocomplete="off"></el-input>
-                    {{authForm.addrErr}}
-                  </el-form-item>
-                  <el-form-item>
-                     <el-button type="primary" @click="requireAuth" v-bind:disabled="authForm.beDisabled" style="float:right;">确 定</el-button>
-                  </el-form-item>
-              </el-form>
-          </el-dialog>
           <el-dialog :title="breakTitle" :visible.sync="breakDialogVisible" @close="closeBreak">
             <el-form :model="breakForm">
               <el-form-item label="房源链上ID" :label-width="formLabelWidth">
@@ -180,14 +147,15 @@
                  <el-button type="primary" @click="subBreak" v-bind:disabled="breakForm.beDisabled" style="float:right;">确 定</el-button>
               </el-form-item>
             </el-form>
-          </el-dialog>
+          </el-dialog>-->
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig, OPTION_TYPE, COMMENT_REMARK} from 'src/common/js/globe';
+import {UrlConfig, COMMENT_REMARK} from 'src/common/js/globe';
+import util from 'src/common/js/util'; // 引入时间控件
 export default {
     name: 'gethouse',
     components: {
@@ -249,6 +217,7 @@ export default {
         dialogFormVisible: false,
         dialogVisible: false,
         authVisible: false,
+        ctlFlag: false,
         breakDialogVisible: false,
         isSus: false,
         btnStatus: 0,
@@ -256,7 +225,6 @@ export default {
         tableData: [],
         currentPage: 1,
         expendRow: [],
-        options: OPTION_TYPE,
         remarks: COMMENT_REMARK,
         filters: {
             houseId: '',
@@ -295,7 +263,7 @@ export default {
               houseId = '0x';
           }
           console.log("house hash", this.filters.houseId)
-          let url = UrlConfig.serverUrl+"/gethouse/"+houseId+"/"+this.filters.type;
+          let url = UrlConfig.serverUrl+"/getagree/"+houseId;
           console.log(url);
           this.btnStatus = this.filters.type;
           axios.get(url, {}).then(res => {
@@ -309,15 +277,19 @@ export default {
                         tableData.info = item.info;
                         tableData.tenancy = item.tenancy;
                         tableData.rental = item.rental;
-                        tableData.hopeYou = item.hope_you;
                         tableData.addr = item.addr;
                         tableData.houseId = item.house_id;
-                        tableData.userAddr = item.addr;
                         tableData.txHash = item.tx_hash;
                         tableData.index = index;
-                        tableData.houseState = item.house_state;
-                        tableData.huxing = item.huxing;
+                        tableData.houseUse = item.house_use;
+                        tableData.payDeadline = item.pay_deadline;
+                        tableData.payOne = item.pay_one;
+                        tableData.flsify_month = item.flsify_month;
+                        tableData.landlordSignTime = this.dealTime(item.landlord_sign_time);
                         this.tableData.push(tableData);
+                        if (item.state == 0 || item.state == '0') {
+                           this.ctlFlag = true;
+                        }
                     })        
                 } else {
                     console.log(res.data);            
@@ -338,112 +310,43 @@ export default {
           }
           return '';
       },
-      comfirmSub() {
-          console.log("comfirm Sub", this.form);
-          this.dialogVisible = true;
-          let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
-          console.log(url)
-          axios.get(url, {}).then(res => {
-                console.log(res.data);  
-                if(res.data.status == 200) {
-                    this.dialogForm.status = "成功";
-                    this.dialogForm.data = res.data.data; 
-                    this.dialogVisible = false;  
-                } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
-                    this.$notify({
-                        message: "预定房屋失败："+res.data.err,
-                        type: 'info',
-                        duration: 2000,
-                        onClose: action => {
-                          this.form = {};
-                          this.dialogVisible = false; 
-                          this.dialogFormVisible = false;
-                          this.getHouseData();
-                        }
-                    });      
-                } else {
-                    console.log("request error:", res.data.err);  
-                    this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err.err;          
-                }
-          }).catch(err => {
-              console.log("get house error", err);
-              this.dialogForm.status = "失败";
-              this.dialogForm.err = res.data.err;
-          });
-      },
-      orderHouse(row) {
-         console.log(row);
-         this.dialogFormVisible = true;
-         this.form.houseId = row.houseId;
-         this.form.rental = row.rental;
-      },
-      signAgree(row) {
-         console.log("sign agree", row);
-         this.$router.push({name: 'signagree', params: {data: row}});
-      },
+      // comfirmSub() {
+      //     console.log("comfirm Sub", this.form);
+      //     this.dialogVisible = true;
+      //     let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
+      //     console.log(url)
+      //     axios.get(url, {}).then(res => {
+      //           console.log(res.data);  
+      //           if(res.data.status == 200) {
+      //               this.dialogForm.status = "成功";
+      //               this.dialogForm.data = res.data.data; 
+      //               this.dialogVisible = false;  
+      //           } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
+      //               this.$notify({
+      //                   message: "预定房屋失败："+res.data.err,
+      //                   type: 'info',
+      //                   duration: 2000,
+      //                   onClose: action => {
+      //                     this.form = {};
+      //                     this.dialogVisible = false; 
+      //                     this.dialogFormVisible = false;
+      //                     this.getHouseData();
+      //                   }
+      //               });      
+      //           } else {
+      //               console.log("request error:", res.data.err);  
+      //               this.dialogForm.status = "失败";
+      //               this.dialogForm.err = res.data.err.err;          
+      //           }
+      //     }).catch(err => {
+      //         console.log("get house error", err);
+      //         this.dialogForm.status = "失败";
+      //         this.dialogForm.err = res.data.err;
+      //     });
+      // },
       leaserSign(row) {
          console.log("leaser sign", row);
          this.$router.push({name: 'sign', params: {data: row}});
-      },
-      subBreak() {
-          let url = UrlConfig.serverUrl+"/break/"+this.breakForm.houseId+"/"+this.breakForm.reason+"/"+this.breakForm.addr+"/"+this.breakForm.prikey;
-          console.log(url)
-          axios.get(url, {}).then(res => {
-                console.log(res.data);  
-                if(res.data.status == 200) {
-                    this.$notify({
-                        message: "撤销房屋发布成功！",
-                        type: 'success',
-                        duration: 2000,
-                        onClose: action => {
-                          this.breakDialogVisible = false;
-                          this.breakForm = {};
-                          this.getHouseData();
-                        }
-                    });
-                } else if (res.data.status == 201) {
-                    this.$notify({
-                        message: "撤销房屋发布失败："+res.data.err,
-                        type: 'info',
-                        duration: 2000,
-                        onClose: action => {
-                          this.breakDialogVisible = false;
-                          this.breakForm = {};
-                        }
-                    });
-                } else {
-                    this.$notify({
-                      message: "撤销房屋发布失败："+res.data.err,
-                      type: 'warning',
-                      duration: 2000,
-                      onClose: action => {
-                         this.breakDialogVisible = false;
-                         this.breakForm = {};
-                      }
-                    });          
-                }
-          }).catch(err => {
-              console.log("get house error", err);
-              this.$notify({
-                message: "撤销房屋发布失败："+err.message,
-                type: 'warning',
-                duration: 2000,
-                onClose: action => {
-                   this.breakDialogVisible = false;
-                   this.breakForm = {};
-                }
-              }); 
-          });
-      },
-      cancle(row) {
-         console.log("cancle", row);
-         if (row) {
-            this.breakForm.houseId = row.houseId;
-            this.breakForm.addr = row.addr;
-         }
-         this.breakTitle = "撤销发布房屋租赁";
-         this.breakDialogVisible = true;
       },
       breakContract(row) {
           console.log("break", row);
@@ -454,78 +357,15 @@ export default {
          this.breakTitle = "毁约房屋租赁合同";
          this.breakDialogVisible = true;
       },
-      inspectBreak(row) {
-         console.log("inspect", row);
-      },
-      achieveRent(row) {
-         console.log("achieveRent", row);
-      },
-      withdrawRent(row) {
-         console.log("withdrawRent", row);
-      },
-      lookAuth(row) {
-         console.log("look auth", row);
-         this.authForm.houseId = row.houseId;
-         this.authForm.landlordAddr = row.addr;
-         this.authVisible = true;
-      },
-      requireAuth(){
-          console.log("requireAuth", this.authForm);
-          let url = UrlConfig.serverUrl+"/requestapprove/"+this.authForm.houseId+"/"+this.authForm.landlordAddr+"/"+this.authForm.addr;
-          console.log(url)
-          axios.get(url, {}).then(res => {
-                console.log(res.data);  
-                if(res.data.status == 200) {
-                    this.$notify({
-                        message: "已成功请求查看房屋授权",
-                        type: 'success',
-                        duration: 2000,
-                        onClose: action => {
-                            this.$router.push({
-                                path: 'auth/getauth',
-                                params: {
-                                  key: 'key',
-                                  msgKey: this.authForm
-                                }
-                            });
-                        }
-                    });
-                } else if (res.data.status == 201) {
-                    this.$notify({
-                        message: "已请求过查看房屋授权",
-                        type: 'info',
-                        duration: 2000,
-                        onClose: action => {
-                            this.$router.push({
-                                path: 'auth/getauth',
-                                params: {
-                                  key: 'key',
-                                  msgKey: this.authForm
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    this.$notify({
-                      message: "请求查看授权失败",
-                      type: 'warning',
-                      duration: 2000,
-                      onClose: action => {
-                         this.authForm.addr = "";
-                      }
-                    });          
-                }
-          }).catch(err => {
-              console.log("get house error", err);
-              this.$notify({
-                message: "请求查看授权失败"+err.message,
-                type: 'warning',
-                duration: 2000,
-                onClose: action => {
-                   this.authForm.addr = "";
-                }
-              }); 
-          });
+      dealTime(src) {
+          console.log(111111, src);
+          if (!src) {
+            return '';
+          }
+          let date = new Date();
+          let time = date.setTime(src);
+          let timeStamp = util.formatDate(new Date(time), 'yyyy/MM/dd'); // 将时间转为yyyy-MM-dd
+          return timeStamp;
       },
       expand(row, status){
         if (status) {

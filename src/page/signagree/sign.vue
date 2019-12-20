@@ -29,11 +29,14 @@
                     <el-input type="text" id="tenacy" v-model="agreeInfo.tenacy" :readonly="true"></el-input>
                     </el-form-item>
                  <el-form-item label="房屋用途">
-                    <el-input type="text" id="houseUse" v-model="agreeInfo.houseUse" @blur="inputBlur('houseUse', agreeInfo.houseUse)"></el-input>
+                    <el-input type="text" id="houseUse" v-model="agreeInfo.houseUse" :readonly="true" @blur="inputBlur('houseUse', agreeInfo.houseUse)"></el-input>
                     <p>{{agreeInfo.houseUseErr}}</p>
                  </el-form-item>
-                 <el-form-item label="违约金">
+                 <el-form-item label="违约金">  
                     <el-input type="text" id="falsify" v-model="agreeInfo.falsify" :readonly="true"></el-input>
+                 </el-form-item>
+                 <el-form-item label="提前终止通知时间(月)">  
+                    <el-input type="text" id="breakMonth" v-model="agreeInfo.breakMonth" :readonly="true"></el-input>
                  </el-form-item>
                  <el-form-item label="续租提前时间(月)">
                     <el-input type="text" id="renewalMonth" v-model="agreeInfo.renewalMonth" @blur="inputBlur('renewalMonth',agreeInfo.renewalMonth)"></el-input>
@@ -106,9 +109,9 @@ export default {
             houseUse : '',
             falsify: '',
             renewalMonth: '',
+            breakMonth: '',
             rentStartTime: '',
             rentEndTime: '',
-            landlordSignTime: '',
             addr: '',
             prikey: '',
             leaserNameErr: '',
@@ -156,7 +159,8 @@ export default {
           this.agreeInfo.houseAddr = data.houseAddr;
           this.agreeInfo.rental = data.rental;
           this.agreeInfo.tenacy = data.tenancy;
-          this.agreeInfo.addr = data.addr;
+          this.agreeInfo.houseUse = data.houseUse;
+          this.agreeInfo.falsify = data.flsify_month;
       },
       jumpLog() {
          this.agreeInfo = {};
@@ -169,8 +173,7 @@ export default {
          console.log(this.agreeInfo, formInfo);
           let info = this.agreeInfo; 
           console.log("info--", info);
-          // /sign/:leaserName/:idcard/:phonenum/:rental/:tenacy/:houseid/:houseaddr/:falsify/:renewalMonth/:addr/:prikey
-          let url = UrlConfig.serverUrl+"/sign/"+info.leaserName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.rental+"/"+info.tenacy+"/"+info.houseId+"/"+info.houseAddr+"/"+info.falsify+"/"+info.renewalMonth+"/"+info.houseUse+"/"+info.addr+"/"+info.prikey;
+          let url = UrlConfig.serverUrl+"/leasersign/"+info.leaserName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.houseId+"/"+info.renewalMonth+"/"+info.breakMonth+"/"+info.addr+"/"+info.prikey;
           console.log(url);
           this.form.houseId = info.houseId;
           this.dialogFormVisible = true;
