@@ -36,7 +36,7 @@
                     <el-input type="text" id="falsify" v-model="agreeInfo.falsify" :readonly="true"></el-input>
                  </el-form-item>
                  <el-form-item label="提前终止通知时间(月)">  
-                    <el-input type="text" id="breakMonth" v-model="agreeInfo.breakMonth" :readonly="true"></el-input>
+                    <el-input type="text" id="breakMonth" v-model="agreeInfo.breakMonth" @blur="inputBlur('breakMonth',agreeInfo.breakMonth)"></el-input>
                  </el-form-item>
                  <el-form-item label="续租提前时间(月)">
                     <el-input type="text" id="renewalMonth" v-model="agreeInfo.renewalMonth" @blur="inputBlur('renewalMonth',agreeInfo.renewalMonth)"></el-input>
@@ -51,7 +51,7 @@
                     <p>{{agreeInfo.prikeyErr}}</p>
                  </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('agreeInfo')" v-bind:disabled="agreeInfo.beDisabled">发布房源</el-button>
+                  <el-button type="primary" @click="submitForm('agreeInfo')" v-bind:disabled="agreeInfo.beDisabled">签约</el-button>
                   <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -85,7 +85,7 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
 export default {
-    name: 'signagree',
+    name: 'sign',
     components: {
       itemcontainer
     },
@@ -145,6 +145,7 @@ export default {
    },
    methods : {
       closeBut() {
+          this.isSus = true;
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.form = {};
@@ -164,7 +165,7 @@ export default {
       },
       jumpLog() {
          this.agreeInfo = {};
-         this.$router.push({path: '/release'}); 
+         this.$router.push({path: '/signagree/getsign'}); 
       },
       resetForm:function(){
           this.agreeInfo = {};
@@ -223,7 +224,7 @@ export default {
               if (inputContent === '') {
                   this.agreeInfo.phoneNumErr = '手机号不能为空！';
                   flag = false;
-              } else if (!addrReg.test(inputContent)) {
+              } else if (!(/^1(3|4|5|7|8)\d{9}$/.test(inputContent))) {
                   this.agreeInfo.phoneNumErr = '手机号不符合规则！';
                   flag = false;
               } else {

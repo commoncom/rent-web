@@ -182,8 +182,7 @@ export default {
       submitForm(formInfo){
          console.log(this.agreeInfo, formInfo);
           let info = this.agreeInfo; 
-          console.log("info--", info);
-                                         // /sign/:username/:idcard/:phonenum/:rental/:tenacy/:houseid/:houseaddr/:falsify/:housedeadline/:houseuse:/payone/:addr/:prikey
+          console.log("info--", info);                                 // /sign/:username/:idcard/:phonenum/:rental/:tenacy/:houseid/:houseaddr/:falsify/:housedeadline/:houseuse:/payone/:addr/:prikey
           let url = UrlConfig.serverUrl+"/sign/"+info.userName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.rental+"/"+info.tenacy+"/"+info.houseId+"/"+info.houseAddr+"/"+info.falsify+"/"+info.houseDeadline+"/"+info.houseUse+"/"+info.payOne+"/"+info.addr+"/"+info.prikey;
           console.log(url);
           this.form.houseId = info.houseId;
@@ -333,7 +332,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 110%;
+      top: 115%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

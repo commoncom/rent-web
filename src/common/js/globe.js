@@ -36,3 +36,9 @@ export const COMMENT_REMARK = {
 	3: 'R4',
 	4: 'R5'
 }
+
+export const SIGN_STATUS = {
+	0: "等待租户签约",
+	1: "合同签约完成",
+	2: "合同已生效"
+}

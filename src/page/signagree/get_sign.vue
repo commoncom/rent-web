@@ -58,8 +58,7 @@
                           <el-form-item>
                           </el-form-item>
                           <el-form-item>
-                            <el-button v-if="ctlFlag == true"
-                                size="small" type="primary"
+                            <el-button v-if="props.row.state == '0' || props.row.state == 0"                              size="small" type="primary"
                                 @click="leaserSign(props.row)">租客签订</el-button>
                             <el-button 
                                 size="small" type="danger"
@@ -84,6 +83,11 @@
                     </el-table-column> 
                     <el-table-column label="房东地址" prop="addr">
                     </el-table-column>
+                    <el-table-column label="房东地址" width="80">
+                       <template slot-scope="scope">
+                          {{signStatus[scope.row.state]}}
+                        </template>
+                    </el-table-column>
                     <el-table-column label="房东签订日期" width="90"> 
                        <template slot-scope="scope">
                           {{scope.row.landlordSignTime}}
@@ -92,69 +96,13 @@
                 </el-table> 
             </div>
           </div>
-          <!--<el-dialog title="预定房租" :visible.sync="dialogFormVisible">
-                <el-form :model="form">
-                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
-                    <el-input v-model="form.houseId"   autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="租金" :label-width="formLabelWidth">
-                    <el-input v-model="form.rental"  autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="地址" :label-width="formLabelWidth">
-                    <el-input v-model="form.addr"   autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="私钥" :label-width="formLabelWidth">
-                    <el-input v-model="form.prikey" autocomplete="off"></el-input>
-                  </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="comfirmSub">确 定</el-button>
-              </div>
-          </el-dialog>
-          <el-dialog :title="regTitle" :visible.sync="dialogVisible" top :show-close="false">
-            <el-form :model="form">
-              <el-form-item label="状态" :label-width="formLabelWidth">
-                <el-input v-model="dialogForm.status"   autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
-                <el-input v-model="dialogForm.data"  :readonly="true" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
-                <el-input v-model="dialogForm.err"  :readonly="true" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="closeBut">确 定</el-button>
-            </div>
-          </el-dialog>
-          <el-dialog :title="breakTitle" :visible.sync="breakDialogVisible" @close="closeBreak">
-            <el-form :model="breakForm">
-              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
-                <el-input v-model="breakForm.houseId"  autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item  label="原因" :label-width="formLabelWidth">
-                <el-input v-model="breakForm.reason"  id="reason" @blur="inputBlur('reason', breakForm.reason)"  autocomplete="off"></el-input>
-                 {{breakForm.reasonErr}}
-              </el-form-item>
-              <el-form-item  label="地址" :label-width="formLabelWidth">
-                <el-input v-model="breakForm.addr"  :readonly="true" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item  label="私钥" :label-width="formLabelWidth">
-                <el-input v-model="breakForm.prikey" id="prikey" @blur="inputBlur('prikey', breakForm.prikey)"  autocomplete="off"></el-input>
-                {{breakForm.prikeyErr}}
-              </el-form-item>
-              <el-form-item>
-                 <el-button type="primary" @click="subBreak" v-bind:disabled="breakForm.beDisabled" style="float:right;">确 定</el-button>
-              </el-form-item>
-            </el-form>
-          </el-dialog>-->
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig, COMMENT_REMARK} from 'src/common/js/globe';
+import {UrlConfig, COMMENT_REMARK, SIGN_STATUS} from 'src/common/js/globe';
 import util from 'src/common/js/util'; // 引入时间控件
 export default {
     name: 'gethouse',
@@ -212,6 +160,7 @@ export default {
            prikeyErr: '',
            beDisabled: true
         },
+        signStatus: SIGN_STATUS,
         regTitle: '预约结果',
         breakTitle: '',
         dialogFormVisible: false,
@@ -286,10 +235,8 @@ export default {
                         tableData.payOne = item.pay_one;
                         tableData.flsify_month = item.flsify_month;
                         tableData.landlordSignTime = this.dealTime(item.landlord_sign_time);
+                        tableData.state = item.state;
                         this.tableData.push(tableData);
-                        if (item.state == 0 || item.state == '0') {
-                           this.ctlFlag = true;
-                        }
                     })        
                 } else {
                     console.log(res.data);            
@@ -310,40 +257,6 @@ export default {
           }
           return '';
       },
-      // comfirmSub() {
-      //     console.log("comfirm Sub", this.form);
-      //     this.dialogVisible = true;
-      //     let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
-      //     console.log(url)
-      //     axios.get(url, {}).then(res => {
-      //           console.log(res.data);  
-      //           if(res.data.status == 200) {
-      //               this.dialogForm.status = "成功";
-      //               this.dialogForm.data = res.data.data; 
-      //               this.dialogVisible = false;  
-      //           } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
-      //               this.$notify({
-      //                   message: "预定房屋失败："+res.data.err,
-      //                   type: 'info',
-      //                   duration: 2000,
-      //                   onClose: action => {
-      //                     this.form = {};
-      //                     this.dialogVisible = false; 
-      //                     this.dialogFormVisible = false;
-      //                     this.getHouseData();
-      //                   }
-      //               });      
-      //           } else {
-      //               console.log("request error:", res.data.err);  
-      //               this.dialogForm.status = "失败";
-      //               this.dialogForm.err = res.data.err.err;          
-      //           }
-      //     }).catch(err => {
-      //         console.log("get house error", err);
-      //         this.dialogForm.status = "失败";
-      //         this.dialogForm.err = res.data.err;
-      //     });
-      // },
       leaserSign(row) {
          console.log("leaser sign", row);
          this.$router.push({name: 'sign', params: {data: row}});
@@ -449,7 +362,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 20%;
+      top: 25%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
