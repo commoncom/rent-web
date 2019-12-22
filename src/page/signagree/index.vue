@@ -39,6 +39,10 @@
                     <el-input type="text" id="houseUse" v-model="agreeInfo.houseUse" @blur="inputBlur('houseUse',agreeInfo.houseUse)"></el-input>
                     <p>{{agreeInfo.houseUseErr}}</p>
                   </el-form-item>
+                  <el-form-item label="日常维护方(甲方或乙方)">
+                    <el-input type="text" id="payOne" v-model="agreeInfo.payOne" @blur="inputBlur('payOne',agreeInfo.payOne)"></el-input>
+                    <p>{{agreeInfo.payOneErr}}</p>
+                  </el-form-item>
                  <el-form-item label="违约金">
                     <el-input type="text" id="falsify" v-model="agreeInfo.falsify" @blur="inputBlur('falsify',agreeInfo.falsify)"></el-input>
                     <p>{{agreeInfo.falsifyErr}}</p>
@@ -56,7 +60,7 @@
                     <p>{{agreeInfo.prikeyErr}}</p>
                  </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('agreeInfo')" v-bind:disabled="agreeInfo.beDisabled">发布房源</el-button>
+                  <el-button type="primary" @click="submitForm('agreeInfo')" v-bind:disabled="agreeInfo.beDisabled">签订合同</el-button>
                   <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -112,6 +116,7 @@ export default {
             rental: '',
             tenacy: '',
             houseUse : '',
+            payOne: '', // 日常维护方
             falsify: '',
             houseDeadline: '',
             rentStartTime: '',
@@ -128,6 +133,7 @@ export default {
             rentalErr: '',
             houseUseErr: '',
             falsifyErr: '',
+            payOneErr: '',
             houseDeadlineErr: '',
             landlordSignTimeErr: '',
             addrErr: '',
@@ -150,9 +156,9 @@ export default {
    },
    methods : {
       closeBut() {
+          this.form = {};
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.form = {};
               this.canClose = false;
               if (this.isSus) {
                  this.jumpLog();
@@ -177,8 +183,8 @@ export default {
          console.log(this.agreeInfo, formInfo);
           let info = this.agreeInfo; 
           console.log("info--", info);
-          // /sign/:username/:idcard/:phonenum/:rental/:tenacy/:houseid/:houseaddr/:falsify/:housedeadline/:addr/:prikey
-          let url = UrlConfig.serverUrl+"/sign/"+info.userName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.rental+"/"+info.tenacy+"/"+info.houseId+"/"+info.houseAddr+"/"+info.falsify+"/"+info.houseDeadline+"/"+info.houseUse+"/"+info.addr+"/"+info.prikey;
+                                         // /sign/:username/:idcard/:phonenum/:rental/:tenacy/:houseid/:houseaddr/:falsify/:housedeadline/:houseuse:/payone/:addr/:prikey
+          let url = UrlConfig.serverUrl+"/sign/"+info.userName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.rental+"/"+info.tenacy+"/"+info.houseId+"/"+info.houseAddr+"/"+info.falsify+"/"+info.houseDeadline+"/"+info.houseUse+"/"+info.payOne+"/"+info.addr+"/"+info.prikey;
           console.log(url);
           this.form.houseId = info.houseId;
           this.dialogFormVisible = true;
@@ -228,7 +234,7 @@ export default {
               if (inputContent === '') {
                   this.agreeInfo.phoneNumErr = '手机号不能为空！';
                   flag = false;
-              } else if (!addrReg.test(inputContent)) {
+              } else if (!(/^1(3|4|5|7|8)\d{9}$/.test(inputContent))) {
                   this.agreeInfo.phoneNumErr = '手机号不符合规则！';
                   flag = false;
               } else {
@@ -269,7 +275,14 @@ export default {
               } else{
                   this.agreeInfo.houseUseErr = '';
               }
-          } else if (errorItem === 'falsify') {
+          } else if (errorItem === 'payOne') {
+             if (inputContent === '') {
+                  this.agreeInfo.payOneErr = '日常维护方不能为空！';
+                  flag = false;
+              } else{
+                  this.agreeInfo.payOneErr = '';
+              }
+          } else if (errorItem === 'falsify') { 
              if (inputContent === '') {
                   this.agreeInfo.falsifyErr = '房屋违约金不能为空！';
                   flag = false;
