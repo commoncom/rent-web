@@ -138,6 +138,7 @@ export default {
          console.log(this.houseInfo, formInfo)
          if (this.newMap.has(this.houseInfo.addr)) {
                this.$notify({title : '提示信息',message : '该房源已经发布，房屋Hash为：'+this.newMap.get(this.houseInfo.addr).houseId,type : 'error'});
+               this.houseInfo = {};
                return false;
           }
           let info = this.houseInfo;
