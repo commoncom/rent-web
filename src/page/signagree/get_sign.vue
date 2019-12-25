@@ -60,9 +60,6 @@
                           <el-form-item>
                             <el-button v-if="props.row.state == '0' || props.row.state == 0"                              size="small" type="primary"
                                 @click="leaserSign(props.row)">租客签订</el-button>
-                            <el-button 
-                                size="small" type="danger"
-                                @click="breakContract(props.row)">毁约租赁</el-button>
                           </el-form-item>
                         </el-form>
                       </template>
@@ -83,7 +80,7 @@
                     </el-table-column> 
                     <el-table-column label="房东地址" prop="addr">
                     </el-table-column>
-                    <el-table-column label="房东地址" width="80">
+                    <el-table-column label="状态" width="80">
                        <template slot-scope="scope">
                           {{signStatus[scope.row.state]}}
                         </template>

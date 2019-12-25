@@ -1,31 +1,31 @@
 <template>
     <div class="home_container">
         <itemcontainer father-component="home"></itemcontainer>
-        <!--登录-->
+        <!--认证-->
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到租房空间</div>
+              <div class="logo">欢迎来到租房毁约</div>
               <el-form>
-                 <el-form-item label="用户名">
-                    <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
-                    <p>{{userInfo.nameErr}}</p>
+                 <el-form-item label="房屋链上ID">
+                    <el-input type="text" id="houseId" v-model="houseInfo.houseId" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                    <p>{{houseInfo.houseIdErr}}</p>
+                 </el-form-item>
+                 <el-form-item label="数量">
+                    <el-input type="text" id="amount" v-model="houseInfo.amount" @blur="inputBlur('amount',houseInfo.amount)"></el-input>
+                    <p>{{houseInfo.amountErr}}</p>
+                 </el-form-item>
+                <el-form-item label="用户地址">
+                    <el-input type="text" id="addr" v-model="houseInfo.addr" @blur="inputBlur('addr',houseInfo.addr)"></el-input>
+                    <p>{{houseInfo.addrErr}}</p>
                 </el-form-item>
-                 <el-form-item label="地址">
-                    <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
-                    <p>{{userInfo.addrErr}}</p>
-                </el-form-item>
-                <el-form-item label="密码">
-                    <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
-                    <p>{{userInfo.pwdErr}}</p>
-                </el-form-item>
-                 <el-form-item label="私钥">
-                    <el-input type="text" id="prikey" v-model="userInfo.prikey" @blur="inputBlur('prikey',userInfo.prikey)"></el-input>
-                    <p>{{userInfo.prikeyErr}}</p>
+                <el-form-item label="私钥">
+                    <el-input type="pwd" id="prikey" v-model="houseInfo.prikey" @blur="inputBlur('prikey',houseInfo.prikey)"></el-input>
+                    <p>{{houseInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">登录</el-button>
-                  <el-button @click="goRegister">注册</el-button>
+                  <el-button type="primary" @click="submitForm('houseInfo')" v-bind:disabled="houseInfo.beDisabled">毁约</el-button>
+                  <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
             </div>
@@ -33,7 +33,7 @@
           <el-dialog :title="regTitle" :visible.sync="dialogFormVisible" :show-close="false">
             <el-form :model="form">
               <el-form-item label="状态" :label-width="formLabelWidth">
-                <el-input v-model="form.status"   autocomplete="off"></el-input>
+                <el-input v-model="form.status"  :readonly="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
                 <el-input v-model="form.data"  :readonly="true" autocomplete="off"></el-input>
@@ -54,9 +54,8 @@ import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
 import {UrlConfig} from 'src/common/js/globe';
-import {generateAddress} from 'src/common/js/address';
 export default {
-    name: 'home',
+    name: 'breakcontract',
     components: {
       itemcontainer
     },
@@ -65,14 +64,14 @@ export default {
     },
     data () {
       return {
-        userInfo :{
-            userName: '',
+        houseInfo :{
+            houseId: '',
+            amount: '',
             addr: '',
-            pwd: '',
             prikey: '',
-            nameErr: '',
+            houseIdErr: '',
+            amountErr: '',
             addrErr: '',
-            pwdErr: '',
             prikeyErr: '',
             beDisabled: true
         },
@@ -84,115 +83,95 @@ export default {
         dialogFormVisible: false,
         canClose : false,
         isSus: true, // 注册结果控制
-        regSus: false,
         formLabelWidth: '80px',
-        regTitle: "登录中，请稍等.....",
+        regTitle: "毁约中",
         newMap: new Map(),
       }
    },
    methods : {
       closeBut() {
-          this.form
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.regTitle = "登录中，请稍等.....";
               this.canClose = false;
-              if (this.regSus) {
-                 this.jumpLog();
-              }
+              this.form = {};
+              this.jumpLog();
           }
       },
       jumpLog() {
-         this.userInfo = {};
-         this.regSus = true;
-         this.$router.push({path: '/release'}); 
+         if (this.isSus) {
+            this.$router.push({path: 'release'}); 
+            this.houseInfo = {};
+         }
       },
-      goRegister(){
-          this.$router.push({path: 'register'});
+      resetForm:function(){
+          this.houseInfo = {};
       },
       submitForm:function(formInfo){
-         console.log(this.userInfo, formInfo)
-         let addr = this.userInfo.addr;
-         if (this.newMap.has(addr)) {
-               this.$notify({title : '提示信息',message : '该用户已登录！', type : 'error'});
-               console.log(this.newMap.get(addr));
-               return false;
-          }
-          console.log(addr, this.userInfo.userName)
-          let url = UrlConfig.serverUrl+"/login/"+addr+"/"+this.userInfo.userName +"/"+this.userInfo.pwd+"/"+this.userInfo.prikey;
+          console.log("==submitForm==", this.houseInfo);
+          let info = this.houseInfo;
+          let url = UrlConfig.serverUrl+"/break/"+info.addr+"/"+info.prikey+"/"+info.houseId+"/"+info.reason;
+          console.log(url);
           this.dialogFormVisible = true;
-          console.log("url", url)
           axios.get(url, {}).then(res => {
-                this.regTitle = "登录结果";
+                this.regTitle = "毁约结果";
                 console.log("rtn", res.data);
-                if(res.data.status) {
-                    this.newMap.set(addr, res.data.data); 
-                    this.regSus = true; 
+                if(res.data.status) { 
                     this.form.data = res.data.data;
-                    this.form.status = "成功";              
+                    this.form.status = "成功";               
                 } else {
                     this.form.status = "失败"; 
                     this.isSus = false;
-                    if (typeof(res.data.err) == 'object') {
-                       this.form.err = res.data.err.message;
-                    } else {
-                       this.form.err = res.data.err;
-                    }
+                    this.form.err = res.data.err;
                 }
                 this.canClose = true;
           }).catch(err => {
-              this.isSus = false;
-              this.form.status = "失败";
-              this.regTitle = "登录结果";
-              this.form.err = "服务繁忙，请稍后重试！"; 
-              console.log(err)
+              this.form = err.data;
+              this.regTitle = "毁约结果";
               this.canClose = true;
-          })
+          });
       },
       inputBlur:function(errorItem,inputContent){
           let flag = true;
+          let reg =/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/;
+          let guidReg = /^\d{12,64}$/;
           let addrReg = /^0x[0-9a-fA-F]{40}$/;
-          if (errorItem === 'name') {
+          if (errorItem === 'guid') {
               if (inputContent === '') {
-                  this.userInfo.nameErr = '用户名不能为空';
+                  this.houseInfo.houseIdErr = '房屋链上ID不能为空！';
+                  flag = false;
+              }  else{
+                  this.houseInfo.houseIdErr = '';
+              }
+          } else if (errorItem === 'amount') {
+              if (inputContent === '') {
+                  this.houseInfo.amountErr = '数量不能为空';
                   flag = false;
               } else{
-                  this.userInfo.nameErr = '';
+                  this.houseInfo.userIdErr = '';
               }
           } else if(errorItem === 'addr') {
               if (inputContent === '') {
-                  this.userInfo.addrErr = '地址不能为空';
+                  this.houseInfo.addrErr = '地址不能为空';
                   flag = false;
               } else if (!addrReg.test(inputContent)) {
                   this.houseInfo.addrErr = '地址不符合规则';
                   flag = false;
-              } else{
-                  this.userInfo.addrErr = '';
-
-              }
-          } else if(errorItem === 'pwd') {
-              if (inputContent === '') {
-                  this.userInfo.pwdErr = '密码不能为空';
-                  flag = false;
               } else {
-                  this.userInfo.pwdErr = '';
+                  this.houseInfo.addrErr = '';
               }
           } else if(errorItem === 'prikey') {
               if (inputContent === '') {
-                  this.userInfo.prikeyErr = '私钥不能为空';
-                  flag = false;
-              } else if (!inputContent.startsWith('0x')) {
-                  this.userInfo.prikeyErr = '私钥没有0x开头，需要补上0x!';
+                  this.houseInfo.prikeyErr = '私钥不能为空';
                   flag = false;
               } else {
-                  this.userInfo.prikeyErr = '';
+                  this.houseInfo.prikeyErr = '';
               }
           } 
           //对于按钮的状态进行修改
           if (flag) {
-              this.userInfo.beDisabled = false;
+              this.houseInfo.beDisabled = false;
           }else{
-              this.userInfo.beDisabled = true;
+              this.houseInfo.beDisabled = true;
           }
       },
   },
@@ -210,7 +189,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 43%;
+      top: 45%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

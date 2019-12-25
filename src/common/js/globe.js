@@ -1,5 +1,5 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.169:8080"
+  serverUrl: "http://192.168.218.171:8080"
 }
 
 export const OPTION_TYPE = [{
@@ -16,10 +16,13 @@ export const OPTION_TYPE = [{
 		label: '完成租赁'
 	}, {
 		value: '4',
-		label: '解除租赁' 
+		label: '取消租赁'
 	}, {
 		value: '5',
-		label: '取消租赁'
+		label: '毁约审核中' 
+	}, {
+		value: '6',
+		label: '解除租赁' 
 	}
 ];
 
@@ -40,5 +43,9 @@ export const COMMENT_REMARK = {
 export const SIGN_STATUS = {
 	0: "等待租户签约",
 	1: "合同签约完成",
-	2: "合同已生效"
+	2: "合同已生效",
+	3: "租赁到期",
+	4: "取消租赁",
+	5: "毁约审核中",
+	6: "已毁约"
 }

@@ -174,7 +174,7 @@ export default {
          console.log(this.agreeInfo, formInfo);
           let info = this.agreeInfo; 
           console.log("info--", info);
-          let url = UrlConfig.serverUrl+"/leasersign/"+info.leaserName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.houseId+"/"+info.renewalMonth+"/"+info.breakMonth+"/"+info.addr+"/"+info.prikey;
+          let url = UrlConfig.serverUrl+"/leasersign/"+info.leaserName+"/"+info.idCard+"/"+info.phoneNum+"/"+info.houseId+"/"+info.renewalMonth+"/"+info.breakMonth+"/"+info.tenacy+"/"+info.addr+"/"+info.prikey;
           console.log(url);
           this.form.houseId = info.houseId;
           this.dialogFormVisible = true;

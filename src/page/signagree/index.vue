@@ -157,6 +157,7 @@ export default {
    methods : {
       closeBut() {
           this.form = {};
+          this.isSus = true;
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.canClose = false;
@@ -174,7 +175,7 @@ export default {
       },
       jumpLog() {
          this.agreeInfo = {};
-         this.$router.push({path: '/release'}); 
+         this.$router.push({path: '/signagree/getsign'}); 
       },
       resetForm:function(){
           this.agreeInfo = {};

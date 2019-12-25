@@ -24,7 +24,7 @@
                        <el-menu-item index="/signagree">房东签约</el-menu-item>
                        <el-menu-item index="/signagree/getsign">查询签约</el-menu-item>
                        <el-menu-item index="/signagree/sign" :disabled="true">租客签约</el-menu-item>
-                       <el-menu-item index="/breakcontract">毁约房源</el-menu-item>
+                       <el-menu-item index="/breakcontract">审核毁约</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="3">
