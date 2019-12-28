@@ -1,5 +1,5 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.171:8080"
+  serverUrl: "http://192.168.218.172:8080"
 }
 
 export const OPTION_TYPE = [{
@@ -22,7 +22,7 @@ export const OPTION_TYPE = [{
 		label: '毁约审核中' 
 	}, {
 		value: '6',
-		label: '解除租赁' 
+		label: '已毁约' 
 	}
 ];
 
@@ -49,3 +49,12 @@ export const SIGN_STATUS = {
 	5: "毁约审核中",
 	6: "已毁约"
 }
+
+export const TOKEN_TYPE = [{
+		value: '1',
+		label: 'ETH'
+	}, {
+		value: '2',
+		label: 'RentToken'
+	}
+];

@@ -48,5 +48,14 @@ export default [{
     }, {
         path: '/checkbreak',
         component: r => require.ensure([], () => r(require('../page/checkbreak')), 'checkbreak')
+    }, {
+        path: '/token/transfer',
+        component: r => require.ensure([], () => r(require('../page/token')), 'transfer')
+    }, {
+        path: '/token/aprrove',
+        component: r => require.ensure([], () => r(require('../page/token/approve.vue')), 'aprrove')
+    }, {
+        path: '/token/getbalance',
+        component: r => require.ensure([], () => r(require('../page/token/getbalance.vue')), 'getbalance')
     }] 
 }]

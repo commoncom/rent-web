@@ -50,8 +50,9 @@
                       <span class="el-icon-coin">通证管理</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
-                       <el-menu-item index="/auth">转账</el-menu-item>
-                       <el-menu-item index="/auth/getauth">余额</el-menu-item>
+                       <el-menu-item index="/token/transfer">转账</el-menu-item>
+                       <el-menu-item index="/token/getbalance">余额查询</el-menu-item>
+                       <el-menu-item index="/token/aprrove">转账授权</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>

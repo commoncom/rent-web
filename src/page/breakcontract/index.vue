@@ -74,7 +74,7 @@
                           <el-form-item>
                             <el-button v-if="props.row.state == '5' || props.row.state == 5"                              size="small" type="primary"
                                 @click="passCheck(props.row)">通过</el-button>
-                            <el-button 
+                            <el-button v-if="props.row.state == '5' || props.row.state == 5" 
                                 size="small" type="danger"
                                 @click="rejectCheck(props.row)">拒绝</el-button>
                           </el-form-item>
@@ -110,6 +110,32 @@
                 </el-table> 
             </div>
           </div>
+          <el-dialog title="审核毁约" :visible.sync="breakDialogVisible" :show-close="false">
+            <el-form :model="checkForm">
+              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
+                <el-input v-model="checkForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="惩罚地址" :label-width="formLabelWidth">
+                <el-input v-model="checkForm.punishAddr"  id="punishAddr" @blur="inputBlur('punishAddr', checkForm.punishAddr)"  autocomplete="off"></el-input>
+                 {{checkForm.punishAddrErr}}
+              </el-form-item>
+              <el-form-item  label="惩罚数量" :label-width="formLabelWidth"> 
+                <el-input v-model="checkForm.punishAmount" id="punishAmount" @blur="inputBlur('punishAmount', checkForm.punishAmount)" autocomplete="off"></el-input>
+                {{checkForm.punishAmountErr}}
+              </el-form-item>
+              <el-form-item  label="审查人地址" :label-width="formLabelWidth"> 
+                <el-input v-model="checkForm.inspectAddr" id="inspectAddr" @blur="inputBlur('inspectAddr', checkForm.inspectAddr)" autocomplete="off"></el-input>
+                {{checkForm.inspectAddrErr}}
+              </el-form-item>
+              <el-form-item  label="私钥" :label-width="formLabelWidth">
+                <el-input v-model="checkForm.prikey" id="prikey" @blur="inputBlur('prikey', checkForm.prikey)"  autocomplete="off"></el-input>
+                {{checkForm.prikeyErr}}
+              </el-form-item>
+              <el-form-item>
+                 <el-button type="primary" @click="subBreak" v-bind:disabled="checkForm.beDisabled" style="float:right;">确 定</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
     </div>
 </template>
 <script>
@@ -128,59 +154,19 @@ export default {
     },
     data () {
       return {
-        houseInfo :{
-            houseAddr: '',
-            describe: '',
-            info : '',
-            tenancy: '',
-            rental: '',
-            hopeYou: '',
-            addr: '',
-            prikey: '',
-            houseAddrErr: '',
-            describeErr: '',
-            infoErr: '',
-            tenancyErr: '',
-            rentalErr: '',
-            hopeYouErr: '',
-            addrErr: '',
-            prikeyErr: '',
-            beDisabled: true
-        },
-        form: {
+        checkForm: {
            houseId: '',
-           rental: '',
-           addr: '',
-           prikey: ''
-        },
-        dialogForm: {
-           status: '',
-           data: '',
-           err: ''
-        },
-        authForm: {
-           houseId: '',
-           landlordAddr: '',
-           addr: '',
-           addrErr: '',
-           beDisabled: true
-        },
-        breakForm: {
-           houseId: '',
-           reason: '',
-           addr: '',
+           punishAddr: '',
+           punishAmount: 0,
+           inspectAddr: '',
            prikey: '',
-           reasonErr: '',
+           punishAddrErr: '',
+           punishAmountErr: '',
+           inspectAddrErr: '',
            prikeyErr: '',
            beDisabled: true
         },
         signStatus: SIGN_STATUS,
-        regTitle: '毁约结果',
-        breakTitle: '',
-        dialogFormVisible: false,
-        dialogVisible: false,
-        authVisible: false,
-        ctlFlag: false,
         breakDialogVisible: false,
         isSus: false,
         btnStatus: 0,
@@ -191,7 +177,7 @@ export default {
         remarks: COMMENT_REMARK,
         filters: {
             houseId: '',
-            type: '0'
+            type: '5'
         }
       }
    },
@@ -217,7 +203,7 @@ export default {
          this.dialogVisible = false;
       },
       closeBreak() {
-         this.breakForm = {};
+         this.checkForm = {};
       },
       getHouseData() {
           this.tableData = [];
@@ -278,16 +264,59 @@ export default {
       },
       passCheck(row) {
          console.log("leaser sign", row);
-         // this.$router.push({name: 'sign', params: {data: row}});
+         this.breakDialogVisible = true;
+         this.checkForm.houseId = row.houseId;
       },
       rejectCheck(row) {
           console.log("break", row);
           if (row) {
-            this.breakForm.houseId = row.houseId;
-            this.breakForm.addr = row.addr;
+            this.checkForm.houseId = row.houseId;
+            this.checkForm.addr = row.addr;
          }
-         this.breakTitle = "毁约房屋租赁合同";
          this.breakDialogVisible = true;
+      },
+      subBreak() {
+          let form = this.checkForm;
+          let url = UrlConfig.serverUrl+"/checkbreak/"+form.houseId+"/"+form.punishAddr+"/"+form.punishAmount+"/"+form.inspectAddr+"/"+form.prikey;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status) {
+                    this.$notify({
+                        message: "审核通过："+res.data.data,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.checkForm = {};
+                          this.breakDialogVisible = false; 
+                          this.getHouseData();
+                        }
+                    });  
+                } else  {
+                    this.$notify({
+                        message: "审核失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.dialogForm = {};
+                          this.breakDialogVisible = false; 
+                          this.getHouseData();
+                        }
+                    });      
+                } 
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                  message: "审核失败："+err.message,
+                  type: 'error',
+                  duration: 2000,
+                  onClose: action => {
+                    this.dialogForm = {};
+                    this.breakDialogVisible = false; 
+                    this.getHouseData();
+                  }
+              });  
+          });
       },
       dealTime(src) {
           console.log(111111, src);
@@ -324,46 +353,50 @@ export default {
             this.getMenu();
           }
       },
-      handleSelect(index){
-        this.selectIndex = index;
-        this.selectMenu = this.menuOptions[index];
-      },
       inputBlur:function(errorItem,inputContent){
           let flag = true;
           let addrReg = /^0x[0-9a-fA-F]{40}$/;
           console.log(inputContent, addrReg.test(inputContent));
-          if(errorItem === 'addr') {
+          if(errorItem === 'punishAddr') {
               if (inputContent === '') {
-                  this.authForm.addrErr = '地址不能为空';
+                  this.checkForm.punishAddrErr = '被惩罚的地址不能为空！';
                   flag = false;
               } else if (!addrReg.test(inputContent)) {
-                  this.authForm.addrErr = '请输入正确的地址！';
+                  this.checkForm.punishAddrErr = '请输入正确被惩罚的地址！';
                   flag = false;
               } else {
-                  this.authForm.addrErr = '';
+                  this.checkForm.punishAddrErr = '';
               }
-          } else if(errorItem === 'reason') { 
+          } else if(errorItem === 'punishAmount') { 
               if (inputContent === '') {
-                  this.breakForm.reasonErr = '地址不能为空';
+                  this.checkForm.punishAmountErr = '惩罚数量不能为空！';
                   flag = false;
               }  else {
-                  this.breakForm.reasonErr = '';
+                  this.checkForm.punishAmountErr = '';
+              }
+          } else if(errorItem === 'inspectAddr') { 
+              if (inputContent === '') {
+                  this.checkForm.inspectAddrErr = '审核人地址不能为空！';
+                  flag = false;
+              }  else if (!addrReg.test(inputContent)) {
+                  this.checkForm.inspectAddrErr = '请输入审查人正确的地址！';
+                  flag = false;
+              } else {
+                  this.checkForm.inspectAddrErr = '';
               }
           } else if(errorItem === 'prikey') { 
               if (inputContent === '') {
-                  this.breakForm.prikeyErr = '私钥不能为空';
+                  this.checkForm.prikeyErr = '私钥不能为空！';
                   flag = false;
               }  else {
-                  this.breakForm.prikeyErr = '';
+                  this.checkForm.prikeyErr = '';
               }
           } 
           //对于按钮的状态进行修改
           if (flag) {
-              this.authForm.beDisabled = false;
-              this.breakForm.beDisabled = false;
+              this.checkForm.beDisabled = false;
           } else {
-              this.authForm.beDisabled = true;
-              this.breakForm.beDisabled = true;
+              this.checkForm.beDisabled = true;
           }
       },
   },

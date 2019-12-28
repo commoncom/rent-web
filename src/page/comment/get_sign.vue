@@ -75,15 +75,15 @@
                             <el-button v-else
                                 size="small" type="primary"
                                 @click="withdrawRent(props.row)">退回押金</el-button>
-                            <el-button v-if="btnStatus == 2"
+                            <el-button v-if="btnStatus != 0"
                                 size="small" type="danger"
                                 @click="breakContract(props.row)">毁约租赁</el-button>
                             <el-button type="primary"
                                 size="small"
                                 @click="lookAuth(props.row)">查看认证</el-button>
-                            <el-button v-if="btnStatus == 0 || btnStatus == 1" type="primary"
+                            <el-button v-if="btnStatus == 0" type="primary"
                                 size="small"
-                                @click="cancle(props.row)">撤销发布</el-button>
+                                @click="cancle(props.row)">撤销租赁</el-button>
                           </el-form-item>
                         </el-form>
                       </template>
@@ -164,18 +164,17 @@
                   </el-form-item>
               </el-form>
           </el-dialog>
-          <el-dialog :title="breakTitle" :visible.sync="breakDialogVisible" :show-close="false">
+          <el-dialog :title="breakTitle" :visible.sync="breakDialogVisible" @close="closeBreak">
             <el-form :model="breakForm">
               <el-form-item label="房源链上ID" :label-width="formLabelWidth">
                 <el-input v-model="breakForm.houseId"  autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item v-if="breakCtl == true"  label="原因" :label-width="formLabelWidth">
+              <el-form-item  label="原因" :label-width="formLabelWidth">
                 <el-input v-model="breakForm.reason"  id="reason" @blur="inputBlur('reason', breakForm.reason)"  autocomplete="off"></el-input>
                  {{breakForm.reasonErr}}
               </el-form-item>
-              <el-form-item  label="地址" :label-width="formLabelWidth"> 
-                <el-input v-model="breakForm.breakAddr" :readyonly="breakCtl" id="breakAddr" @blur="inputBlur('breakAddr', breakForm.breakAddr)" autocomplete="off"></el-input>
-                {{breakForm.addrErr}}
+              <el-form-item  label="地址" :label-width="formLabelWidth">
+                <el-input v-model="breakForm.addr"  :readonly="true" autocomplete="off"></el-input>
               </el-form-item>
               <el-form-item  label="私钥" :label-width="formLabelWidth">
                 <el-input v-model="breakForm.prikey" id="prikey" @blur="inputBlur('prikey', breakForm.prikey)"  autocomplete="off"></el-input>
@@ -243,10 +242,9 @@ export default {
         breakForm: {
            houseId: '',
            reason: '',
-           breakAddr: '',
+           addr: '',
            prikey: '',
            reasonErr: '',
-           addrErr: '',
            prikeyErr: '',
            beDisabled: true
         },
@@ -256,7 +254,6 @@ export default {
         dialogVisible: false,
         authVisible: false,
         breakDialogVisible: false,
-        breakCtl: true,
         isSus: false,
         btnStatus: 0,
         formLabelWidth: '100px',
@@ -352,27 +349,15 @@ export default {
           console.log(url)
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
-                if(res.data.status == 200) {
+                if(res.data.status) {
                     this.dialogForm.status = "成功";
                     this.dialogForm.data = res.data.data; 
+                    // this.dialogFormVisible = false; // dialogFormVisible
                     this.dialogVisible = false;  
-                } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
-                    this.$notify({
-                        message: "预定房屋失败："+res.data.err,
-                        type: 'info',
-                        duration: 2000,
-                        onClose: action => {
-                          this.dialogForm = {};
-                          this.dialogVisible = false; 
-                          this.dialogFormVisible = false;
-                          this.filters.type = '1';
-                          this.getHouseData();
-                        }
-                    });      
                 } else {
                     console.log("request error:", res.data.err);  
                     this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;          
+                    this.dialogForm.err = res.data.err.err;          
                 }
           }).catch(err => {
               console.log("get house error", err);
@@ -391,122 +376,54 @@ export default {
          this.$router.push({name: 'signagree', params: {data: row}});
       },
       subBreak() {
-          if (this.breakCtl) { // 毁约
-              let url = UrlConfig.serverUrl+"/break/"+this.breakForm.houseId+"/"+this.breakForm.reason+"/"+this.breakForm.breakAddr+"/"+this.breakForm.prikey;
-              console.log(url)
-              this.dialogVisible = true;
-              this.isSus = true;
-              this.regTitle = "毁约结果";
-              axios.get(url, {}).then(res => {
-                    console.log(res.data); 
-                    if(res.data.status == 200) {
-                        this.dialogForm.status = "成功";
-                        this.dialogForm.data = res.data.data;
-                        this.$notify({
-                            message: "成功毁约！毁约hash："+res.data.data,
-                            type: 'success',
-                            duration: 2000,
-                            onClose: action => {
-                              this.breakDialogVisible = false;
-                              this.breakForm = {};
-                              this.getHouseData();
-                            }
-                        });
-                    } else if (res.data.status == 203) {
-                        this.$notify({
-                            message: res.data.err,
-                            type: 'info',
-                            duration: 2000,
-                            onClose: action => {
-                              this.breakDialogVisible = false;
-                              this.breakForm = {};
-                              this.$router.push({path: '/'}); 
-                            }
-                        });
-                    } else if (res.data.status == 207) {
-                        this.$notify({
-                            message: res.data.err,
-                            type: 'info',
-                            duration: 2000,
-                            onClose: action => {
-                              this.breakDialogVisible = false;
-                              this.breakForm = {};
-                              this.getHouseData();
-                            }
-                        });
-                    } else {
-                        this.$notify({
-                          message: "毁约失败："+res.data.err,
-                          type: 'warning',
-                          duration: 2000,
-                          onClose: action => {
-                             this.breakDialogVisible = false;
-                             this.breakForm = {};
-                          }
-                        });          
-                    }
-              }).catch(err => {
-                  console.log("get house error", err);
-                  this.$notify({
-                    message: "毁约失败："+err.message,
-                    type: 'warning',
-                    duration: 2000,
-                    onClose: action => {
-                       this.breakDialogVisible = false;
-                       this.breakForm = {};
-                    }
-                  }); 
-              });
-          } else { // 完成合同
-             let url = UrlConfig.serverUrl+"/complete/"+this.breakForm.houseId+"/"+this.breakForm.breakAddr+"/"+this.breakForm.prikey;
-             console.log(url)
-             axios.get(url, {}).then(res => {
-                    console.log(res.data);  
-                    if(res.data.status == 200) {
-                        this.$notify({
-                            message: "租赁完成",
-                            type: 'success',
-                            duration: 2000,
-                            onClose: action => {
-                              this.breakDialogVisible = false;
-                              this.breakForm = {};
-                              this.getHouseData();
-                            }
-                        });
-                    } else if (res.data.status == 201) {
-                        this.$notify({
-                            message: "租赁未完成："+res.data.err,
-                            type: 'info',
-                            duration: 2000,
-                            onClose: action => {
-                              this.breakDialogVisible = false;
-                              this.breakForm = {};
-                            }
-                        });
-                    } else {
-                        this.$notify({
-                          message: "更改租赁完成状态失败："+res.data.err,
-                          type: 'warning',
-                          duration: 2000,
-                          onClose: action => {
-                             this.breakDialogVisible = false;
-                             this.breakForm = {};
-                          }
-                        });          
-                    }
-             }).catch(err => {
-                  console.log("get house error", err);
-                  this.$notify({
-                    message: "更改租赁完成状态失败："+err.message,
-                    type: 'warning',
-                    duration: 2000,
-                    onClose: action => {
-                       this.breakDialogVisible = false;
-                       this.breakForm = {};
-                    }
-                  }); 
-            });
-          }
+          let url = UrlConfig.serverUrl+"/break/"+this.breakForm.houseId+"/"+this.breakForm.reason+"/"+this.breakForm.addr+"/"+this.breakForm.prikey;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status == 200) {
+                    this.$notify({
+                        message: "撤销房屋发布成功！",
+                        type: 'success',
+                        duration: 2000,
+                        onClose: action => {
+                          this.breakDialogVisible = false;
+                          this.breakForm = {};
+                          this.getHouseData();
+                        }
+                    });
+                } else if (res.data.status == 201) {
+                    this.$notify({
+                        message: "撤销房屋发布失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.breakDialogVisible = false;
+                          this.breakForm = {};
+                        }
+                    });
+                } else {
+                    this.$notify({
+                      message: "撤销房屋发布失败："+res.data.err,
+                      type: 'warning',
+                      duration: 2000,
+                      onClose: action => {
+                         this.breakDialogVisible = false;
+                         this.breakForm = {};
+                      }
+                    });          
+                }
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                message: "撤销房屋发布失败："+err.message,
+                type: 'warning',
+                duration: 2000,
+                onClose: action => {
+                   this.breakDialogVisible = false;
+                   this.breakForm = {};
+                }
+              }); 
+          });
       },
       cancle(row) {
          console.log("cancle", row);
@@ -517,14 +434,13 @@ export default {
          this.breakTitle = "撤销发布房屋租赁";
          this.breakDialogVisible = true;
       },
-      breakContract(row) { // 
+      breakContract(row) {
           console.log("break", row);
           if (row) {
             this.breakForm.houseId = row.houseId;
             this.breakForm.addr = row.addr;
          }
          this.breakTitle = "毁约房屋租赁合同";
-         this.breakCtl = true;
          this.breakDialogVisible = true;
       },
       inspectBreak(row) {
@@ -532,13 +448,6 @@ export default {
       },
       achieveRent(row) {
          console.log("achieveRent", row);
-         if (row) {
-            this.breakForm.houseId = row.houseId;
-            this.breakForm.addr = row.addr;
-         }
-         this.breakCtl = false;
-         this.breakTitle = "租赁完成请求";
-         this.breakDialogVisible = true;
       },
       withdrawRent(row) {
          console.log("withdrawRent", row);
@@ -652,19 +561,12 @@ export default {
               }
           } else if(errorItem === 'reason') { 
               if (inputContent === '') {
-                  this.breakForm.reasonErr = '毁约理由不能为空';
+                  this.breakForm.reasonErr = '地址不能为空';
                   flag = false;
               }  else {
                   this.breakForm.reasonErr = '';
               }
-          } else if(errorItem === 'breakAddr') { 
-              if (inputContent === '') {
-                  this.breakForm.addrErr = '地址不能为空';
-                  flag = false;
-              }  else {
-                  this.breakForm.addrErr = '';
-              }
-          } else if(errorItem === 'prikey') {  // 
+          } else if(errorItem === 'prikey') { 
               if (inputContent === '') {
                   this.breakForm.prikeyErr = '私钥不能为空';
                   flag = false;
