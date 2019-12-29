@@ -47,7 +47,9 @@ export const SIGN_STATUS = {
 	3: "租赁到期",
 	4: "取消租赁",
 	5: "毁约审核中",
-	6: "已毁约"
+	6: "已毁约",
+	7: "房东已评论",
+	8: "租户已评论"
 }
 
 export const TOKEN_TYPE = [{

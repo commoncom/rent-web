@@ -41,8 +41,7 @@
                       <span class="el-icon-s-comment">评论管理</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
-                       <el-menu-item index="/auth">评论房源</el-menu-item>
-                       <el-menu-item index="/auth/getauth">获取评论</el-menu-item>
+                       <el-menu-item index="/comment/getcomment">获取评论</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="5">

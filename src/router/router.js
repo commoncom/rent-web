@@ -57,5 +57,9 @@ export default [{
     }, {
         path: '/token/getbalance',
         component: r => require.ensure([], () => r(require('../page/token/getbalance.vue')), 'getbalance')
+    }, {
+        path: '/comment/getcomment',
+        name: 'getcomment',
+        component: r => require.ensure([], () => r(require('../page/comment/get_comment.vue')), 'getcomment')
     }] 
 }]
