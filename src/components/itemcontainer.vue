@@ -1,8 +1,8 @@
 <template>
   	<section>
     	<header class="top_tips">
-    	    <!---->
-    	    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    	    <!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    	    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css"> 
     		<span class="num_tip" v-if="fatherComponent == 'item'">欢迎来到区块链租房平台{{itemNum}}</span>
     	</header>
     	<div v-if="fatherComponent == 'home'" >
@@ -25,7 +25,6 @@
     	</div>
   	</section>
 </template>
-
 <script>
 import { mapState, mapActions } from 'vuex'
 export default {

@@ -78,6 +78,9 @@
                             <el-button v-if="btnStatus == 2"
                                 size="small" type="danger"
                                 @click="breakContract(props.row)">毁约租赁</el-button>
+                            <el-button v-if="props.row.houseState == 3 || props.row.houseState == 6"
+                                size="small" type="warning"
+                                @click="comment(props.row)">交易评论</el-button>
                             <el-button type="primary"
                                 size="small"
                                 @click="lookAuth(props.row)">查看认证</el-button>
@@ -186,13 +189,44 @@
               </el-form-item>
             </el-form>
           </el-dialog>
+          <el-dialog title="评论" :visible.sync="commentDialogVisible" class="dialog_size" top :show-close="false">
+            <el-form :model="commentForm"> 
+              <el-form-item label="租赁关系" :label-width="formLabelWidth">
+                  <el-select v-model="commentForm.type" clearable placeholder="请选择租赁关系">
+                    <el-option v-for="(item, index) in releations" :key="index" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+              </el-form-item>  
+              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
+                <el-input v-model="commentForm.houseId"  :readonly="true" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item  label="分数" :label-width="formLabelWidth">
+                <el-slider v-model="commentForm.scope"  :step="1" show-stops :max="5" :marks="marks"></el-slider>
+              </el-form-item>
+              <el-form-item  :label="comCtx" :label-width="formLabelWidth">
+                <el-input type="textarea" :rows="2" v-model="commentForm.ctx"  id="ctx" @blur="inputBlur('ctx', commentForm.ctx)"  autocomplete="off"></el-input>
+                 {{commentForm.ctxErr}}
+              </el-form-item>
+              <el-form-item  label="地址" :label-width="formLabelWidth"> 
+                <el-input v-model="commentForm.addr" id="addr" @blur="inputBlur('addr', commentForm.addr)" autocomplete="off"></el-input>
+                {{commentForm.addrErr}}
+              </el-form-item>
+              <el-form-item  label="私钥" :label-width="formLabelWidth">
+                <el-input v-model="commentForm.prikey" id="prikey" @blur="inputBlur('prikey', commentForm.prikey)"  autocomplete="off"></el-input>
+                {{commentForm.prikeyErr}}
+              </el-form-item>
+              <el-form-item>
+                 <el-button type="primary" @click="subComment" v-bind:disabled="commentForm.beDisabled" style="float:right;">确 定</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig, OPTION_TYPE, COMMENT_REMARK} from 'src/common/js/globe';
+import {UrlConfig, OPTION_TYPE, COMMENT_REMARK, RELATION_TYPE} from 'src/common/js/globe';
 export default {
     name: 'gethouse',
     components: {
@@ -250,12 +284,28 @@ export default {
            prikeyErr: '',
            beDisabled: true
         },
+        commentForm: {
+           type: '',
+           houseId: '',
+           scope: 0,
+           ctx: '',
+           addr: '',
+           prikey: '',
+           landlordAddr: '',
+           ctxErr: '',
+           scopeErr: '',
+           addrErr: '',
+           prikeyErr: '',
+           beDisabled: true
+        },
         regTitle: '预约结果',
         breakTitle: '',
+        comCtx: '评论',
         dialogFormVisible: false,
         dialogVisible: false,
         authVisible: false,
         breakDialogVisible: false,
+        commentDialogVisible: false,
         breakCtl: true,
         isSus: false,
         btnStatus: 0,
@@ -264,10 +314,19 @@ export default {
         currentPage: 1,
         expendRow: [],
         options: OPTION_TYPE,
+        releations: RELATION_TYPE,
         remarks: COMMENT_REMARK,
         filters: {
             houseId: '',
             type: '0'
+        },
+        marks: {
+           0: '0',
+           1: '1',
+           2: '2',
+           3: '3',
+           4: '4', 
+           5: '5'
         }
       }
    },
@@ -508,6 +567,86 @@ export default {
             });
           }
       },
+      subComment() {
+          console.log("sub comment",this.commentForm);
+          if (this.commentForm.type == '2') { // 我是租户
+             this.comCtx = "对租户的评论";
+             if (this.commentForm.landlordAddr != this.commentForm.addr) {
+                  this.$notify({
+                    message: "地址输入错误！",
+                    type: 'info',
+                    duration: 2000,
+                    onClose: action => {
+                      this.commentDialogVisible = false;
+                      this.commentForm = {};
+                    }
+                });
+               return;
+             }
+          } else {
+             this.comCtx = "对房源以及房东的评论";
+          }
+          let url = UrlConfig.serverUrl+"/comment/"+this.commentForm.houseId+"/"+this.commentForm.scope+"/"+this.commentForm.ctx+"/"+this.commentForm.addr+"/"+this.commentForm.prikey;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data); 
+                if(res.data.status == 200) {
+                    this.$notify({
+                        message: "评论成功！评论hash："+res.data.data,
+                        type: 'success',
+                        duration: 2000,
+                        onClose: action => {
+                          this.commentDialogVisible = false;
+                          this.commentForm = {};
+                          this.$router.push({name: '/getcomment', params: {data: this.commentForm}});
+                        }
+                    });
+                } else if (res.data.status == 203) {
+                    this.$notify({
+                        message: res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.commentDialogVisible = false;
+                          this.commentForm = {};
+                          this.$router.push({name: '/getcomment', params: {data: this.commentForm}});
+                        }
+                    });
+                } else if (res.data.status == 207) {
+                    this.$notify({
+                        message: res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.commentDialogVisible = false;
+                          this.commentForm = {};
+                          this.getHouseData();
+                        }
+                    });
+                } else {
+                    this.$notify({
+                      message: "评论失败："+res.data.err,
+                      type: 'warning',
+                      duration: 2000,
+                      onClose: action => {
+                         this.commentDialogVisible = false;
+                          this.commentForm = {};
+                      }
+                    });          
+                }
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                message: "评论失败："+err.message,
+                type: 'warning',
+                duration: 2000,
+                onClose: action => {
+                   this.commentDialogVisible = false;
+                          this.commentForm = {};
+                }
+              }); 
+          });
+      },
       cancle(row) {
          console.log("cancle", row);
          if (row) {
@@ -606,6 +745,12 @@ export default {
                 }
               }); 
           });
+      },
+      comment(row) {
+          console.log("comment info", row);
+          this.commentForm.houseId = row.houseId;
+          this.commentForm.landlordAddr = row.landlordAddr;
+          this.commentDialogVisible = true;
       },
       expand(row, status){
         if (status) {
@@ -713,6 +858,9 @@ export default {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
       font-size: 30px;
+    }
+    .dialog_size {
+      font-size: 20px;
     }
     .moveCenter {
        margin-left: 250px;

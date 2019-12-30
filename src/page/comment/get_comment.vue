@@ -233,7 +233,7 @@ export default {
       },
       comment(row) {
          console.log("leaser sign", row);
-         this.$router.push({name: 'sign', params: {data: row}});
+         
       },
       breakContract(row) {
           console.log("break", row);

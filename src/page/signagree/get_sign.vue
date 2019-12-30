@@ -37,6 +37,9 @@
                           <el-form-item label="房屋链上ID">
                             <span>{{props.row.houseId}}</span>
                           </el-form-item>
+                          <el-form-item label="租户地址">
+                            <span>{{props.row.leaserAddr}}</span>
+                          </el-form-item>
                           <el-form-item label="租期">
                             <span>{{props.row.tenancy}}</span>
                           </el-form-item>
@@ -54,6 +57,15 @@
                           </el-form-item>
                            <el-form-item label="违约金(Token/日)">
                             <span>{{props.row.flsify_month}}个</span>
+                          </el-form-item>
+                          <el-form-item label="毁约理由" v-if="props.row.state == '6'">
+                            <span>{{props.row.reason}}</span>
+                          </el-form-item>
+                           <el-form-item label="租赁开始时间">
+                            <span>{{props.row.rentStartTime}}</span>
+                          </el-form-item>
+                          <el-form-item label="租赁结束时间">
+                            <span>{{props.row.rentEndTime}}</span>
                           </el-form-item>
                           <el-form-item>
                           </el-form-item>
@@ -77,7 +89,7 @@
                     <el-table-column
                       label="租金" width="60"
                       prop="rental">
-                    </el-table-column> 
+                    </el-table-column>
                     <el-table-column label="房东地址" prop="addr">
                     </el-table-column>
                     <el-table-column label="状态" width="80">
@@ -233,6 +245,10 @@ export default {
                         tableData.flsify_month = item.flsify_month;
                         tableData.landlordSignTime = this.dealTime(item.landlord_sign_time);
                         tableData.state = item.state;
+                        tableData.leaserAddr = item.leaser_addr;
+                        tableData.reason = item.reason;
+                        tableData.rentStartTime = this.dealTime(item.rent_start_time);
+                        tableData.rentEndTime = this.dealTime(item.rent_end_time);
                         this.tableData.push(tableData);
                     })        
                 } else {

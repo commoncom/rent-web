@@ -1,5 +1,5 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.172:8080"
+  serverUrl: "http://192.168.218.173:8080"
 }
 
 export const OPTION_TYPE = [{
@@ -52,9 +52,17 @@ export const SIGN_STATUS = {
 	8: "租户已评论"
 }
 
+export const RELATION_TYPE = [{
+		value: '1',
+		label: '我是租户'
+	}, {
+		value: '2',
+		label: '我是房东'
+	}]
+
 export const TOKEN_TYPE = [{
 		value: '1',
-		label: 'ETH'
+		label: 'Eth'
 	}, {
 		value: '2',
 		label: 'RentToken'
