@@ -208,11 +208,11 @@
                  {{commentForm.ctxErr}}
               </el-form-item>
               <el-form-item  label="地址" :label-width="formLabelWidth"> 
-                <el-input v-model="commentForm.addr" id="addr" @blur="inputBlur('addr', commentForm.addr)" autocomplete="off"></el-input>
+                <el-input v-model="commentForm.addr" id="addr" @blur="inputBlur('commAddr', commentForm.addr)" autocomplete="off"></el-input>
                 {{commentForm.addrErr}}
               </el-form-item>
               <el-form-item  label="私钥" :label-width="formLabelWidth">
-                <el-input v-model="commentForm.prikey" id="prikey" @blur="inputBlur('prikey', commentForm.prikey)"  autocomplete="off"></el-input>
+                <el-input v-model="commentForm.prikey" id="prikey" @blur="inputBlur('commPrikey', commentForm.prikey)"  autocomplete="off"></el-input>
                 {{commentForm.prikeyErr}}
               </el-form-item>
               <el-form-item>
@@ -571,26 +571,37 @@ export default {
           console.log("sub comment",this.commentForm);
           if (this.commentForm.type == '2') { // 我是租户
              this.comCtx = "对租户的评论";
+             console.log("subcomment", this.commentForm.landlordAddr, this.commentForm.addr, this.commentForm.landlordAddr == this.commentForm.addr)
              if (this.commentForm.landlordAddr != this.commentForm.addr) {
                   this.$notify({
-                    message: "地址输入错误！",
+                    message: "地址输入错误，请输入房东地址！",
                     type: 'info',
-                    duration: 2000,
-                    onClose: action => {
-                      this.commentDialogVisible = false;
-                      this.commentForm = {};
-                    }
+                    duration: 2000
+                    // onClose: action => {
+                    //   this.commentDialogVisible = false;
+                    //   this.commentForm = {};
+                    // }
                 });
-               return;
              }
           } else {
              this.comCtx = "对房源以及房东的评论";
+             if (this.commentForm.landlordAddr == this.commentForm.addr) {
+                  this.$notify({
+                    message: "地址输入错误，请输入租户地址！",
+                    type: 'info',
+                    duration: 2000
+                    // onClose: action => {
+                    //   this.commentDialogVisible = false;
+                    //   this.commentForm = {};
+                    // }
+                });
+             }
           }
-          let url = UrlConfig.serverUrl+"/comment/"+this.commentForm.houseId+"/"+this.commentForm.scope+"/"+this.commentForm.ctx+"/"+this.commentForm.addr+"/"+this.commentForm.prikey;
+          let url = UrlConfig.serverUrl+"/comment/"+this.commentForm.houseId+"/"+this.commentForm.type+"/"+this.commentForm.scope+"/"+this.commentForm.ctx+"/"+this.commentForm.addr+"/"+this.commentForm.prikey;
           console.log(url)
           axios.get(url, {}).then(res => {
                 console.log(res.data); 
-                if(res.data.status == 200) {
+                if(res.data.status) {
                     this.$notify({
                         message: "评论成功！评论hash："+res.data.data,
                         type: 'success',
@@ -601,18 +612,18 @@ export default {
                           this.$router.push({name: '/getcomment', params: {data: this.commentForm}});
                         }
                     });
-                } else if (res.data.status == 203) {
+                } else if (res.data.status == 202) {
                     this.$notify({
-                        message: res.data.err,
+                        message: "请先登录！",
                         type: 'info',
                         duration: 2000,
                         onClose: action => {
                           this.commentDialogVisible = false;
                           this.commentForm = {};
-                          this.$router.push({name: '/getcomment', params: {data: this.commentForm}});
+                          this.$router.push({name: '/login', params: {data: this.commentForm}});
                         }
                     });
-                } else if (res.data.status == 207) {
+                } else if (res.data.status == 204) {
                     this.$notify({
                         message: res.data.err,
                         type: 'info',
@@ -629,7 +640,7 @@ export default {
                       type: 'warning',
                       duration: 2000,
                       onClose: action => {
-                         this.commentDialogVisible = false;
+                          this.commentDialogVisible = false;
                           this.commentForm = {};
                       }
                     });          
@@ -642,7 +653,7 @@ export default {
                 duration: 2000,
                 onClose: action => {
                    this.commentDialogVisible = false;
-                          this.commentForm = {};
+                   this.commentForm = {};
                 }
               }); 
           });
@@ -749,7 +760,7 @@ export default {
       comment(row) {
           console.log("comment info", row);
           this.commentForm.houseId = row.houseId;
-          this.commentForm.landlordAddr = row.landlordAddr;
+          this.commentForm.landlordAddr = row.addr;
           this.commentDialogVisible = true;
       },
       expand(row, status){
@@ -802,6 +813,13 @@ export default {
               }  else {
                   this.breakForm.reasonErr = '';
               }
+          } else if(errorItem === 'ctx') { 
+              if (inputContent === '') {
+                  this.commentForm.ctxErr = '评论内容不能为空！';
+                  flag = false;
+              }  else {
+                  this.commentForm.ctxErr = '';
+              }
           } else if(errorItem === 'breakAddr') { 
               if (inputContent === '') {
                   this.breakForm.addrErr = '地址不能为空';
@@ -816,14 +834,30 @@ export default {
               }  else {
                   this.breakForm.prikeyErr = '';
               }
-          } 
+          } else if(errorItem === 'commAddr') { 
+              if (inputContent === '') {
+                  this.commentForm.addrErr = '地址不能为空';
+                  flag = false;
+              }  else {
+                  this.commentForm.addrErr = '';
+              }
+          } else if(errorItem === 'commPrikey') {  // 
+              if (inputContent === '') {
+                  this.commentForm.prikeyErr = '私钥不能为空';
+                  flag = false;
+              }  else {
+                  this.commentForm.prikeyErr = '';
+              }
+          }
           //对于按钮的状态进行修改
           if (flag) {
               this.authForm.beDisabled = false;
               this.breakForm.beDisabled = false;
+              this.commentForm.beDisabled = false;
           } else {
               this.authForm.beDisabled = true;
               this.breakForm.beDisabled = true;
+              this.commentForm.beDisabled = true;
           }
       },
   },

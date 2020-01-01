@@ -5,6 +5,7 @@ export default [{
     component: App,
     children: [{
         path: '',
+        name: 'login',
         component: r => require.ensure([], () => r(require('../page/home')), 'home')
     }, {
         path: '/register',
