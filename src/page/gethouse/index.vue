@@ -189,10 +189,10 @@
               </el-form-item>
             </el-form>
           </el-dialog>
-          <el-dialog title="评论" :visible.sync="commentDialogVisible" class="dialog_size" top :show-close="false">
+          <el-dialog title="评论" :visible.sync="commentDialogVisible"  class="dialog_size" top :show-close="false">
             <el-form :model="commentForm"> 
               <el-form-item label="租赁关系" :label-width="formLabelWidth">
-                  <el-select v-model="commentForm.type" clearable placeholder="请选择租赁关系">
+                  <el-select v-model="commentForm.type" clearable placeholder="请选择租赁关系" @change="changeVal">
                     <el-option v-for="(item, index) in releations" :key="index" :label="item.label" :value="item.value">
                     </el-option>
                   </el-select>
@@ -300,7 +300,7 @@ export default {
         },
         regTitle: '预约结果',
         breakTitle: '',
-        comCtx: '评论',
+        comCtx: '评论内容',
         dialogFormVisible: false,
         dialogVisible: false,
         authVisible: false,
@@ -567,33 +567,32 @@ export default {
             });
           }
       },
+      changeVal(val) {
+          console.log("change value", val);
+          if (this.commentForm.type == '2') { // 房东
+              this.comCtx = "对租户的评论";
+              this.commentForm.addr = this.commentForm.landlordAddr;
+          } else { // 租户
+              this.comCtx = "对房源和房东的评论";
+              this.commentForm.addr = "";
+          }
+      },
       subComment() {
           console.log("sub comment",this.commentForm);
-          if (this.commentForm.type == '2') { // 我是租户
-             this.comCtx = "对租户的评论";
-             console.log("subcomment", this.commentForm.landlordAddr, this.commentForm.addr, this.commentForm.landlordAddr == this.commentForm.addr)
+          if (this.commentForm.type == '2') { // 我是房东
              if (this.commentForm.landlordAddr != this.commentForm.addr) {
                   this.$notify({
                     message: "地址输入错误，请输入房东地址！",
                     type: 'info',
                     duration: 2000
-                    // onClose: action => {
-                    //   this.commentDialogVisible = false;
-                    //   this.commentForm = {};
-                    // }
                 });
              }
           } else {
-             this.comCtx = "对房源以及房东的评论";
              if (this.commentForm.landlordAddr == this.commentForm.addr) {
                   this.$notify({
                     message: "地址输入错误，请输入租户地址！",
                     type: 'info',
                     duration: 2000
-                    // onClose: action => {
-                    //   this.commentDialogVisible = false;
-                    //   this.commentForm = {};
-                    // }
                 });
              }
           }
