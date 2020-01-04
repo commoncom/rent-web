@@ -19,7 +19,7 @@
 git clone https://github.com/commoncom/rent-web.git
 
 # 进入文件夹
-cd vue2-happyfri
+cd rent-web
 
 # 安装依赖
 npm install 或 yarn(推荐)
@@ -39,7 +39,7 @@ npm run build
 [demo地址](https://cangdu.org/happyfri/)（请用chrome手机模式预览）
 
 ### 移动端扫描下方二维码
-<img src='https://github.com/bailicangdu/vue2-happyfri/blob/master/src/images/ewm.png' width="300" height="300" />
+<img src='https://github.com/bailicangdu/rent-web/blob/master/src/images/ewm.png' width="300" height="300" />
 
 
 
