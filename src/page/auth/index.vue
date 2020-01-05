@@ -103,16 +103,16 @@ export default {
    },
    methods : {
       closeBut() {
+          this.form = {};
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.canClose = false;
-              this.form = {};
               this.jumpLog();
           }
       },
       jumpLog() {
          if (this.isSus) {
-            this.$router.push({path: 'release'}); 
+            this.$router.push({path: '/release'}); 
             this.houseInfo = {};
          }
       },
@@ -128,14 +128,14 @@ export default {
           let info = this.houseInfo;
           let url = UrlConfig.serverUrl+"/auth/"+info.addr+"/"+info.idCard+"/"+info.guid+"/"+info.userName+"/"+info.userId+"/"+info.prikey;
           console.log(url);
+          this.regTitle = "认证结果";
           this.dialogFormVisible = true;
           axios.get(url, {}).then(res => {
-                this.regTitle = "认证结果";
                 console.log("rtn", res.data);
                 if(res.data.status) {
                     this.newMap.set(this.houseInfo.userId, res.data.data); 
                     this.form.data = res.data.data;
-                    this.form.status = "成功";               
+                    this.form.status = "成功";             
                 } else {
                     this.form.status = "失败"; 
                     this.isSus = false;
@@ -143,8 +143,8 @@ export default {
                 }
                 this.canClose = true;
           }).catch(err => {
-              this.form = err.data;
-              this.regTitle = "认证结果";
+              this.form.statue = "失败";
+              this.form.err = err.data;
               this.canClose = true;
           });
       },
