@@ -1,5 +1,5 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.174:8080"
+  serverUrl: "http://192.168.218.175:8080"
 }
 
 export const OPTION_TYPE = [{

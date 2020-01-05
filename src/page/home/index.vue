@@ -92,7 +92,7 @@ export default {
    },
    methods : {
       closeBut() {
-          this.form
+          this.form = {};
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.regTitle = "登录中，请稍等.....";
