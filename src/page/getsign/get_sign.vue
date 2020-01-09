@@ -22,7 +22,7 @@
                                   <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
                               </el-form-item>
                       </el-form>
-                  </el-col>
+                    </el-col>
                    <el-table
                     :data="tableData"
                     @expand='expand'
@@ -193,7 +193,7 @@ import axios from 'axios';
 import http from 'http';
 import {UrlConfig, OPTION_TYPE, COMMENT_REMARK} from 'src/common/js/globe';
 export default {
-    name: 'gethouse',
+    name: 'getsign',
     components: {
       itemcontainer
     },
@@ -598,7 +598,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 20%;
+      top: 10%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

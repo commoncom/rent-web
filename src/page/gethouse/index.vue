@@ -105,7 +105,10 @@
                       label="租金"
                       prop="rental">
                     </el-table-column> 
-                    <el-table-column label="房屋描述" width="160" prop="describe">
+                    <el-table-column label="房屋描述" width="160">
+                       <template slot-scope="scope">
+                          {{scope.row.describe | limitLen}}
+                        </template>
                     </el-table-column>
                     <el-table-column label="房屋评价等级" width="80"> 
                        <template slot-scope="scope">
@@ -115,7 +118,7 @@
                 </el-table> 
             </div>
           </div>
-           <el-dialog title="预定房租" :visible.sync="dialogFormVisible">
+           <el-dialog title="预定房租" :visible.sync="dialogFormVisible" top>
                 <el-form :model="form">
                   <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
                     <el-input v-model="form.houseId"   autocomplete="off"></el-input>
@@ -307,7 +310,7 @@ export default {
         breakDialogVisible: false,
         commentDialogVisible: false,
         breakCtl: true,
-        isSus: false,
+        isSus: true,
         btnStatus: 0,
         formLabelWidth: '100px',
         tableData: [],
@@ -348,8 +351,12 @@ export default {
               console.log('获取数据失败', err);
           }
       },
-      closeBut() {
+      closeBut() { // 预约关闭
+         this.dialogForm = {};
+         this.form = {};
+         this.isSus = true;
          this.dialogVisible = false;
+         this.dialogFormVisible = false;
       },
       closeBreak() {
          this.breakForm = {};
@@ -404,7 +411,7 @@ export default {
           }
           return '';
       },
-      comfirmSub() {
+      comfirmSub() { // 请求签订房屋
           console.log("comfirm Sub", this.form);
           this.dialogVisible = true;
           let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
@@ -415,6 +422,15 @@ export default {
                     this.dialogForm.status = "成功";
                     this.dialogForm.data = res.data.data; 
                     this.dialogVisible = false;  
+                    this.$notify({
+                        message: "预定成功!",
+                        type: 'success',
+                        duration: 2000,
+                        onClose: action => {
+                          this.dialogForm = {};
+                          this.getHouseData();
+                        }
+                    }); 
                 } else if (res.data.status == 203 || res.data.status == 204 || res.data.status == 205) {
                     this.$notify({
                         message: "预定房屋失败："+res.data.err,
@@ -431,12 +447,16 @@ export default {
                 } else {
                     console.log("request error:", res.data.err);  
                     this.dialogForm.status = "失败";
-                    this.dialogForm.err = res.data.err;          
+                    this.dialogForm.err = res.data.err;   
+                    this.dialogVisible = false; 
+                    this.dialogFormVisible = false;       
                 }
           }).catch(err => {
               console.log("get house error", err);
               this.dialogForm.status = "失败";
               this.dialogForm.err = res.data.err;
+              this.dialogVisible = false; 
+              this.dialogFormVisible = false;
           });
       },
       orderHouse(row) {
@@ -467,6 +487,7 @@ export default {
                             duration: 2000,
                             onClose: action => {
                               this.breakDialogVisible = false;
+                              this.dialogVisible = false;
                               this.breakForm = {};
                               this.getHouseData();
                             }
@@ -478,6 +499,7 @@ export default {
                             duration: 2000,
                             onClose: action => {
                               this.breakDialogVisible = false;
+                              this.dialogVisible = false;
                               this.breakForm = {};
                               this.$router.push({path: '/'}); 
                             }
@@ -490,6 +512,7 @@ export default {
                             onClose: action => {
                               this.breakDialogVisible = false;
                               this.breakForm = {};
+                              this.dialogVisible = false;
                               this.getHouseData();
                             }
                         });
@@ -500,6 +523,7 @@ export default {
                           duration: 2000,
                           onClose: action => {
                              this.breakDialogVisible = false;
+                             this.dialogVisible = false;
                              this.breakForm = {};
                           }
                         });          

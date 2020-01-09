@@ -104,6 +104,7 @@ export default {
    methods : {
       closeBut() {
           this.form = {};
+          this.isSus = true;
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.canClose = false;

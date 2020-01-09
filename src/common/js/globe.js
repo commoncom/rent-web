@@ -1,5 +1,5 @@
 export const UrlConfig = {
-  serverUrl: "http://192.168.218.176:8080"
+  serverUrl: "http://192.168.218.177:8080"
 }
 
 export const OPTION_TYPE = [{
@@ -49,7 +49,8 @@ export const SIGN_STATUS = {
 	5: "毁约审核中",
 	6: "已毁约",
 	7: "房东已评论",
-	8: "租户已评论"
+	8: "租户已评论",
+	9: "拒绝毁约"
 }
 
 export const RELATION_TYPE = [{

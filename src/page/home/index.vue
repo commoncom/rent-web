@@ -105,10 +105,10 @@ export default {
       jumpLog() {
          this.userInfo = {};
          this.regSus = true;
-         this.$router.push({path: '/release'}); 
+         this.$router.push({path: '/auth'}); 
       },
       goRegister(){
-          this.$router.push({path: 'register'});
+          this.$router.push({path: '/register'});
       },
       submitForm:function(formInfo){
          console.log(this.userInfo, formInfo)

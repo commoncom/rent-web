@@ -72,7 +72,7 @@
                             <span>{{props.row.flsify_month}}个</span>
                           </el-form-item>
                           <el-form-item>
-                            <el-button v-if="props.row.state == '5' || props.row.state == 5"                              size="small" type="primary"
+                            <el-button v-if="props.row.state == '5' || props.row.state == 5 || props.row.state == 9"                              size="small" type="primary"
                                 @click="passCheck(props.row)">通过</el-button>
                             <el-button v-if="props.row.state == '5' || props.row.state == 5" 
                                 size="small" type="danger"
@@ -136,6 +136,28 @@
               </el-form-item>
             </el-form>
           </el-dialog>
+          <el-dialog title="审核毁约" :visible.sync="rejectBreakVisible" :show-close="false">
+            <el-form :model="rejectForm">
+              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
+                <el-input v-model="rejectForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="拒绝原因" :label-width="formLabelWidth">
+                <el-input v-model="rejectForm.rejReason" id="rejReason" @blur="inputBlur('rejReason', rejectForm.rejReason)"  autocomplete="off"></el-input>
+                {{rejectForm.rejReasonErr}}
+              </el-form-item>
+              <el-form-item  label="审查人地址" :label-width="formLabelWidth"> 
+                <el-input v-model="rejectForm.inspectAddr" id="inspectAddr" @blur="inputBlur('rejectAddr', rejectForm.inspectAddr)" autocomplete="off"></el-input>
+                {{rejectForm.inspectAddrErr}}
+              </el-form-item>
+              <el-form-item  label="私钥" :label-width="formLabelWidth">
+                <el-input v-model="rejectForm.prikey" id="prikey" @blur="inputBlur('rejectPrikey', rejectForm.prikey)"  autocomplete="off"></el-input>
+                {{rejectForm.prikeyErr}}
+              </el-form-item>
+              <el-form-item>
+                 <el-button type="primary" @click="rejectBreak" v-bind:disabled="rejectForm.beDisabled" style="float:right;">确 定</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
     </div>
 </template>
 <script>
@@ -166,8 +188,19 @@ export default {
            prikeyErr: '',
            beDisabled: true
         },
+        rejectForm: {
+           houseId: '',
+           rejReason: '',
+           inspectAddr: '',
+           prikey: '',
+           rejReasonErr: '',
+           inspectAddrErr: '',
+           prikeyErr: '',
+           beDisabled: true
+        },
         signStatus: SIGN_STATUS,
         breakDialogVisible: false,
+        rejectBreakVisible: false,
         isSus: false,
         btnStatus: 0,
         formLabelWidth: '100px',
@@ -270,10 +303,52 @@ export default {
       rejectCheck(row) {
           console.log("break", row);
           if (row) {
-            this.checkForm.houseId = row.houseId;
-            this.checkForm.addr = row.addr;
+            this.rejectForm.houseId = row.houseId;
          }
-         this.breakDialogVisible = true;
+         this.rejectBreakVisible = true;
+      },
+      rejectBreak() { // 拒绝毁约
+          let form = this.rejectForm;
+          let url = UrlConfig.serverUrl+"/rejectbreak/"+form.houseId+"/"+form.rejReason+"/"+form.inspectAddr+"/"+form.prikey;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status) {
+                    this.$notify({
+                        message: "已拒绝该申请！",
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.rejectForm = {};
+                          this.rejectBreakVisible = false; 
+                          this.getHouseData();
+                        }
+                    });  
+                } else  {
+                    this.$notify({
+                        message: "审核失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.rejectForm = {};
+                          this.rejectBreakVisible = false; 
+                          this.getHouseData();
+                        }
+                    });      
+                } 
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                  message: "审核失败："+err.message,
+                  type: 'error',
+                  duration: 2000,
+                  onClose: action => {
+                    this.rejectForm = {};
+                    this.rejectBreakVisible = false; 
+                    this.getHouseData();
+                  }
+              });  
+          });
       },
       subBreak() {
           let form = this.checkForm;
@@ -414,7 +489,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 25%;
+      top: 30%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

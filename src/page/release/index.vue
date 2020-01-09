@@ -23,7 +23,7 @@
                     <el-input type="text" id="tenancy" v-model="houseInfo.tenancy" @blur="inputBlur('tenancy',houseInfo.tenancy)"></el-input>
                     <p>{{houseInfo.tenancyErr}}</p>
                 </el-form-item>
-                <el-form-item label="租金">
+                <el-form-item label="租金(RentToken/月)">
                     <el-input type="text" id="rental" v-model="houseInfo.rental" @blur="inputBlur('rental',houseInfo.rental)"></el-input>
                     <p>{{houseInfo.rentalErr}}</p>
                 </el-form-item>
@@ -90,6 +90,7 @@ export default {
             tenancy: '',
             rental: '',
             hopeYou: '',
+            deposit: '',
             addr: '',
             prikey: '',
             houseAddrErr: '',
@@ -98,6 +99,7 @@ export default {
             tenancyErr: '',
             rentalErr: '',
             hopeYouErr: '',
+            depositErr: '',
             addrErr: '',
             prikeyErr: '',
             beDisabled: true
@@ -142,7 +144,7 @@ export default {
                return false;
           }
           let info = this.houseInfo;
-          let url = UrlConfig.serverUrl+"/release/"+info.addr+"/"+info.prikey+"/"+info.houseAddr+"/"+info.describe+"/"+info.info+"/"+info.tenancy+"/"+info.rental+"/"+info.hopeYou;
+          let url = UrlConfig.serverUrl+"/release/"+info.addr+"/"+info.prikey+"/"+info.houseAddr+"/"+info.describe+"/"+info.info+"/"+info.tenancy+"/"+info.rental+"/"+info.hopeYou+"/"+info.deposit;
           console.log(url);
           this.dialogFormVisible = true;
           axios.get(url, {}).then(res => {
@@ -229,6 +231,13 @@ export default {
                   flag = false;
               } else{
                   this.houseInfo.hopeYouErr = '';
+              }
+          } else if (errorItem === 'deposit') {
+             if (inputContent === '') {
+                  this.houseInfo.depositErr = '押金不能为空!';
+                  flag = false;
+              } else{
+                  this.houseInfo.depositErr = '';
               }
           }
           //对于按钮的状态进行修改
