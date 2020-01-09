@@ -74,9 +74,9 @@
                           <el-form-item>
                             <el-button v-if="props.row.state == '5' || props.row.state == 5 || props.row.state == 9"                              size="small" type="primary"
                                 @click="passCheck(props.row)">通过</el-button>
-                            <el-button v-if="props.row.state == '5' || props.row.state == 5" 
+                            <!--<el-button v-if="props.row.state == '5' || props.row.state == 5" 
                                 size="small" type="danger"
-                                @click="rejectCheck(props.row)">拒绝</el-button>
+                                @click="rejectCheck(props.row)">拒绝</el-button> -->
                           </el-form-item>
                         </el-form>
                       </template>
