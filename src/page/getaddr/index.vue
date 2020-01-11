@@ -139,7 +139,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 35%;
+      top: 42%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

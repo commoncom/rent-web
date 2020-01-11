@@ -3,9 +3,11 @@
         <itemcontainer father-component="home"></itemcontainer>
         <!--发布房源-->
         <div id="bg" class="bg">
-             <div class="login">
-                  <div class="logo moveCenter">欢迎来到签订租房</div>
-                    <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
+             <div class="login">  
+                  <div  class="logo moveCenter">欢迎来到签订租房</div>
+                  <!--<div v-if="notOpen" class="logo moveCenter" style="margin-top:80px;height:20px;">欢迎来到签订租房</div>
+                  <div v-else class="logo moveCenter" style="margin-top:80px;height:425px;">欢迎来到签订租房</div>-->
+                    <el-col class="toolbar" style="padding-bottom:0px;height:20px;">
                       <el-form :inline="true" :model="filters">
                               <el-form-item :span="6">
                                   <el-input type="text" style="width:300px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
@@ -21,7 +23,7 @@
                     @expand='expand'
                     :expand-row-keys='expendRow'
                     :row-key="row => row.index"
-                    style="width: 100%">
+                    style="width: 100%; position:absolute;">
                     <el-table-column type="expand">
                       <template slot-scope="props">
                         <el-form label-position="left" inline class="demo-table-expand">
@@ -175,6 +177,7 @@ export default {
         dialogFormVisible: false,
         dialogVisible: false,
         authVisible: false,
+        notOpen: true,
         ctlFlag: false,
         breakDialogVisible: false,
         isSus: false,
@@ -295,10 +298,12 @@ export default {
       },
       expand(row, status){
         if (status) {
-          this.getSelectItemData(row)
+          this.getSelectItemData(row);
+          this.notOpen = true;
         }else{
               const index = this.expendRow.indexOf(row.index);
-              this.expendRow.splice(index, 1)
+              this.expendRow.splice(index, 1);
+              this.notOpen = false;
           }
       },
       getDetail(row) {
@@ -375,7 +380,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 25%;
+      top: 7%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
@@ -395,6 +400,7 @@ export default {
     }
     .moveCenter {
        margin-left: 250px;
+
     }
     .widthContrl {
        width: 400px;

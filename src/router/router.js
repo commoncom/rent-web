@@ -44,11 +44,11 @@ export default [{
         path: '/withdraw',
         component: r => require.ensure([], () => r(require('../page/withdraw')), 'withdraw')
     }, {
-        path: '/breakcontract',
-        component: r => require.ensure([], () => r(require('../page/breakcontract')), 'breakcontract')
-    }, {
         path: '/checkbreak',
         component: r => require.ensure([], () => r(require('../page/checkbreak')), 'checkbreak')
+    }, {
+        path: '/requestsign',
+        component: r => require.ensure([], () => r(require('../page/requestsign')), 'requestsign')
     }, {
         path: '/token/transfer',
         component: r => require.ensure([], () => r(require('../page/token')), 'transfer')

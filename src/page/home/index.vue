@@ -93,6 +93,7 @@ export default {
    methods : {
       closeBut() {
           this.form = {};
+          this.regSus = true;
           if (this.canClose) {
               this.dialogFormVisible = false;
               this.regTitle = "登录中，请稍等.....";
@@ -104,7 +105,6 @@ export default {
       },
       jumpLog() {
          this.userInfo = {};
-         this.regSus = true;
          this.$router.push({path: '/auth'}); 
       },
       goRegister(){

@@ -3,92 +3,179 @@
         <itemcontainer father-component="home"></itemcontainer>
         <!--发布房源-->
         <div id="bg" class="bg">
-          <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋浏览</div>
-                    <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
-                      <el-form :inline="true" :model="filters">
-                              <el-form-item :span="6">
-                                  <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
-                              </el-form-item>
-                              <!-- 操作类型下拉查询-->
-                              <el-form-item :span="3">
-                                  <el-select v-model="filters.type" clearable placeholder="房屋状态">
-                                      <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
-                                      </el-option>
-                                  </el-select>
-                              </el-form-item>
-                              <!-- 设置查询Form-->
-                              <el-form-item >
-                                  <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
-                              </el-form-item>
-                      </el-form>
-                  </el-col>
-                    <el-table :data="tableData" >
-                        <el-table-column
-                          label="房屋链上ID"
-                          prop="houseId">
-                        </el-table-column>
-                        <el-table-column
-                          label="房屋地址"
-                          prop="addr">
-                        </el-table-column>
-                        <el-table-column
-                          label="惩罚地址"
-                          prop="punishAddr">
-                        </el-table-column>
-                        <el-table-column label="房屋描述" width="160" prop="punishAmount">
-                        </el-table-column>
-                        <el-table-column label="操作">
-                          <template slot-scope="scope">
-                            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                          </template>
-                        </el-table-column>
-                   </el-table> 
+                  <div class="logo moveCenter" >欢迎来到审核毁约</div>
+                   <el-row>
+                      <el-col class="toolbar" style="height:50px;">
+                        <el-form :inline="true" :model="filters">
+                                <el-form-item :span="6">
+                                    <el-input type="text" style="width:300px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                                </el-form-item>
+                                <!-- 设置查询Form-->
+                                <el-form-item >
+                                    <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
+                                </el-form-item>
+                        </el-form>
+                     </el-col>
+                  </el-row>
+                   <el-table
+                    :data="tableData"
+                    @expand='expand'
+                    :expand-row-keys='expendRow'
+                    :row-key="row => row.index"
+                    style="width: 100%;position:absolute;">
+                    <el-table-column type="expand">
+                      <template slot-scope="props">
+                        <el-form label-position="left" inline class="demo-table-expand">
+                          <el-form-item label="房屋位置">
+                            <span>{{props.row.houseAddr}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋交易Hash">
+                            <span>{{props.row.txHash}}</span>
+                          </el-form-item>
+                          <el-form-item label="房东地址">
+                            <span>{{props.row.addr}}</span>
+                          </el-form-item>
+                          </el-form-item>
+                           <el-form-item label="租户地址">
+                            <span>{{props.row.leaserAddr}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋链上ID">
+                            <span>{{props.row.houseId}}</span>
+                          </el-form-item>
+                          <el-form-item label="租期">
+                            <span>{{props.row.tenancy}}</span>
+                          </el-form-item>
+                          <el-form-item label="租金">
+                            <span>{{props.row.rental}}</span>
+                          </el-form-item>
+                          <el-form-item label="房屋用途">
+                            <span>{{props.row.houseUse}}</span>
+                          </el-form-item>
+                          <el-form-item label="交付期限">
+                            <span>{{props.row.payDeadline}}天</span>
+                          </el-form-item>
+                          <el-form-item label="日常维修方">
+                            <span>{{props.row.payOne}}</span>
+                          </el-form-item>
+                          <el-form-item label="租赁开始时间">
+                            <span>{{props.row.rentStartTime}}</span>
+                          </el-form-item>
+                          <el-form-item label="租赁结束时间">
+                            <span>{{props.row.rentEndTime}}</span>
+                          </el-form-item>
+                          <el-form-item label="续租提前通知时间(月)">
+                            <span>{{props.row.renewalBeforeMonth}}</span>
+                          </el-form-item>
+                          <el-form-item label="双方提前终止通知时间(月)">
+                            <span>{{props.row.noticeBreakMonth}}</span>
+                          </el-form-item>
+                          <el-form-item v-if="props.row.state == 6" label="毁约原因">
+                            <span>{{props.row.reason}}</span>
+                          </el-form-item>
+                           <el-form-item label="违约金(Token/日)">
+                            <span>{{props.row.flsify_month}}个</span>
+                          </el-form-item>
+                          <el-form-item>
+                            <el-button v-if="props.row.state == '5' || props.row.state == 5 || props.row.state == 9"                              size="small" type="primary"
+                                @click="passCheck(props.row)">通过</el-button>
+                            <!--<el-button v-if="props.row.state == '5' || props.row.state == 5" 
+                                size="small" type="danger"
+                                @click="rejectCheck(props.row)">拒绝</el-button> -->
+                          </el-form-item>
+                        </el-form>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="房屋位置"
+                      prop="houseAddr">
+                       <template slot-scope="scope">
+                          {{scope.row.houseAddr | limitLen}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="房屋链上ID" width="100">  
+                        <template slot-scope="scope">
+                          {{scope.row.houseId | limitLen}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="租金" width="60"
+                      prop="rental">
+                    </el-table-column> 
+                    <el-table-column label="房东地址" prop="addr">
+                    </el-table-column>
+                    <el-table-column label="状态" width="100">
+                       <template slot-scope="scope">
+                          {{signStatus[scope.row.state]}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="房东签订日期" width="90"> 
+                       <template slot-scope="scope">
+                          {{scope.row.landlordSignTime}}
+                        </template>
+                    </el-table-column>
+                </el-table> 
             </div>
           </div>
-           <el-dialog title="审核" :visible.sync="dialogFormVisible">
-                <el-form :model="form">
-                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
-                    <el-input v-model="form.houseId"   autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="惩罚数量" :label-width="formLabelWidth">
-                    <el-input v-model="form.rental"  autocomplete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="惩罚地址" :label-width="formLabelWidth">
-                    <el-input v-model="form.addr"   autocomplete="off"></el-input>
-                  </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="comfirmSub">确 定</el-button>
-              </div>
-          </el-dialog>
-          <el-dialog :title="regTitle" :visible.sync="dialogVisible" top :show-close="false">
-            <el-form :model="form">
-              <el-form-item label="状态" :label-width="formLabelWidth">
-                <el-input v-model="dialogForm.status"   autocomplete="off"></el-input>
+          <el-dialog title="审核毁约" :visible.sync="breakDialogVisible" :show-close="false">
+            <el-form :model="checkForm">
+              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
+                <el-input v-model="checkForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
               </el-form-item>
-              <el-form-item v-if = "isSus" label="链上Hash" :label-width="formLabelWidth">
-                <el-input v-model="dialogForm.data"  :readonly="true" autocomplete="off"></el-input>
+              <el-form-item label="惩罚地址" :label-width="formLabelWidth">
+                <el-input v-model="checkForm.punishAddr"  id="punishAddr" @blur="inputBlur('punishAddr', checkForm.punishAddr)"  autocomplete="off"></el-input>
+                 {{checkForm.punishAddrErr}}
               </el-form-item>
-              <el-form-item v-else label="错误原因" :label-width="formLabelWidth">
-                <el-input v-model="dialogForm.err"  :readonly="true" autocomplete="off"></el-input>
+              <el-form-item  label="惩罚数量" :label-width="formLabelWidth"> 
+                <el-input v-model="checkForm.punishAmount" id="punishAmount" @blur="inputBlur('punishAmount', checkForm.punishAmount)" autocomplete="off"></el-input>
+                {{checkForm.punishAmountErr}}
+              </el-form-item>
+              <el-form-item  label="审查人地址" :label-width="formLabelWidth"> 
+                <el-input v-model="checkForm.inspectAddr" id="inspectAddr" @blur="inputBlur('inspectAddr', checkForm.inspectAddr)" autocomplete="off"></el-input>
+                {{checkForm.inspectAddrErr}}
+              </el-form-item>
+              <el-form-item  label="私钥" :label-width="formLabelWidth">
+                <el-input v-model="checkForm.prikey" id="prikey" @blur="inputBlur('prikey', checkForm.prikey)"  autocomplete="off"></el-input>
+                {{checkForm.prikeyErr}}
+              </el-form-item>
+              <el-form-item>
+                 <el-button type="primary" @click="subBreak" v-bind:disabled="checkForm.beDisabled" style="float:right;">确 定</el-button>
               </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="closeBut">确 定</el-button>
-            </div>
           </el-dialog>
-        </div>
+          <el-dialog title="拒绝毁约" :visible.sync="rejectBreakVisible" :show-close="false">
+            <el-form :model="rejectForm">
+              <el-form-item label="房源链上ID" :label-width="formLabelWidth">
+                <el-input v-model="rejectForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="拒绝原因" :label-width="formLabelWidth">
+                <el-input v-model="rejectForm.rejReason" id="rejReason" @blur="inputBlur('rejReason', rejectForm.rejReason)"  autocomplete="off"></el-input>
+                {{rejectForm.rejReasonErr}}
+              </el-form-item>
+              <el-form-item  label="审查人地址" :label-width="formLabelWidth"> 
+                <el-input v-model="rejectForm.inspectAddr" id="inspectAddr" @blur="inputBlur('rejectAddr', rejectForm.inspectAddr)" autocomplete="off"></el-input>
+                {{rejectForm.inspectAddrErr}}
+              </el-form-item>
+              <el-form-item  label="私钥" :label-width="formLabelWidth">
+                <el-input v-model="rejectForm.prikey" id="prikey" @blur="inputBlur('rejectPrikey', rejectForm.prikey)"  autocomplete="off"></el-input>
+                {{rejectForm.prikeyErr}}
+              </el-form-item>
+              <el-form-item>
+                 <el-button type="primary" @click="rejectBreak" v-bind:disabled="rejectForm.beDisabled" style="float:right;">确 定</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
     </div>
 </template>
 <script>
 import itemcontainer from '../../components/itemcontainer'
 import axios from 'axios';
 import http from 'http';
-import {UrlConfig, OPTION_TYPE} from 'src/common/js/globe';
+import {UrlConfig, COMMENT_REMARK, SIGN_STATUS} from 'src/common/js/globe';
+import util from 'src/common/js/util'; // 引入时间控件
 export default {
-    name: 'gethouse',
+    name: 'breakcontract',
     components: {
       itemcontainer
     },
@@ -97,52 +184,52 @@ export default {
     },
     data () {
       return {
-        houseInfo :{
-            houseAddr: '',
-            describe: '',
-            info : '',
-            tenancy: '',
-            rental: '',
-            hopeYou: '',
-            addr: '',
-            prikey: '',
-            houseAddrErr: '',
-            describeErr: '',
-            infoErr: '',
-            tenancyErr: '',
-            rentalErr: '',
-            hopeYouErr: '',
-            addrErr: '',
-            prikeyErr: '',
-            beDisabled: true
-        },
-        form: {
+        checkForm: {
            houseId: '',
-           rental: '',
-           addr: '',
-           prikey: ''
+           punishAddr: '',
+           punishAmount: 0,
+           inspectAddr: '',
+           prikey: '',
+           punishAddrErr: '',
+           punishAmountErr: '',
+           inspectAddrErr: '',
+           prikeyErr: '',
+           beDisabled: true
         },
-        dialogForm: {
-           status: '',
-           data: '',
-           err: ''
+        rejectForm: {
+           houseId: '',
+           rejReason: '',
+           inspectAddr: '',
+           prikey: '',
+           rejReasonErr: '',
+           inspectAddrErr: '',
+           prikeyErr: '',
+           beDisabled: true
         },
-        regTitle: '预约结果',
-        dialogFormVisible: false,
-        dialogVisible: false,
+        signStatus: SIGN_STATUS,
+        breakDialogVisible: false,
+        rejectBreakVisible: false,
         isSus: false,
+        btnStatus: 0,
         formLabelWidth: '100px',
-        offset: 0, // new
-        limit: 20,
-        count: 0,
         tableData: [],
         currentPage: 1,
         expendRow: [],
-        options: OPTION_TYPE,
+        remarks: COMMENT_REMARK,
         filters: {
             houseId: '',
-            type: '0'
+            type: '5'
         }
+      }
+   },
+   filters: {
+      limitLen(src){
+          let a = src.split('', 10);
+          let b = a.join('');
+          if (src.length <= 10) {
+            return b;
+          }
+          return b + '...';
       }
    },
    methods : {
@@ -156,6 +243,9 @@ export default {
       closeBut() {
          this.dialogVisible = false;
       },
+      closeBreak() {
+         this.checkForm = {};
+      },
       getHouseData() {
           this.tableData = [];
           let houseId = this.filters.houseId;
@@ -163,8 +253,9 @@ export default {
               houseId = '0x';
           }
           console.log("house hash", this.filters.houseId)
-          let url = UrlConfig.serverUrl+"/gethouse/"+houseId+"/"+this.filters.type;
+          let url = UrlConfig.serverUrl+"/getagree/"+houseId;
           console.log(url);
+          this.btnStatus = this.filters.type;
           axios.get(url, {}).then(res => {
                 if(res.data.status) {
                     let releaseInfo = res.data.data; 
@@ -176,12 +267,22 @@ export default {
                         tableData.info = item.info;
                         tableData.tenancy = item.tenancy;
                         tableData.rental = item.rental;
-                        tableData.hopeYou = item.hope_you;
                         tableData.addr = item.addr;
+                        tableData.leaserAddr = item.leaser_addr;
                         tableData.houseId = item.house_id;
-                        tableData.userAddr = item.addr;
                         tableData.txHash = item.tx_hash;
                         tableData.index = index;
+                        tableData.houseUse = item.house_use;
+                        tableData.payDeadline = item.pay_deadline;
+                        tableData.payOne = item.pay_one;
+                        tableData.reason = item.reason;
+                        tableData.flsify_month = item.flsify_month;
+                        tableData.rentStartTime = this.dealTime(item.rent_start_time);
+                        tableData.rentEndTime = this.dealTime(item.rent_end_time);
+                        tableData.renewalBeforeMonth = item.renewal_before_month;
+                        tableData.noticeBreakMonth = item.notice_break_month;
+                        tableData.landlordSignTime = this.dealTime(item.landlord_sign_time);
+                        tableData.state = item.state;
                         this.tableData.push(tableData);
                     })        
                 } else {
@@ -203,66 +304,113 @@ export default {
           }
           return '';
       },
-      comfirmSub() {
-          console.log("comfirm Sub", this.form);
-          this.dialogVisible = true;
-          let url = UrlConfig.serverUrl+"/requestsign/"+this.form.addr+"/"+this.form.prikey+"/"+this.form.houseId+"/"+this.form.rental;
+      passCheck(row) {
+         console.log("leaser sign", row);
+         this.breakDialogVisible = true;
+         this.checkForm.houseId = row.houseId;
+      },
+      rejectCheck(row) {
+          console.log("break", row);
+          if (row) {
+            this.rejectForm.houseId = row.houseId;
+         }
+         this.rejectBreakVisible = true;
+      },
+      rejectBreak() { // 拒绝毁约
+          let form = this.rejectForm;
+          let url = UrlConfig.serverUrl+"/rejectbreak/"+form.houseId+"/"+form.rejReason+"/"+form.inspectAddr+"/"+form.prikey;
           console.log(url)
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
                 if(res.data.status) {
-                    console.log(res.data);       
-                } else {
-                    console.log(res.data);            
-                }
+                    this.$notify({
+                        message: "已拒绝该申请！",
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.rejectForm = {};
+                          this.rejectBreakVisible = false; 
+                          this.getHouseData();
+                        }
+                    });  
+                } else  {
+                    this.$notify({
+                        message: "审核失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.rejectForm = {};
+                          this.rejectBreakVisible = false; 
+                          this.getHouseData();
+                        }
+                    });      
+                } 
           }).catch(err => {
-              console.log("bind error", err);
-              this.$notify({title : '提示信息', message : "请检查网络状况!", type:'error'});
+              console.log("get house error", err);
+              this.$notify({
+                  message: "审核失败："+err.message,
+                  type: 'error',
+                  duration: 2000,
+                  onClose: action => {
+                    this.rejectForm = {};
+                    this.rejectBreakVisible = false; 
+                    this.getHouseData();
+                  }
+              });  
           });
       },
-      checkBreak(row) {
-         console.log(row);
-         this.dialogFormVisible = true;
-         this.form.houseId = row.houseId;
-         this.form.rental = row.rental;
+      subBreak() {
+          let form = this.checkForm;
+          let url = UrlConfig.serverUrl+"/checkbreak/"+form.houseId+"/"+form.punishAddr+"/"+form.punishAmount+"/"+form.inspectAddr+"/"+form.prikey;
+          console.log(url)
+          axios.get(url, {}).then(res => {
+                console.log(res.data);  
+                if(res.data.status) {
+                    this.$notify({
+                        message: "审核通过："+res.data.data,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.checkForm = {};
+                          this.breakDialogVisible = false; 
+                          this.getHouseData();
+                        }
+                    });  
+                } else  {
+                    this.$notify({
+                        message: "审核失败："+res.data.err,
+                        type: 'info',
+                        duration: 2000,
+                        onClose: action => {
+                          this.dialogForm = {};
+                          this.breakDialogVisible = false; 
+                          this.getHouseData();
+                        }
+                    });      
+                } 
+          }).catch(err => {
+              console.log("get house error", err);
+              this.$notify({
+                  message: "审核失败："+err.message,
+                  type: 'error',
+                  duration: 2000,
+                  onClose: action => {
+                    this.dialogForm = {};
+                    this.breakDialogVisible = false; 
+                    this.getHouseData();
+                  }
+              });  
+          });
       },
-      resetForm(){
-          this.houseInfo = {};
-      },
-      inputBlur(errorItem,inputContent) {
-          let flag = true;
-          if (errorItem === 'name') {
-              if (inputContent === '') {
-                  this.userInfo.nameErr = '用户名不能为空';
-                  flag = false;
-              } else{
-                  this.userInfo.nameErr = '';
-              }
-          } else if(errorItem === 'addr') {
-              if (inputContent === '') {
-                  this.userInfo.addrErr = '地址不能为空';
-                  flag = false;
-              }else{
-                  this.userInfo.addrErr = '';
-
-              }
-          } 
-          //对于按钮的状态进行修改
-          if (flag) {
-              this.userInfo.beDisabled = false;
-          }else{
-              this.userInfo.beDisabled = true;
+      dealTime(src) {
+          console.log(111111, src);
+          if (!src) {
+            return '';
           }
-      },
-      deleteSpecs(index){
-        this.specs.splice(index, 1);
-      },
-      handleSizeChange(val) {
-          console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {
-          this.currentPage = val;
-          this.offset = (val - 1)*this.limit;
+          let date = new Date();
+          let time = date.setTime(src);
+          let timeStamp = util.formatDate(new Date(time), 'yyyy/MM/dd'); // 将时间转为yyyy-MM-dd
+          return timeStamp;
       },
       expand(row, status){
         if (status) {
@@ -289,9 +437,51 @@ export default {
             this.getMenu();
           }
       },
-      handleSelect(index){
-        this.selectIndex = index;
-        this.selectMenu = this.menuOptions[index];
+      inputBlur:function(errorItem,inputContent){
+          let flag = true;
+          let addrReg = /^0x[0-9a-fA-F]{40}$/;
+          console.log(inputContent, addrReg.test(inputContent));
+          if(errorItem === 'punishAddr') {
+              if (inputContent === '') {
+                  this.checkForm.punishAddrErr = '被惩罚的地址不能为空！';
+                  flag = false;
+              } else if (!addrReg.test(inputContent)) {
+                  this.checkForm.punishAddrErr = '请输入正确被惩罚的地址！';
+                  flag = false;
+              } else {
+                  this.checkForm.punishAddrErr = '';
+              }
+          } else if(errorItem === 'punishAmount') { 
+              if (inputContent === '') {
+                  this.checkForm.punishAmountErr = '惩罚数量不能为空！';
+                  flag = false;
+              }  else {
+                  this.checkForm.punishAmountErr = '';
+              }
+          } else if(errorItem === 'inspectAddr') { 
+              if (inputContent === '') {
+                  this.checkForm.inspectAddrErr = '审核人地址不能为空！';
+                  flag = false;
+              }  else if (!addrReg.test(inputContent)) {
+                  this.checkForm.inspectAddrErr = '请输入审查人正确的地址！';
+                  flag = false;
+              } else {
+                  this.checkForm.inspectAddrErr = '';
+              }
+          } else if(errorItem === 'prikey') { 
+              if (inputContent === '') {
+                  this.checkForm.prikeyErr = '私钥不能为空！';
+                  flag = false;
+              }  else {
+                  this.checkForm.prikeyErr = '';
+              }
+          } 
+          //对于按钮的状态进行修改
+          if (flag) {
+              this.checkForm.beDisabled = false;
+          } else {
+              this.checkForm.beDisabled = true;
+          }
       },
   },
   mounted (){
@@ -308,7 +498,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 20%;
+      top: 10%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
@@ -325,6 +515,9 @@ export default {
       font-family: "DejaVu Sans Mono";
       color: lightblue;
       font-size: 30px;
+    }
+    .moveCenter {
+       margin-left: 250px;
     }
     .widthContrl {
        width: 400px;

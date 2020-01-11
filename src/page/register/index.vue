@@ -103,9 +103,10 @@ export default {
    },
    methods : {
       closeBut() {
+          this.isSus = true;
+          this.form = {};
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.form = {};
               this.canClose = false;
               if (this.regSus) {
                  this.jumpLog();
@@ -114,7 +115,6 @@ export default {
       },
       jumpLog() {
          this.userInfo = {};
-         this.regSus = false;
          this.$router.push({path: '/'}); 
       },
       resetForm:function(){
@@ -140,7 +140,6 @@ export default {
                     this.regSus = true;            
                 } else {
                     this.form.status = "失败"; 
-                    this.isSus = false;
                     console.log(res.data.err);
                     if (typeof(res.data.err) == 'object') {
                        this.form.err = res.data.err.message;

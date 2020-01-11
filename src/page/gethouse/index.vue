@@ -5,30 +5,32 @@
         <div id="bg" class="bg">
              <div class="login">
                   <div class="logo moveCenter">欢迎来到房屋浏览</div>
-                    <el-col class="toolbar" style="padding-bottom:0px;height:50px;">
-                      <el-form :inline="true" :model="filters">
-                              <el-form-item :span="6">
-                                  <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
-                              </el-form-item>
-                              <!-- 操作类型下拉查询-->
-                              <el-form-item :span="3">
-                                  <el-select v-model="filters.type" clearable placeholder="房屋状态">
-                                      <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
-                                      </el-option>
-                                  </el-select>
-                              </el-form-item>
-                              <!-- 设置查询Form-->
-                              <el-form-item >
-                                  <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
-                              </el-form-item>
-                      </el-form>
-                  </el-col>
+                     <el-row>
+                      <el-col class="toolbar" style="height:50px;" >
+                        <el-form :inline="true" :model="filters">
+                                <el-form-item :span="6">
+                                    <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                                </el-form-item>
+                                <!-- 操作类型下拉查询-->
+                                <el-form-item :span="3">
+                                    <el-select v-model="filters.type" clearable placeholder="房屋状态">
+                                        <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <!-- 设置查询Form-->
+                                <el-form-item >
+                                    <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
+                                </el-form-item>
+                        </el-form>
+                    </el-col>
+                    </el-row>
                    <el-table
                     :data="tableData"
                     @expand='expand'
                     :expand-row-keys='expendRow'
                     :row-key="row => row.index"
-                    style="width: 100%">
+                    style="width:100%;marigin-top:100px;position:absolute;">
                     <el-table-column type="expand">
                       <template slot-scope="props">
                         <el-form label-position="left" inline class="demo-table-expand">
@@ -898,7 +900,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 20%;
+      top: 10%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
