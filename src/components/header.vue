@@ -33,7 +33,7 @@
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/auth">房屋认证</el-menu-item>
-                       <el-menu-item index="/auth/getauth">获取认证</el-menu-item>
+                       <el-menu-item index="/auth/getauth">查看授权</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="4">

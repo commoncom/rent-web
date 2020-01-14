@@ -211,12 +211,14 @@ export default {
           axios.get(url, {}).then(res => {
                 console.log(res.data);  
                 if(res.data.status) {
+                    this.dialogVisible =false;
                     console.log(res.data);       
                 } else {
                     console.log(res.data);            
                 }
           }).catch(err => {
               console.log("bind error", err);
+              this.dialogVisible =false;
               this.$notify({title : '提示信息', message : "请检查网络状况!", type:'error'});
           });
       },
