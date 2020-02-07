@@ -1,20 +1,38 @@
-# 说明
+## TODO list
 
->  非常简单的一个vue2 + vuex的项目，整个流程一目了然，麻雀虽小，五脏俱全，适合作为入门练习。
+1、查询签约
 
->  如果对您有帮助，您可以点右上角 "Star" 支持一下 谢谢！ ^_^
+①、增加根据houseId查询 
 
->  或者您可以 "follow" 一下，我会不断开源更多的有趣的项目
+②、增加根据状态查询
 
->  如有问题请直接在 Issues 中提，或者您发现问题并有非常好的解决方案，欢迎 PR 👍
+2、通证管理
 
->  开发环境 macOS 10.12.3  Chrome 56 nodejs 6.10.0
+①、增加转账记录
 
->  这个项目主要用于 vue2 + vuex 的入门练习，另外推荐一个 vue2 比较复杂的大型项目，覆盖了vuejs大部分的知识点。目前项目已经完成。[地址在这里](https://github.com/bailicangdu/vue2-elm)
+②、增加授权记录
 
+③、增加获取总量
+
+④、考虑是否增加销毁Token功能
+
+3、登录注册增加功能
+
+①、增加信息修改。
+
+②、增加退出功能。
+
+③、增加密码找回和私钥找回功能。（考虑）
+
+④、增加记录
+
+4、房源管理
+
+①、增加 退回Token
 
 ## 项目运行（nodejs 6.0+）
-``` bash
+
+```bash
 # 克隆到本地
 git clone https://github.com/commoncom/rent-web.git
 
@@ -31,19 +49,8 @@ npm run dev
 npm run build
 ```
 
-
-
-# 效果演示
-
-
-[demo地址](https://cangdu.org/happyfri/)（请用chrome手机模式预览）
-
-### 移动端扫描下方二维码
-<img src='https://github.com/bailicangdu/rent-web/blob/master/src/images/ewm.png' width="300" height="300" />
-
-
-
 ## 路由配置
+
 ```js
 import App from '../App'
 
@@ -52,102 +59,69 @@ export default [{
     component: App,
     children: [{
         path: '',
+        name: 'login',
         component: r => require.ensure([], () => r(require('../page/home')), 'home')
     }, {
-        path: '/item',
-        component: r => require.ensure([], () => r(require('../page/item')), 'item')
+        path: '/register',
+        component: r => require.ensure([], () => r(require('../page/register')), 'register')
     }, {
-        path: '/score',
-        component: r => require.ensure([], () => r(require('../page/score')), 'score')
-    }]
+        path: '/register/getstatus',
+        component: r => require.ensure([], () => r(require('../page/register/getstauts.vue')), 'getstatus')
+    }, {
+        path: '/getaddr',
+        component: r => require.ensure([], () => r(require('../page/getaddr')), 'getaddr')
+    }, {
+        path: '/auth',
+        component: r => require.ensure([], () => r(require('../page/auth')), 'auth')
+    }, {
+        path: '/auth/getauth',
+        component: r => require.ensure([], () => r(require('../page/auth/getauth.vue')), 'getauth')
+    }, {
+        path: '/release',
+        component: r => require.ensure([], () => r(require('../page/release')), 'release')
+    }, {
+        path: '/gethouse',
+        component: r => require.ensure([], () => r(require('../page/gethouse')), 'gethouse')
+    }, {
+        path: '/signagree',
+        name: 'signagree',
+        component: r => require.ensure([], () => r(require('../page/signagree')), 'signagree')
+    }, {
+        path: '/signagree/getsign',
+        name: 'getsign',
+        component: r => require.ensure([], () => r(require('../page/signagree/get_sign.vue')), 'getsign')
+    }, {
+        path: '/signagree/sign',
+        name: 'sign',
+        component: r => require.ensure([], () => r(require('../page/signagree/sign.vue')), 'sign')
+    }, {
+        path: '/withdraw',
+        component: r => require.ensure([], () => r(require('../page/withdraw')), 'withdraw')
+    }, {
+        path: '/checkbreak',
+        component: r => require.ensure([], () => r(require('../page/checkbreak')), 'checkbreak')
+    }, {
+        path: '/requestsign',
+        component: r => require.ensure([], () => r(require('../page/requestsign')), 'requestsign')
+    }, {
+        path: '/token/transfer',
+        component: r => require.ensure([], () => r(require('../page/token')), 'transfer')
+    }, {
+        path: '/token/aprrove',
+        component: r => require.ensure([], () => r(require('../page/token/approve.vue')), 'aprrove')
+    }, {
+        path: '/token/getbalance',
+        component: r => require.ensure([], () => r(require('../page/token/getbalance.vue')), 'getbalance')
+    }, {
+        path: '/comment/getcomment',
+        name: 'getcomment',
+        component: r => require.ensure([], () => r(require('../page/comment/get_comment.vue')), 'getcomment')
+    }] 
 }]
-
 ```
-
-
-
-## 配置actions
-```js
-import ajax from '../config/ajax'
-
-export default {
-	addNum({ commit, state }, id) {
-		//点击下一题，记录答案id，判断是否是最后一题，如果不是则跳转下一题
-		commit('REMBER_ANSWER', id);
-		if (state.itemNum < state.itemDetail.length) {
-			commit('ADD_ITEMNUM', 1);
-		}
-	},
-	//初始化信息
-	initializeData({ commit }) {
-		commit('INITIALIZE_DATA');
-	}
-}
-
-```
-
-
-## mutations
-```js
-const ADD_ITEMNUM = 'ADD_ITEMNUM'
-const REMBER_ANSWER = 'REMBER_ANSWER'
-const REMBER_TIME = 'REMBER_TIME'
-const INITIALIZE_DATA = 'INITIALIZE_DATA'
-export default {
-	//点击进入下一题
-	[ADD_ITEMNUM](state, payload) {
-		state.itemNum += payload.num;
-	},
-	//记录答案
-	[REMBER_ANSWER](state, payload) {
-		state.answerid[state.itemNum] = payload.id;
-	},
-	/*
-	记录做题时间
-	 */
-	[REMBER_TIME](state) {
-		state.timer = setInterval(() => {
-			state.allTime++;
-		}, 1000)
-	},
-	/*
-	初始化信息，
-	 */
-	[INITIALIZE_DATA](state) {
-		state.itemNum = 1;
-		state.allTime = 0;
-	},
-}
-```
-
-## 创建store
-```js
-import Vue from 'vue'
-import Vuex from 'vuex'
-import mutations from './mutations'
-import actions from './action'
-
-
-Vue.use(Vuex)
-
-const state = {
-	level: '第一周',
-	itemNum: 1,
-	allTime: 0,
-	timer: '',
-	itemDetail: [],
-	answerid: {}
-}
-
-export default new Vuex.Store({
-	state,
-	actions,
-	mutations
-})
-```
-
 
 ## 创建vue实例
+
 ```js
 import Vue from 'vue'
 import VueRouter from 'vue-router'
@@ -156,11 +130,11 @@ import store from './store/'
 
 Vue.use(VueRouter)
 const router = new VueRouter({
-	routes
+    routes
 })
 
 new Vue({
-	router,
-	store,
+    router,
+    store,
 }).$mount('#app')
 ```

@@ -67,7 +67,7 @@
                                 @click="orderHouse(props.row)">预定房屋</el-button>
                             <el-button v-else-if="btnStatus == 1"
                                 size="small" type="primary"
-                                @click="signAgree(props.row)">签订合同</el-button>
+                                @click="signAgree(props.row)">房东签约</el-button>
                             <el-button v-else-if="btnStatus == 2"
                                 size="small" type="success "
                                 @click="achieveRent(props.row)">完成租赁</el-button>
@@ -369,7 +369,10 @@ export default {
           if (!this.filters.houseId || this.filters.houseId == '') {
               houseId = '0x';
           }
-          console.log("house hash", this.filters.houseId)
+          if (!this.filters.type || this.filters.type.length == 0) {
+               this.filters.type = "1";
+          }
+          console.log("house hash", this.filters.houseId);
           let url = UrlConfig.serverUrl+"/gethouse/"+houseId+"/"+this.filters.type;
           console.log(url);
           this.btnStatus = this.filters.type;

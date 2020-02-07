@@ -123,7 +123,7 @@ export default {
       submitForm:function(formInfo){
          console.log(this.userInfo, formInfo)
          if (this.newMap.has(this.userInfo.userId)) {
-               this.$notify({title : '提示信息',message : '已经注册过，地址为！'+this.newMap.get(this.userInfo.userId),type : 'error'});
+               this.$notify({title : '提示信息',message : '已经注册过，地址为:'+this.newMap.get(this.userInfo.userId),type : 'error'});
                return false;
           }
           let addr = this.userInfo.addr;

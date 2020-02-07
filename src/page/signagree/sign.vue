@@ -5,8 +5,8 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到签订合同</div>
-              <el-form>
+              <div class="logo" style="margin-top:10px;">欢迎来到租客签订合同</div>
+              <el-form style="margin-top:10px;height:60px;">
                  <el-form-item label="承租方(乙方，填写真实姓名)">
                     <el-input type="text" id="leaserName" v-model="agreeInfo.leaserName" @blur="inputBlur('leaserName',agreeInfo.leaserName)"></el-input>
                     <p>{{agreeInfo.leaserNameErr}}</p>
