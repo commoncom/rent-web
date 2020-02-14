@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到租房注册</div>
+              <div class="logo">欢迎来到基于区块链的租房系统注册界面</div>
               <el-form>
                  <el-form-item label="用户名">
                     <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>

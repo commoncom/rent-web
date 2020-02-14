@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋发布</div>
+              <div class="logo">欢迎来到发布房源</div>
               <el-form>
                  <el-form-item label="房屋地址">
                     <el-input type="text" id="houseAddr" v-model="houseInfo.houseAddr" @blur="inputBlur('houseAddr',houseInfo.houseAddr)"></el-input>

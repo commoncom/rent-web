@@ -120,7 +120,7 @@
                 </el-table> 
             </div>
           </div>
-           <el-dialog title="预定房租" :visible.sync="dialogFormVisible" top>
+           <el-dialog title="预定房屋" :visible.sync="dialogFormVisible" top>
                 <el-form :model="form">
                   <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
                     <el-input v-model="form.houseId"   autocomplete="off"></el-input>
@@ -136,7 +136,7 @@
                   </el-form-item>
               </el-form>
               <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="comfirmSub">确 定</el-button>
+                <el-button type="primary" @click="comfirmSub">预 定</el-button>
               </div>
           </el-dialog>
           <el-dialog :title="regTitle" :visible.sync="dialogVisible" top :show-close="false">
@@ -614,7 +614,7 @@ export default {
                     message: "地址输入错误，请输入房东地址！",
                     type: 'info',
                     duration: 2000
-                });
+                  });
              }
           } else {
              if (this.commentForm.landlordAddr == this.commentForm.addr) {

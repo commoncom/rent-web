@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋合同</div>
+              <div class="logo">欢迎来到签约房屋合同</div>
               <el-form>
                  <el-form-item label="出租方(甲方，填写真实姓名)">
                     <el-input type="text" id="userName" v-model="agreeInfo.userName" @blur="inputBlur('userName',agreeInfo.userName)"></el-input>

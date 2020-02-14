@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到租房空间</div>
+              <div class="logo">欢迎来到基于区块链的租房系统登录界面</div>
               <el-form>
                  <el-form-item label="用户名">
                     <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
@@ -20,7 +20,7 @@
                     <p>{{userInfo.pwdErr}}</p>
                 </el-form-item>
                  <el-form-item label="私钥">
-                    <el-input type="text" id="prikey" v-model="userInfo.prikey" @blur="inputBlur('prikey',userInfo.prikey)"></el-input>
+                    <el-input type="password" id="prikey" v-model="userInfo.prikey" @blur="inputBlur('prikey',userInfo.prikey)"></el-input>
                     <p>{{userInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
