@@ -13,7 +13,7 @@ export const OPTION_TYPE = [{
 		label: '租赁中'
 	}, {
 		value: '3',
-		label: '完成租赁'
+		label: '已完成租赁'
 	}, {
 		value: '4',
 		label: '取消租赁'

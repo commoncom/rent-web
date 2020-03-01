@@ -9,7 +9,7 @@
                       <el-col class="toolbar" style="height:50px;" >
                         <el-form :inline="true" :model="filters">
                                 <el-form-item :span="6">
-                                    <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                                    <el-input type="text" style="width:240px;" id="houseId" v-model="filters.houseId" placeholder="房源链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
                                 </el-form-item>
                                 <!-- 操作类型下拉查询-->
                                 <el-form-item :span="3">
@@ -37,7 +37,7 @@
                           <el-form-item label="房屋位置">
                             <span>{{props.row.houseAddr}}</span>
                           </el-form-item>
-                          <el-form-item label="房屋链上ID">
+                          <el-form-item label="房源链上ID">
                             <span>{{props.row.houseId}}</span>
                           </el-form-item>
                           <el-form-item label="房屋交易Hash">
@@ -98,7 +98,7 @@
                       prop="houseAddr">
                     </el-table-column>
                     <el-table-column
-                      label="房屋链上ID">  
+                      label="房源链上ID">  
                         <template slot-scope="scope">
                           {{scope.row.houseId | limitLen}}
                         </template>
@@ -122,7 +122,7 @@
           </div>
            <el-dialog title="预定房屋" :visible.sync="dialogFormVisible" top>
                 <el-form :model="form">
-                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
+                  <el-form-item label="房源链上ID" :label-width="formLabelWidth">
                     <el-input v-model="form.houseId"   autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="租金" :label-width="formLabelWidth">
@@ -157,7 +157,7 @@
           </el-dialog>
           <el-dialog title="请求查看认证" top :visible.sync="authVisible">
                 <el-form :model="authForm">
-                  <el-form-item label="房屋链上ID" :label-width="formLabelWidth">
+                  <el-form-item label="房源链上ID" :label-width="formLabelWidth">
                     <el-input v-model="authForm.houseId" :readyonly="true"  autocomplete="off"></el-input>
                   </el-form-item>
                   <el-form-item label="房东地址" :label-width="formLabelWidth">

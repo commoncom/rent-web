@@ -19,7 +19,7 @@
                     <el-input type="text" id="phoneNum" v-model="agreeInfo.phoneNum" @blur="inputBlur('phoneNum',agreeInfo.phoneNum)"></el-input>
                     <p>{{agreeInfo.phoneNumErr}}</p>
                  </el-form-item>
-                 <el-form-item label="房屋链上ID">
+                 <el-form-item label="房源链上ID">
                     <el-input type="text" id="houseId" v-model="agreeInfo.houseId" @blur="inputBlur('houseId',agreeInfo.houseId)"></el-input>
                     <p>{{agreeInfo.houseIdErr}}</p>
                  </el-form-item>
@@ -333,7 +333,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 115%;
+      top: 105%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

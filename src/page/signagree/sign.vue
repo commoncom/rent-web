@@ -5,8 +5,8 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo" style="margin-top:10px;">欢迎来到租客签订合同</div>
-              <el-form style="margin-top:10px;height:60px;">
+              <div class="logo" style="margin-top:5px;">欢迎来到租客签订合同</div>
+              <el-form style="margin-top:10px;">
                  <el-form-item label="承租方(乙方，填写真实姓名)">
                     <el-input type="text" id="leaserName" v-model="agreeInfo.leaserName" @blur="inputBlur('leaserName',agreeInfo.leaserName)"></el-input>
                     <p>{{agreeInfo.leaserNameErr}}</p>
@@ -19,7 +19,7 @@
                     <el-input type="text" id="phoneNum" v-model="agreeInfo.phoneNum" @blur="inputBlur('phoneNum',agreeInfo.phoneNum)"></el-input>
                     <p>{{agreeInfo.phoneNumErr}}</p>
                  </el-form-item>
-                 <el-form-item label="房屋链上ID">
+                 <el-form-item label="房源链上ID">
                     <el-input type="text" id="houseId" v-model="agreeInfo.houseId" :readonly="true"></el-input>
                  </el-form-item>
                  <el-form-item label="租金">
@@ -32,7 +32,7 @@
                     <el-input type="text" id="houseUse" v-model="agreeInfo.houseUse" :readonly="true" @blur="inputBlur('houseUse', agreeInfo.houseUse)"></el-input>
                     <p>{{agreeInfo.houseUseErr}}</p>
                  </el-form-item>
-                 <el-form-item label="违约金">  
+                 <el-form-item label="违约金(RentToken数目)">  
                     <el-input type="text" id="falsify" v-model="agreeInfo.falsify" :readonly="true"></el-input>
                  </el-form-item>
                  <el-form-item label="提前终止通知时间(月)">  
@@ -316,7 +316,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 100%;
+      top: 98%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

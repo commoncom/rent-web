@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到房屋认证</div>
+              <div class="logo">欢迎来到授权查询个人信息</div>
               <el-form>
                  <el-form-item label="房屋唯一码">
                     <el-input type="text" id="guid" v-model="houseInfo.guid" @blur="inputBlur('guid',houseInfo.guid)"></el-input>

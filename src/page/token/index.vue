@@ -5,7 +5,7 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到Token转账</div>
+              <div class="logo">欢迎来到通证转账</div>
               <el-form>
                  <el-form-item label="转出地址(from)" v-if="tokenInfo.type == '2'">
                     <el-input type="text" id="transOutAddr" v-model="tokenInfo.transOutAddr" @blur="inputBlur('transOutAddr',tokenInfo.transOutAddr)"></el-input>
@@ -19,7 +19,7 @@
                     <el-input type="text" id="amount" v-model="tokenInfo.amount" @blur="inputBlur('amount',tokenInfo.amount)"></el-input>
                     <p>{{tokenInfo.amountErr}}</p>
                 </el-form-item>
-                <el-form-item label="Token类型">
+                <el-form-item label="通证类型">
                     <el-select v-model="tokenInfo.type" clearable placeholder="请选择token类型">
                       <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value">
                       </el-option>
@@ -146,12 +146,8 @@ export default {
             } else {
                 this.form.status = "失败"; 
                 this.isSus = false;
-                console.log(res.data.err);
-                if (typeof(res.data.err) == 'object') {
-                   this.form.err = res.data.err.message;
-                } else {
-                   this.form.err = res.data.err;
-                }
+                console.log(res.data.err, 3333, JSON.stringify(res.data.err));
+                this.form.err = JSON.stringify(res.data.err);
             }
             this.canClose = true;
         }).catch(err => {
