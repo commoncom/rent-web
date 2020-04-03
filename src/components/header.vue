@@ -5,18 +5,20 @@
             <el-menu :default-active="activeIndex" :active="activeIndex" mode="vertical" router unique-opened>
                  <el-submenu index="1">
                     <template slot="title">
-                      <span class="el-icon-user">登录注册</span>
+                      <span class="el-icon-user" style="font-size:16px;">&nbsp;&nbsp;登录注册</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
                       <el-menu-item index="/">登录</el-menu-item>
                       <el-menu-item index="/register">注册</el-menu-item>
                       <el-menu-item index="/getaddr">获取地址</el-menu-item>
                       <el-menu-item index="/register/getstatus">登录状态</el-menu-item>
+                     <!-- <el-menu-item index="/logout">退出登录</el-menu-item>
+                      <el-menu-item index="/updateinfo">修改个人信息</el-menu-item> -->
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="2">
                     <template slot="title">
-                      <span class="el-icon-menu">房源管理</span>
+                      <span class="el-icon-menu" style="font-size:16px;">&nbsp;&nbsp;房源管理</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/release">发布房源</el-menu-item>
@@ -29,7 +31,7 @@
                 </el-submenu>
                 <el-submenu index="3">
                     <template slot="title">
-                      <span class="el-icon-tickets">认证管理</span>
+                      <span class="el-icon-tickets" style="font-size:16px;">&nbsp;&nbsp;认证管理</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/auth">房屋认证</el-menu-item>
@@ -38,7 +40,7 @@
                 </el-submenu>
                 <el-submenu index="4">
                     <template slot="title">
-                      <span class="el-icon-s-comment">评论管理</span>
+                      <span class="el-icon-s-comment" style="font-size:16px;">&nbsp;&nbsp;评论管理</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/comment/getcomment">获取评论</el-menu-item>
@@ -46,7 +48,7 @@
                 </el-submenu>
                 <el-submenu index="5">
                     <template slot="title">
-                      <span class="el-icon-coin">通证管理</span>
+                      <span class="el-icon-coin" style="font-size:16px;">&nbsp;&nbsp;通证管理</span>
                     </template>
                     <el-menu-item-group style="margin-left:30px;">
                        <el-menu-item index="/token/transfer">转账</el-menu-item>
@@ -110,7 +112,7 @@ export default {
     left: 0px;
     height: 100%;
     top: 0%;
-    width: 118px;
+    width: 155px;
     font-size: 14px;
     line-height: 60px;
     /* padding-top: 10px; */
@@ -122,6 +124,7 @@ export default {
     -o-transition: all ease-in-out 1s;
     -moz-transition: all ease-in-out 1s;
     transition: all ease-in-out 1s;
+     border: 1px solid #eee
 }
 
 .headerFull {
@@ -145,7 +148,7 @@ export default {
 .header .logo {
     float: left;
     cursor: pointer;
-    font-size: 25px;
+    font-size: 20px;
 }
 
 .logo_prefix {
@@ -180,7 +183,7 @@ export default {
 .header-right span {
     display: inline-block;
     margin-left: 14px;
-    font-size: 18px;
+    font-size: 16px;
     color: #fff;
     line-height: 1px;
     height: 18px;
@@ -322,7 +325,7 @@ export default {
     /* text-overflow: ellipsis; */
     white-space: nowrap;
     /* font-size: 1.5em; */
-    font-size: 30px;
+    font-size: 25px;
     color: rgb(163, 177, 191);
     font-weight: bold;
     text-decoration: none;
@@ -335,9 +338,12 @@ export default {
     right: 10px !important;
 
 }
+.el-submenu{
+     font-size: 50px !important;
 
+}
 .el-menu-item {
     padding: 0 0 0 10px !important;
-
+   
 }
 </style>

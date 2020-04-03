@@ -7,6 +7,14 @@ export default [{
         path: '',
         name: 'login',
         component: r => require.ensure([], () => r(require('../page/home')), 'home')
+    },{
+        path: '/logout',
+        name: '',
+        component: r => require.ensure([], () => r(require('../page/home/logout.vue')), 'logout')
+    },{
+        path: '/updateinfo',
+        name: '',
+        component: r => require.ensure([], () => r(require('../page/home/updateinfo.vue')), 'updateinfo')
     }, {
         path: '/register',
         component: r => require.ensure([], () => r(require('../page/register')), 'register')

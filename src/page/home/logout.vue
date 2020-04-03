@@ -24,8 +24,8 @@
                     <p>{{userInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">登录</el-button>
-                  <el-button @click="goRegister">注册</el-button>
+                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">退出登录</el-button>
+                  <el-button @click="goRegister">重置</el-button>
                 </el-form-item>
               </el-form>     
             </div>

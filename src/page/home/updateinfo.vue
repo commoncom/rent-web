@@ -19,13 +19,17 @@
                     <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
                     <p>{{userInfo.pwdErr}}</p>
                 </el-form-item>
+                 <el-form-item label="新密码">
+                    <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
+                    <p>{{userInfo.pwdErr}}</p>
+                </el-form-item>
                  <el-form-item label="私钥">
                     <el-input type="password" id="prikey" v-model="userInfo.prikey" @blur="inputBlur('prikey',userInfo.prikey)"></el-input>
                     <p>{{userInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">登录</el-button>
-                  <el-button @click="goRegister">注册</el-button>
+                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">退出登录</el-button>
+                  <el-button @click="goRegister">重置</el-button>
                 </el-form-item>
               </el-form>     
             </div>

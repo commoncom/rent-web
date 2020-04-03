@@ -161,3 +161,25 @@ export default {
        width: 500px;
     }
 </style>
+
+
+    // input::-webkit-input-placeholder {
+    //       /* placeholder颜色  */
+    //      color: black;
+    //      /* placeholder字体大小  */
+    //      font-size: 16px;
+    //      /* placeholder位置  */
+    //      text-align: center;
+    //  }
+    //  input {
+    //      width: 100%;
+    //      height: 40px;
+    //      background-color: #FFF;
+    //     background-image: none;
+    //     border-radius: 4px;
+    //     border: 1px solid #DCDFE6;
+    //     box-sizing: border-box;
+    //     color: #606266;
+    //     -webkit-transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    //     transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+    //  }
