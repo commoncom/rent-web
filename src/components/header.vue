@@ -12,8 +12,8 @@
                       <el-menu-item index="/register">注册</el-menu-item>
                       <el-menu-item index="/getaddr">获取地址</el-menu-item>
                       <el-menu-item index="/register/getstatus">登录状态</el-menu-item>
-                     <!-- <el-menu-item index="/logout">退出登录</el-menu-item>
-                      <el-menu-item index="/updateinfo">修改个人信息</el-menu-item> -->
+                      <el-menu-item index="/logout">退出登录</el-menu-item>
+                      <el-menu-item index="/updateinfo">修改个人信息</el-menu-item> 
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="2">

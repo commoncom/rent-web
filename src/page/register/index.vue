@@ -5,28 +5,28 @@
         <div id="bg" class="bg">
           <div class="login">
               <div class="logo">系统注册界面</div>
-              <el-form >
-                 <el-form-item label="用户名">
+              <el-form>
+                 <el-form-item label="用户名" class="form-size">
                     <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
                     <p>{{userInfo.nameErr}}</p>
                 </el-form-item>
-                 <el-form-item label="用户ID">
+                 <el-form-item label="用户ID" class="form-size">
                     <el-input type="text" id="userId" v-model="userInfo.userId" @blur="inputBlur('userId',userInfo.userId)"></el-input>
                     <p>{{userInfo.idErr}}</p>
                 </el-form-item>
-                 <el-form-item label="地址">
+                 <el-form-item label="地址" class="form-size">
                     <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
                     <p>{{userInfo.addrErr}}</p>
                 </el-form-item>
-                <el-form-item label="密码">
+                <el-form-item label="密码" class="form-size">
                     <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
                     <p>{{userInfo.pwdErr}}</p>
                 </el-form-item>
-                <el-form-item label="确认密码">
+                <el-form-item label="确认密码" class="form-size">
                     <el-input type="password" id="pwd" v-model="userInfo.retpwd" @blur="inputBlur('retpwd',userInfo.retpwd)"></el-input>
                     <p>{{userInfo.retpwdErr}}</p>
                 </el-form-item>
-                <el-form-item label="身份证号">
+                <el-form-item label="身份证号" class="form-size">
                     <el-input type="text" id="idcard" v-model="userInfo.idcard" @blur="inputBlur('idcard',userInfo.idcard)"></el-input>
                     <p>{{userInfo.idcardErr}}</p>
                 </el-form-item>
@@ -237,7 +237,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 60%;
+      top: 54%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);
@@ -253,6 +253,8 @@ export default {
     .logo {
       font-family: "Microsoft YaHei";
       font-size: 30px;
+    }
+    .form-size .el-form-item__label {
     }
     .widthContrl {
        width: 400px;

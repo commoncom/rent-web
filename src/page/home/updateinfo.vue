@@ -5,11 +5,15 @@
         <div id="bg" class="bg">
           <div class="login">
              <div class="login">
-              <div class="logo">欢迎来到基于区块链的租房系统登录界面</div>
+              <div class="logo">欢迎来到基于区块链的租房系统更改信息界面</div>
               <el-form>
                  <el-form-item label="用户名">
                     <el-input type="text" id="name" v-model="userInfo.userName" @blur="inputBlur('name',userInfo.userName)"></el-input>
                     <p>{{userInfo.nameErr}}</p>
+                </el-form-item>
+                <el-form-item label="用户ID">
+                    <el-input type="text" id="userId" v-model="userInfo.userId" @blur="inputBlur('userId',userInfo.userId)"></el-input>
+                    <p>{{userInfo.idErr}}</p>
                 </el-form-item>
                  <el-form-item label="地址">
                     <el-input type="text" id="addr" v-model="userInfo.addr" @blur="inputBlur('addr',userInfo.addr)"></el-input>
@@ -20,15 +24,15 @@
                     <p>{{userInfo.pwdErr}}</p>
                 </el-form-item>
                  <el-form-item label="新密码">
-                    <el-input type="password" id="pwd" v-model="userInfo.pwd" @blur="inputBlur('pwd',userInfo.pwd)"></el-input>
-                    <p>{{userInfo.pwdErr}}</p>
+                    <el-input type="password" id="pwd" v-model="userInfo.newPwd" @blur="inputBlur('newPwd',userInfo.newPwd)"></el-input>
+                    <p>{{userInfo.newPwdErr}}</p>
                 </el-form-item>
                  <el-form-item label="私钥">
                     <el-input type="password" id="prikey" v-model="userInfo.prikey" @blur="inputBlur('prikey',userInfo.prikey)"></el-input>
                     <p>{{userInfo.prikeyErr}}</p>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">退出登录</el-button>
+                  <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">更新</el-button>
                   <el-button @click="goRegister">重置</el-button>
                 </el-form-item>
               </el-form>     
@@ -72,11 +76,15 @@ export default {
         userInfo :{
             userName: '',
             addr: '',
+            userId: '',
             pwd: '',
             prikey: '',
+            newPwd: '',
             nameErr: '',
+            idErr: '',
             addrErr: '',
             pwdErr: '',
+            newPwdErr: '',
             prikeyErr: '',
             beDisabled: true
         },
@@ -90,7 +98,7 @@ export default {
         isSus: true, // 注册结果控制
         regSus: false,
         formLabelWidth: '80px',
-        regTitle: "登录中，请稍等.....",
+        regTitle: "更新中，请稍等.....",
         newMap: new Map(),
       }
    },
@@ -100,7 +108,7 @@ export default {
           this.regSus = true;
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.regTitle = "登录中，请稍等.....";
+              this.regTitle = "更新中，请稍等.....";
               this.canClose = false;
               if (this.regSus) {
                  this.jumpLog();
@@ -115,22 +123,16 @@ export default {
           this.$router.push({path: '/register'});
       },
       submitForm:function(formInfo){
-         console.log(this.userInfo, formInfo)
-         let addr = this.userInfo.addr;
-         if (this.newMap.has(addr)) {
-               this.$notify({title : '提示信息',message : '该用户已登录！', type : 'error'});
-               console.log(this.newMap.get(addr));
-               return false;
-          }
+          console.log(this.userInfo, formInfo)
+          let addr = this.userInfo.addr;
           console.log(addr, this.userInfo.userName)
-          let url = UrlConfig.serverUrl+"/login/"+addr+"/"+this.userInfo.userName +"/"+this.userInfo.pwd+"/"+this.userInfo.prikey;
+          let url = UrlConfig.serverUrl+"/updateinfo/"+addr+"/"+this.userInfo.userName +"/"+this.userInfo.pwd +"/"+this.userInfo.newpwd +"/"+this.userInfo.userId +"/"+this.userInfo.prikey;
           this.dialogFormVisible = true;
           console.log("url", url)
           axios.get(url, {}).then(res => {
-                this.regTitle = "登录结果";
+                this.regTitle = "更新结果";
                 console.log("rtn", res.data);
                 if(res.data.status) {
-                    this.newMap.set(addr, res.data.data); 
                     this.regSus = true; 
                     this.form.data = res.data.data;
                     this.form.status = "成功";              
@@ -147,7 +149,7 @@ export default {
           }).catch(err => {
               this.isSus = false;
               this.form.status = "失败";
-              this.regTitle = "登录结果";
+              this.regTitle = "更新结果";
               this.form.err = "服务繁忙，请稍后重试！"; 
               console.log(err)
               this.canClose = true;
@@ -162,6 +164,13 @@ export default {
                   flag = false;
               } else{
                   this.userInfo.nameErr = '';
+              }
+          } else if(errorItem === 'userId') {
+              if (inputContent === '') {
+                  this.userInfo.idErr = '密码不能为空';
+                  flag = false;
+              } else {
+                  this.userInfo.idErr = '';
               }
           } else if(errorItem === 'addr') {
               if (inputContent === '') {
@@ -180,6 +189,16 @@ export default {
                   flag = false;
               } else {
                   this.userInfo.pwdErr = '';
+              }
+          } else if(errorItem === 'newPwd') {
+              if (inputContent === '') {
+                  this.userInfo.newPwdErr = '新密码不能为空';
+                  flag = false;
+              } else if (inputContent === this.userInfo.pwd) {
+                  this.userInfo.newPwdErr = '新旧密码不能相同';
+                  flag = false;
+              } else {
+                  this.userInfo.newPwdErr = '';
               }
           } else if(errorItem === 'prikey') {
               if (inputContent === '') {
@@ -214,7 +233,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 40%;
+      top: 50%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

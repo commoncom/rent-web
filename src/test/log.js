@@ -1,7 +1,41 @@
-http://192.168.218.186:8080/
-transfertoken/0x51c75c5c9c09768a200f026f16d2aaaebb016553/
-0x6084095375343dcfd2c04857922ea168eee01bbd//
-0x51c75c5c9c09768a200f026f16d2aaaebb016553/
-0xe56d59ea64a9624516d968983b677ef35354701a9f8deeb7d90046b38a0235f3
+let comCos = require("./common/globe.js");
+let tracking = require("./db/user.js");
+let nonceMap = new Map();
+// 获取用户列表
+function getUser(db, userName) {
+    return new Promise((resolve, reject) => {
+        tracking.updateUserStatus(db, "", addr, 2);
+   });
+}
+// 编辑用户
+function editUser(db, userId) {
+    return new Promise((resolve, reject) => {
+        tracking.updateUserStatus(db, "", addr, 2);
+   });
+}
+// 添加用户
+function addUser(db, userName, userId, img, telPhone, pwd) {
+    return new Promise((resolve, reject) => {
+        tracking.updateUserStatus(db, "", addr, 2);
+   });
+}
 
-"/transfertoken/"+info.transOutAddr+"/"+info.transInAddr+"/"+info.amount+"/"+info.addr+"/"+info.prikey;
+
+// 删除用户
+function deleteUser(db, userId) {
+    return new Promise((resolve, reject) => {
+        
+    });
+}
+function batchDelete(db, userIds) {
+    return new Promise((resolve, reject) => {
+        
+    });
+}
+
+
+module.exports = {
+    getVideo,
+    exportVideo,
+    deleteVideo
+}

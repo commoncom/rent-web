@@ -25,7 +25,7 @@
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" @click="submitForm('userInfo')" v-bind:disabled="userInfo.beDisabled">退出登录</el-button>
-                  <el-button @click="goRegister">重置</el-button>
+                  <el-button @click="resetForm">重置</el-button>
                 </el-form-item>
               </el-form>     
             </div>
@@ -86,7 +86,7 @@ export default {
         isSus: true, // 注册结果控制
         regSus: false,
         formLabelWidth: '80px',
-        regTitle: "登录中，请稍等.....",
+        regTitle: "退出中，请稍等.....",
         newMap: new Map(),
       }
    },
@@ -96,7 +96,7 @@ export default {
           this.regSus = true;
           if (this.canClose) {
               this.dialogFormVisible = false;
-              this.regTitle = "登录中，请稍等.....";
+              this.regTitle = "退出中，请稍等.....";
               this.canClose = false;
               if (this.regSus) {
                  this.jumpLog();
@@ -107,23 +107,18 @@ export default {
          this.userInfo = {};
          this.$router.push({path: '/auth'}); 
       },
-      goRegister(){
-          this.$router.push({path: '/register'});
+      resetForm(){
+          this.userInfo = {};
       },
       submitForm:function(formInfo){
          console.log(this.userInfo, formInfo)
          let addr = this.userInfo.addr;
-         if (this.newMap.has(addr)) {
-               this.$notify({title : '提示信息',message : '该用户已登录！', type : 'error'});
-               console.log(this.newMap.get(addr));
-               return false;
-          }
           console.log(addr, this.userInfo.userName)
           let url = UrlConfig.serverUrl+"/login/"+addr+"/"+this.userInfo.userName +"/"+this.userInfo.pwd+"/"+this.userInfo.prikey;
           this.dialogFormVisible = true;
           console.log("url", url)
           axios.get(url, {}).then(res => {
-                this.regTitle = "登录结果";
+                this.regTitle = "退出结果";
                 console.log("rtn", res.data);
                 if(res.data.status) {
                     this.newMap.set(addr, res.data.data); 
@@ -143,7 +138,7 @@ export default {
           }).catch(err => {
               this.isSus = false;
               this.form.status = "失败";
-              this.regTitle = "登录结果";
+              this.regTitle = "退出结果";
               this.form.err = "服务繁忙，请稍后重试！"; 
               console.log(err)
               this.canClose = true;
@@ -210,7 +205,7 @@ export default {
     }
     .login {
       position:absolute;
-      top: 40%;
+      top: 34%;
       left: 50%;
       -webkit-transform: translate(-50%, -50%);
       -moz-transform: translate(-50%, -50%);

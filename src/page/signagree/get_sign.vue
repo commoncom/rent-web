@@ -3,22 +3,23 @@
         <itemcontainer father-component="home"></itemcontainer>
         <!--发布房源-->
         <div id="bg" class="bg">
-             <div class="login">  
-                  <div  class="logo moveCenter">欢迎来到签订租房</div>
-                  <!--<div v-if="notOpen" class="logo moveCenter" style="margin-top:80px;height:20px;">欢迎来到签订租房</div>
-                  <div v-else class="logo moveCenter" style="margin-top:80px;height:425px;">欢迎来到签订租房</div>-->
-                    <el-col class="toolbar" style="padding-bottom:0px;height:20px;">
-                      <el-form :inline="true" :model="filters">
-                              <el-form-item :span="6">
-                                  <el-input type="text" style="width:300px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
-                              </el-form-item>
-                              <!-- 设置查询Form-->
-                              <el-form-item >
-                                  <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
-                              </el-form-item>
-                      </el-form>
+          <div class="login">
+            <div class="login">
+               <div class="logo">欢迎来到签约房屋合同</div>
+               <el-row>
+                  <el-col class="toolbar" style="height:50px;">
+                    <el-form :inline="true" :model="filters">
+                        <el-form-item :span="6">
+                            <el-input type="text" style="width:300px;" id="houseId" v-model="filters.houseId" placeholder="房屋链上ID" @blur="inputBlur('houseId',houseInfo.houseId)"></el-input>
+                        </el-form-item>
+                        <!-- 设置查询Form-->
+                        <el-form-item >
+                            <el-button type="primary" icon="el-icon-search" @click="search" style="width:100px;">查询</el-button>
+                        </el-form-item>
+                    </el-form>
                   </el-col>
-                   <el-table
+                </el-row>
+                <el-table
                     :data="tableData"
                     @expand='expand'
                     :expand-row-keys='expendRow'
@@ -107,6 +108,7 @@
                 </el-table> 
             </div>
           </div>
+        </div>
     </div>
 </template>
 <script>
@@ -188,8 +190,7 @@ export default {
         expendRow: [],
         remarks: COMMENT_REMARK,
         filters: {
-            houseId: '',
-            type: '0'
+            houseId: ''
         }
       }
    },
